@@ -58,6 +58,11 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
 				.WithOne(x => x.GeneralLedgerAccount)
 				.HasForeignKey(x => x.GeneralLedgerAccountId)
 				.OnDelete(DeleteBehavior.Cascade);
+
+			entity.HasOne(x => x.GroupAccount)
+				.WithMany(x => x.GeneralLedgerAccounts)
+				.HasForeignKey(x => x.GroupAccountId)
+				.OnDelete(DeleteBehavior.Cascade);
 		});
 
 		modelBuilder.Entity<SubLedgerAccount>(entity =>
@@ -81,6 +86,11 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
 				.WithOne(x => x.SubLedgerAccount)
 				.HasForeignKey(x => x.SubLedgerAccountId)
 				.OnDelete(DeleteBehavior.Cascade);
+
+			entity.HasOne(x => x.GeneralLedgerAccount)
+				.WithMany(x => x.SubLedgerAccounts)
+				.HasForeignKey(x => x.GeneralLedgerAccountId)
+				.OnDelete(DeleteBehavior.Cascade);
 		});
 
 		modelBuilder.Entity<DetailedAccount>(entity =>
@@ -99,6 +109,11 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
 				.IsRequired();
 
 			entity.HasIndex(x => x.IsActive);
+
+			entity.HasOne(x => x.SubLedgerAccount)
+				.WithMany(x => x.DetailedAccounts)
+				.HasForeignKey(x => x.SubLedgerAccountId)
+				.OnDelete(DeleteBehavior.Cascade);
 		});
 	}
 }
