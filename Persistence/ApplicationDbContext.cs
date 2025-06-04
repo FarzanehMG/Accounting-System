@@ -5,16 +5,16 @@ namespace Persistence;
 
 public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : DbContext(options)
 {
-	public DbSet<GroupAccount> GroupAccounts { get; init; } = default!;
-	public DbSet<GeneralLedgerAccount> GeneralLedgerAccounts { get; init; } = default!;
-	public DbSet<SubLedgerAccount> SubLedgerAccounts { get; init; } = default!;
-	public DbSet<DetailedAccount> DetailedAccounts { get; init; } = default!;
+	public DbSet<GroupAccountEntity> GroupAccounts { get; init; } = default!;
+	public DbSet<GeneralLedgerAccountEntity> GeneralLedgerAccounts { get; init; } = default!;
+	public DbSet<SubLedgerAccountEntity> SubLedgerAccounts { get; init; } = default!;
+	public DbSet<DetailedAccountEntity> DetailedAccounts { get; init; } = default!;
 
 	protected override void OnModelCreating(ModelBuilder modelBuilder)
 	{
 		base.OnModelCreating(modelBuilder);
 
-		modelBuilder.Entity<GroupAccount>(entity =>
+		modelBuilder.Entity<GroupAccountEntity>(entity =>
 		{
 			entity.HasKey(x => x.Id);
 
@@ -31,13 +31,13 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
 
 			entity.HasIndex(x => x.IsActive);
 
-			entity.HasMany<GeneralLedgerAccount>()
+			entity.HasMany<GeneralLedgerAccountEntity>()
 				.WithOne(x => x.GroupAccount)
 				.HasForeignKey(x => x.GroupAccountId)
 				.OnDelete(DeleteBehavior.Cascade);
 		});
 
-		modelBuilder.Entity<GeneralLedgerAccount>(entity =>
+		modelBuilder.Entity<GeneralLedgerAccountEntity>(entity =>
 		{
 			entity.HasKey(x => x.Id);
 
@@ -54,7 +54,7 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
 
 			entity.HasIndex(x => x.IsActive);
 
-			entity.HasMany<SubLedgerAccount>()
+			entity.HasMany<SubLedgerAccountEntity>()
 				.WithOne(x => x.GeneralLedgerAccount)
 				.HasForeignKey(x => x.GeneralLedgerAccountId)
 				.OnDelete(DeleteBehavior.Cascade);
@@ -65,7 +65,7 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
 				.OnDelete(DeleteBehavior.Cascade);
 		});
 
-		modelBuilder.Entity<SubLedgerAccount>(entity =>
+		modelBuilder.Entity<SubLedgerAccountEntity>(entity =>
 		{
 			entity.HasKey(x => x.Id);
 
@@ -82,7 +82,7 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
 
 			entity.HasIndex(x => x.IsActive);
 
-			entity.HasMany<DetailedAccount>()
+			entity.HasMany<DetailedAccountEntity>()
 				.WithOne(x => x.SubLedgerAccount)
 				.HasForeignKey(x => x.SubLedgerAccountId)
 				.OnDelete(DeleteBehavior.Cascade);
@@ -93,7 +93,7 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
 				.OnDelete(DeleteBehavior.Cascade);
 		});
 
-		modelBuilder.Entity<DetailedAccount>(entity =>
+		modelBuilder.Entity<DetailedAccountEntity>(entity =>
 		{
 			entity.HasKey(x => x.Id);
 

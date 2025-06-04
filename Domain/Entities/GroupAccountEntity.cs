@@ -2,7 +2,7 @@
 
 namespace Domain.Entities;
 
-public sealed class GroupAccount : BaseEntity
+public sealed class GroupAccountEntity : BaseEntity
 {
 	public required string AccountTitle { get; set; }
 	public required string AccountCode { get; set; }
@@ -10,5 +10,5 @@ public sealed class GroupAccount : BaseEntity
 
 	//public Guid CompanyFinancialPeriodId { get; set; }
 
-	public ICollection<GeneralLedgerAccount> GeneralLedgerAccounts { get; set; } = new List<GeneralLedgerAccount>();
+	public ICollection<GeneralLedgerAccountEntity> GeneralLedgerAccounts { get; set; } = new List<GeneralLedgerAccountEntity>();
 }

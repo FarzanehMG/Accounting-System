@@ -14,7 +14,7 @@ public class CreateGroupAccountCommandHandler(IUnitOfWork unitOfWork)
 		if (!validateResult.IsValid)
 			return OperationResult<bool>.FailureResult(validateResult.Errors.ConvertToKeyValuePair());
 
-		var createGroupAccount = new Domain.Entities.GroupAccount
+		var createGroupAccount = new Domain.Entities.GroupAccountEntity
 		{
 			// ToDo: Implement account code
 			AccountCode = "1",
