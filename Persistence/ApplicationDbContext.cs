@@ -5,10 +5,10 @@ namespace Persistence;
 
 public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : DbContext(options)
 {
-	public DbSet<GroupAccountEntity> GroupAccounts { get; init; } = default!;
-	public DbSet<GeneralLedgerAccountEntity> GeneralLedgerAccounts { get; init; } = default!;
-	public DbSet<SubLedgerAccountEntity> SubLedgerAccounts { get; init; } = default!;
-	public DbSet<DetailedAccountEntity> DetailedAccounts { get; init; } = default!;
+	public DbSet<GroupAccountEntity> GroupAccounts { get; init; } = null!;
+	public DbSet<GeneralLedgerAccountEntity> GeneralLedgerAccounts { get; init; } = null!;
+	public DbSet<SubLedgerAccountEntity> SubLedgerAccounts { get; init; } = null!;
+	public DbSet<DetailedAccountEntity> DetailedAccounts { get; init; } = null!;
 
 	protected override void OnModelCreating(ModelBuilder modelBuilder)
 	{
