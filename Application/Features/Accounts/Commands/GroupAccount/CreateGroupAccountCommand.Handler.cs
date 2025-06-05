@@ -4,7 +4,7 @@ using Application.Repositories.Common;
 
 namespace Application.Features.Accounts.Commands.GroupAccount;
 
-public class CreateGroupAccountCommandHandler(IUnitOfWork unitOfWork)
+public class CreateGroupAccountCommandHandler(IUnitOfWork unitOfWork,IAccountCodeGenerator codeGenerator)
 {
 	public async Task<OperationResult<bool>> Handle(CreateGroupAccountCommand request, CancellationToken cancellationToken)
 	{
@@ -16,8 +16,7 @@ public class CreateGroupAccountCommandHandler(IUnitOfWork unitOfWork)
 
 		var createGroupAccount = new Domain.Entities.GroupAccountEntity
 		{
-			// ToDo: Implement account code
-			AccountCode = "1",
+			AccountCode = codeGenerator.GenerateCode(),
 			AccountTitle = request.Title,
 			AccountDescription = request.Description,
 		};
