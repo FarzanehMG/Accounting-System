@@ -1,3 +1,10 @@
-﻿namespace Application.Features.Accounts.Commands.GroupAccount;
+﻿using Application.Common;
+using Domain.Enums;
 
-public record UpdateGroupAccountCommand(Guid GroupAccountId, string? Title, string? Description);
+namespace Application.Features.Accounts.Commands.GroupAccount;
+
+public record UpdateGroupAccountCommand(Guid GroupAccountId, 
+    Patch<string?>? Title, 
+    Patch<string?>? Description, 
+    Patch<JournalEntryType>? JournalEntryType, 
+    Patch<bool>? IsActive);

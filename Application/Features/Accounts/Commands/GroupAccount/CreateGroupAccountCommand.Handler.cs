@@ -1,6 +1,7 @@
 ﻿using Application.Common;
 using Application.Extensions;
 using Application.Repositories.Common;
+using Domain.Entities;
 
 namespace Application.Features.Accounts.Commands.GroupAccount;
 
@@ -14,12 +15,14 @@ public class CreateGroupAccountCommandHandler(IUnitOfWork unitOfWork,IAccountCod
 		if (!validateResult.IsValid)
 			return OperationResult<bool>.FailureResult(validateResult.Errors.ConvertToKeyValuePair());
 
-		var createGroupAccount = new Domain.Entities.GroupAccountEntity
+		var createGroupAccount = new GroupAccountEntity
 		{
-			AccountCode = codeGenerator.GenerateCode(),
 			AccountTitle = request.Title,
 			AccountDescription = request.Description,
-		};
+			JournalEntryType = request.JournalEntryType,
+			IsActive = request.IsActive,
+            AccountCode = codeGenerator.GenerateCode(),
+        };
 
 		await unitOfWork.GroupAccountRepository.CreateAsync(createGroupAccount, cancellationToken);
 		await unitOfWork.CommitAsync(cancellationToken);

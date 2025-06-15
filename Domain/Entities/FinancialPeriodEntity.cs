@@ -5,7 +5,7 @@ namespace Domain.Entities;
 public sealed class FinancialPeriodEntity : BaseEntity
 {
     public required string FinancialPeriodTitle { get; set; }
-    public bool IsActive { get; set; } = true;
+    public required bool IsActive { get; set; } = true;
     public DateTime StartDate { get; set; }
     public DateTime EndDate { get; set; }
 

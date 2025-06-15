@@ -1,3 +1,5 @@
-﻿namespace Application.Features.Accounts.Commands.GroupAccount;
+﻿using Domain.Enums;
 
-public record CreateGroupAccountCommand(string Title, string? Description);
+namespace Application.Features.Accounts.Commands.GroupAccount;
+
+public record CreateGroupAccountCommand(string Title, string? Description, JournalEntryType JournalEntryType, bool IsActive);

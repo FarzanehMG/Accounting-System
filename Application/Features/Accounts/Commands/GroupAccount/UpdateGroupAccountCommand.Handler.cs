@@ -1,6 +1,7 @@
 ﻿using Application.Common;
 using Application.Extensions;
 using Application.Repositories.Common;
+using Domain.Enums;
 
 namespace Application.Features.Accounts.Commands.GroupAccount;
 
@@ -19,11 +20,18 @@ public class UpdateGroupAccountCommandHandler(IUnitOfWork unitOfWork)
         if (groupAccount is null)
             return OperationResult<bool>.NotFoundResult(nameof(UpdateGroupAccountCommand.GroupAccountId),"Group Account Not Found.");
 
-        if (request.Title != null) 
-            groupAccount.AccountTitle = request.Title;
+        if (request.Title?.Value != null)
+            groupAccount.AccountTitle = request.Title.Value;
 
-        if (request.Description != null)
-            groupAccount.AccountDescription = request.Description;
+        if (request.Description?.Value != null)
+            groupAccount.AccountDescription = request.Description.Value;
+
+        if (request.JournalEntryType?.Value != null)
+            groupAccount.JournalEntryType = (JournalEntryType)request.JournalEntryType.Value;
+
+        if (request.IsActive != null && request.IsActive?.Value != groupAccount.IsActive)
+            if (request.IsActive?.Value != null)
+                groupAccount.IsActive = request.IsActive.Value;
 
         await unitOfWork.CommitAsync(cancellationToken);
 
