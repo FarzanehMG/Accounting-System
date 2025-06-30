@@ -7,7 +7,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Features\Accounts\Queries\GeneralAccount\" />
     <Folder Include="Repositories\Common\" />
     <Folder Include="Services\" />
   </ItemGroup>
