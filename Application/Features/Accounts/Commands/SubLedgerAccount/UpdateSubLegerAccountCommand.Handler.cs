@@ -28,6 +28,9 @@ public class UpdateSubLegerAccountCommandHandler(IUnitOfWork unitOfWork)
         if (request.JournalEntryType?.Value != null)
             subLegerAccount.JournalEntryType = request.JournalEntryType.Value;
 
+        if (request.GeneralLedgerAccountId?.Value != null)
+            subLegerAccount.GeneralLedgerAccountId = request.GeneralLedgerAccountId.Value;
+
         if (request.IsActive != null && request.IsActive?.Value != subLegerAccount.IsActive)
             if (request.IsActive?.Value != null)
                 subLegerAccount.IsActive = request.IsActive.Value;

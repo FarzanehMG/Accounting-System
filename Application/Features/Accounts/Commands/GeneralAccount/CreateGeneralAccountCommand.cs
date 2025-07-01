@@ -2,4 +2,4 @@
 
 namespace Application.Features.Accounts.Commands.GeneralAccount;
 
-public record CreateGeneralAccountCommand(string Title, string? Description, JournalEntryType JournalEntryType, bool IsActive);
+public record CreateGeneralAccountCommand(string Title, string? Description, JournalEntryType JournalEntryType, bool IsActive, Guid GroupAccountId);

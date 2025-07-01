@@ -21,6 +21,7 @@ public class CreateSubLedgerAccountCommandHandler(IUnitOfWork unitOfWork, IAccou
             AccountDescription = request.Description,
             JournalEntryType = request.JournalEntryType,
             IsActive = request.IsActive,
+            GeneralLedgerAccountId = request.GeneralLegerAccountId,
             AccountCode = codeGenerator.GenerateCode(),
         };
         

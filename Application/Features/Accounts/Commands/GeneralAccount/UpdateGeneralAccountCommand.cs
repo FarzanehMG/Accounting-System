@@ -7,4 +7,5 @@ public record UpdateGeneralAccountCommand(Guid GeneralAccountId,
     Patch<string?>? Title, 
     Patch<string?>? Description, 
     Patch<JournalEntryType>? JournalEntryType, 
-    Patch<bool>? IsActive);
+    Patch<bool>? IsActive,
+    Patch<Guid>? GroupAccountId);

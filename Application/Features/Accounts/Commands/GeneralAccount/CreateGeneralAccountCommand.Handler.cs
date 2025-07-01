@@ -21,7 +21,8 @@ public class CreateGeneralAccountCommandHandler(IUnitOfWork unitOfWork, IAccount
             AccountDescription = request.Description,
             JournalEntryType = request.JournalEntryType,
             IsActive = request.IsActive,
-            AccountCode = codeGenerator.GenerateCode()
+            GroupAccountId = request.GroupAccountId,
+            AccountCode = codeGenerator.GenerateCode(),
         };
 
         await unitOfWork.GeneralLegerAccountRepository.CreateAsync(createGeneralAccount, cancellationToken);

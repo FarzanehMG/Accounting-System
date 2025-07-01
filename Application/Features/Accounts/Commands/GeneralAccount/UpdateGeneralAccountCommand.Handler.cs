@@ -29,6 +29,9 @@ public class UpdateGeneralAccountCommandHandler(IUnitOfWork unitOfWork, IGeneral
         if (request.JournalEntryType?.Value != null)
             generalAccount.JournalEntryType = request.JournalEntryType.Value;
 
+        if (request.GroupAccountId?.Value != null)
+            generalAccount.GroupAccountId= request.GroupAccountId.Value;
+
         if (request.IsActive != null && request.IsActive?.Value != generalAccount.IsActive)
             if (request.IsActive?.Value != null)
                 generalAccount.IsActive = request.IsActive.Value;

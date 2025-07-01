@@ -6,7 +6,7 @@ public class UpdateSubLegerAccountCommandValidator : AbstractValidator<UpdateSub
 {
     public UpdateSubLegerAccountCommandValidator()
     {
-        RuleFor(x => x.Id)
+        RuleFor(x => x.SubLegerAccountId)
             .NotEmpty();
     }
 }

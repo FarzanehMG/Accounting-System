@@ -11,7 +11,7 @@ public sealed class GeneralLedgerAccountEntity : BaseEntity
     public bool IsActive { get; set; } = true;
     public required JournalEntryType JournalEntryType { get; set; }
 
-    public Guid GroupAccountId { get; set; }
+    public required Guid GroupAccountId { get; set; }
 	public GroupAccountEntity? GroupAccount { get; set; }
 
 	public ICollection<SubLedgerAccountEntity> SubLedgerAccounts { get; set; } = new List<SubLedgerAccountEntity>();
