@@ -1,11 +1,10 @@
 ﻿using Application.Common;
 using Application.Extensions;
-using Application.Repositories.AccountRepositories;
 using Application.Repositories.Common;
 
 namespace Application.Features.Accounts.Commands.GeneralAccount;
 
-public class UpdateGeneralAccountCommandHandler(IUnitOfWork unitOfWork, IGeneralLegerAccountRepository generalLegerAccountRepository)
+public class UpdateGeneralAccountCommandHandler(IUnitOfWork unitOfWork)
 {
     public async Task<OperationResult<bool>> Handle(UpdateGeneralAccountCommand request, CancellationToken cancellationToken)
     {
@@ -15,7 +14,7 @@ public class UpdateGeneralAccountCommandHandler(IUnitOfWork unitOfWork, IGeneral
         if (!validateResult.IsValid)
             return OperationResult<bool>.FailureResult(validateResult.Errors.ConvertToKeyValuePair());
 
-        var generalAccount = await generalLegerAccountRepository.GetByIdAsync(request.GeneralAccountId, cancellationToken);
+        var generalAccount = await unitOfWork.GeneralLegerAccountRepository.GetByIdAsync(request.GeneralAccountId, cancellationToken);
 
         if (generalAccount is null)
             return OperationResult<bool>.NotFoundResult(nameof(UpdateGeneralAccountCommand.GeneralAccountId), "General Account Not Found.");
