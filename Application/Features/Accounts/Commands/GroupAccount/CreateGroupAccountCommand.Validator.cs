@@ -9,6 +9,12 @@ public class CreateGroupAccountCommandValidator : AbstractValidator<CreateGroupA
 		RuleFor(x => x.Title)
 			.NotEmpty();
 
+        RuleFor(x => x.Code)
+            .NotEmpty();
+
+        RuleFor(x => x.IsActive)
+            .NotEmpty();
+
         RuleFor(x => x.JournalEntryType)
             .NotEmpty();
     }

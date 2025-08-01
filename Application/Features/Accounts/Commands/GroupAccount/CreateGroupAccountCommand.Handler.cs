@@ -5,7 +5,7 @@ using Domain.Entities;
 
 namespace Application.Features.Accounts.Commands.GroupAccount;
 
-public class CreateGroupAccountCommandHandler(IUnitOfWork unitOfWork,IAccountCodeGenerator codeGenerator)
+public class CreateGroupAccountCommandHandler(IUnitOfWork unitOfWork)
 {
 	public async Task<OperationResult<bool>> Handle(CreateGroupAccountCommand request, CancellationToken cancellationToken)
 	{
@@ -15,13 +15,24 @@ public class CreateGroupAccountCommandHandler(IUnitOfWork unitOfWork,IAccountCod
 		if (!validateResult.IsValid)
 			return OperationResult<bool>.FailureResult(validateResult.Errors.ConvertToKeyValuePair());
 
-		var createGroupAccount = new GroupAccountEntity
+        if (request.IsActive)
+        {
+            var exists = await unitOfWork.GroupAccountRepository
+                .FindActiveAccountByTitleAndTypeAsync(request.Title, request.JournalEntryType, cancellationToken);
+
+            if (exists != null)
+            {
+                return OperationResult<bool>.FailureResult(nameof(request.Title), "An active group account with the same title or type already exists.");
+            }
+        }
+
+        var createGroupAccount = new GroupAccountEntity
 		{
 			AccountTitle = request.Title,
 			AccountDescription = request.Description,
 			JournalEntryType = request.JournalEntryType,
 			IsActive = request.IsActive,
-            AccountCode = codeGenerator.GenerateCode(),
+            AccountCode = request.Code,
         };
 
 		await unitOfWork.GroupAccountRepository.CreateAsync(createGroupAccount, cancellationToken);

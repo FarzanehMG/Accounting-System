@@ -1,7 +1,6 @@
 ﻿using Application.Common;
 using Application.Extensions;
 using Application.Repositories.Common;
-using Domain.Enums;
 
 namespace Application.Features.Accounts.Commands.GroupAccount;
 
@@ -27,11 +26,14 @@ public class UpdateGroupAccountCommandHandler(IUnitOfWork unitOfWork)
             groupAccount.AccountDescription = request.Description.Value;
 
         if (request.JournalEntryType?.Value != null)
-            groupAccount.JournalEntryType = (JournalEntryType)request.JournalEntryType.Value;
+            groupAccount.JournalEntryType = request.JournalEntryType.Value;
 
         if (request.IsActive != null && request.IsActive?.Value != groupAccount.IsActive)
             if (request.IsActive?.Value != null)
                 groupAccount.IsActive = request.IsActive.Value;
+
+        if (request.Code?.Value != null)
+            groupAccount.AccountCode = request.Code.Value;
 
         await unitOfWork.CommitAsync(cancellationToken);
 
