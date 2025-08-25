@@ -1,5 +1,7 @@
 ﻿using Application.Common;
 using Application.Features.Accounts.Commands.GroupAccount;
+using Application.Features.Accounts.Queries.GroupAccount;
+using Application.Features.Accounts.Queries.GroupAccount.Dtos;
 using Application.Repositories.Common;
 using Application.Tests.Extensions;
 using Bogus;
@@ -442,196 +444,408 @@ public class GroupAccountTests(ITestOutputHelper testOutputHelper)
             .WhoseValue.Should().Contain("Group Account Not Found.");
     }
 
-    //[Fact]
-    //public async Task Should_Return_GroupAccount_When_Id_Is_Valid()
-    //{
-    //    // Arrange
-    //    var unitOfWork = Substitute.For<IUnitOfWork>();
-    //    var faker = new Faker();
+    [Fact]
+    public async Task GetGroupAccount_WithValidId_ShouldReturnAccount()
+    {
+        // Arrange
+        var unitOfWork = Substitute.For<IUnitOfWork>();
+        var faker = new Faker();
 
-    //    var existingGroupAccount = new GroupAccountEntity
-    //    {
-    //        Id = Guid.NewGuid(),
-    //        AccountTitle = faker.Finance.AccountName(),
-    //        AccountCode = faker.Finance.AccountName(),
-    //        IsActive = true,
-    //        JournalEntryType = JournalEntryType.Debit
-    //    };
+        var existingGroupAccount = new GroupAccountEntity
+        {
+            Id = Guid.NewGuid(),
+            AccountTitle = faker.Finance.AccountName(),
+            AccountCode = faker.Finance.AccountName(),
+            IsActive = true,
+            JournalEntryType = JournalEntryType.Debit
+        };
 
-    //    unitOfWork.GroupAccountRepository
-    //        .GetByIdAsync(existingGroupAccount.Id, Arg.Any<CancellationToken>())
-    //        .Returns(existingGroupAccount);
+        unitOfWork.GroupAccountRepository
+            .GetByIdAsync(existingGroupAccount.Id, CancellationToken.None)
+            .Returns(existingGroupAccount);
 
-    //    var handler = new GetGroupAccountByIdQueryHandler(unitOfWork);
+        var handler = new GetGroupAccountByIdQueryHandler(unitOfWork);
 
-    //    // Act
-    //    var result = await handler.Handle(new GetGroupAccountByIdQuery(existingGroupAccount.Id), CancellationToken.None);
+        // Act
+        var result = await handler.Handle(new GetGroupAccountByIdQuery
+        {
+            Id = existingGroupAccount.Id
+        }, CancellationToken.None);
 
-    //    // Assert
-    //    result.IsSuccess.Should().BeTrue();
-    //    result.Result.Should().NotBeNull();
-    //    result.Result!.Id.Should().Be(existingGroupAccount.Id);
-    //    result.Result.AccountTitle.Should().Be(existingGroupAccount.AccountTitle);
-    //}
+        // Assert
+        result.IsSuccess.Should().BeTrue();
+        result.Result.Should().NotBeNull();
+        result.Result!.Id.Should().Be(existingGroupAccount.Id);
+        result.Result.AccountTitle.Should().Be(existingGroupAccount.AccountTitle);
+    }
 
-    //[Fact]
-    //public async Task Should_Return_NotFound_When_GroupAccount_Does_Not_Exist()
-    //{
-    //    // Arrange
-    //    var unitOfWork = Substitute.For<IUnitOfWork>();
+    [Fact]
+    public async Task GetGroupAccount_WithInvalidId_ShouldReturnNotFound()
+    {
+        // Arrange
+        var unitOfWork = Substitute.For<IUnitOfWork>();
 
-    //    unitOfWork.GroupAccountRepository
-    //        .GetByIdAsync(Arg.Any<Guid>(), CancellationToken.None)
-    //        .Returns((GroupAccountEntity?)null);
+        unitOfWork.GroupAccountRepository
+            .GetByIdAsync(Arg.Any<Guid>(), CancellationToken.None)
+            .Returns((GroupAccountEntity?)null);
 
-    //    var handler = new GetGroupAccountByIdQueryHandler(unitOfWork);
+        var handler = new GetGroupAccountByIdQueryHandler(unitOfWork);
 
-    //    // Act
-    //    var result = await handler.Handle(new GetGroupAccountByIdQuery(Guid.NewGuid()), CancellationToken.None);
+        // Act
+        var result = await handler.Handle(new GetGroupAccountByIdQuery
+        {
+            Id = Guid.NewGuid()
+        }, CancellationToken.None);
 
-    //    // Assert
-    //    result.IsSuccess.Should().BeFalse();
-    //    result.Result.Should().BeNull();
-    //    result.ErrorMessages.Should().Contain(
-    //        new KeyValuePair<string, string>(nameof(GetGroupAccountByIdQuery.Id), "Group account not found."));
-    //}
+        // Assert
+        result.IsSuccess.Should().BeFalse();
+        result.Result.Should().BeNull();
+        result.ErrorMessages.Should().Contain(new KeyValuePair<string, string>(nameof(GetGroupAccountByIdQuery.Id), "Group account not found."));
+    }
 
-    //[Fact]
-    //public async Task Should_Fail_When_Validation_Fails()
-    //{
-    //    // Arrange
-    //    var unitOfWork = Substitute.For<IUnitOfWork>();
-    //    var handler = new GetGroupAccountByIdQueryHandler(unitOfWork);
+    [Fact]
+    public async Task GetGroupAccount_WhenValidationFails_ReturnsFailureResult()
+    {
+        // Arrange
+        var unitOfWork = Substitute.For<IUnitOfWork>();
+        var handler = new GetGroupAccountByIdQueryHandler(unitOfWork);
 
-    //    // Act
-    //    var result = await handler.Handle(new GetGroupAccountByIdQuery(Guid.Empty), CancellationToken.None);
+        // Act
+        var result = await handler.Handle(new GetGroupAccountByIdQuery
+        {
+            Id = Guid.Empty
+        }, CancellationToken.None);
 
-    //    // Assert
-    //    result.IsSuccess.Should().BeFalse();
-    //    result.ErrorMessages.Should()
-    //        .Contain(x => x.Key == nameof(GetGroupAccountByIdQuery.Id) && x.Value.Contains("must not be empty"));
-    //}
+        // Assert
+        result.IsSuccess.Should().BeFalse();
+        result.ErrorMessages.Should()
+            .Contain(x => x.Key == nameof(GetGroupAccountByIdQuery.Id) && x.Value.Contains("must not be empty"));
+    }
 
-    //[Fact]
-    //public async Task Should_Return_GroupAccounts_When_Title_Is_Valid()
-    //{
-    //    // Arrange
-    //    var unitOfWork = Substitute.For<IUnitOfWork>();
-    //    var faker = new Faker();
-    //    var title = faker.Finance.AccountName();
+    [Fact]
+    public async Task GetGroupAccounts_WhenTitleIsValid_ShouldReturnMatchingResults()
+    {
+        // Arrange
+        var unitOfWork = Substitute.For<IUnitOfWork>();
+        var faker = new Faker();
+        var title = faker.Finance.AccountName();
 
-    //    var existingGroupAccounts = new List<GroupAccountEntity>
-    //    {
-    //        new()
-    //        {
-    //            Id = Guid.NewGuid(),
-    //            AccountTitle = title,
-    //            AccountCode = faker.Finance.AccountName(),
-    //            IsActive = true,
-    //            JournalEntryType = JournalEntryType.Debit
-    //        },
-    //        new()
-    //        {
-    //            Id = Guid.NewGuid(),
-    //            AccountTitle = title,
-    //            AccountCode = faker.Finance.AccountName(),
-    //            IsActive = true,
-    //            JournalEntryType = JournalEntryType.Credit
-    //        }
-    //    };
+        var existingGroupAccounts = new List<GroupAccountEntity>
+        {
+            new()
+            {
+                Id = Guid.NewGuid(),
+                AccountTitle = title,
+                AccountCode = faker.Finance.AccountName(),
+                IsActive = true,
+                JournalEntryType = JournalEntryType.Debit
+            },
+            new()
+            {
+                Id = Guid.NewGuid(),
+                AccountTitle = title,
+                AccountCode = faker.Finance.AccountName(),
+                IsActive = true,
+                JournalEntryType = JournalEntryType.Credit
+            }
+        };
 
-    //    unitOfWork.GroupAccountRepository
-    //        .GetByTitleAsync(title, CancellationToken.None)
-    //        .Returns(existingGroupAccounts);
+        unitOfWork.GroupAccountRepository
+            .GetAllAsync(new GroupAccountFilter
+            {
+                Title = title
+            }, CancellationToken.None)
+            .Returns(existingGroupAccounts);
 
-    //    var query = new GetGroupAccountByTitleQuery(title);
-    //    var handler = new GetGroupAccountByTitleQueryHandler(unitOfWork);
+        var query = new GetGroupAccountsQuery
+        {
+            Title = title
+        };
+        var handler = new GetGroupAccountsQueryHandler(unitOfWork);
 
-    //    // Act
-    //    var result = await handler.Handle(query, CancellationToken.None);
+        // Act
+        var result = await handler.Handle(query, CancellationToken.None);
 
-    //    // Assert
-    //    result.IsSuccess.Should().BeTrue();
-    //    result.Result.Should().HaveCount(2);
-    //    result.Result.Select(x => x.AccountTitle).Distinct().Should().ContainSingle().Which.Should().Be(title);
-    //}
+        // Assert
+        result.IsSuccess.Should().BeTrue();
+        result.Result.Should().HaveCount(2);
+        result.Result.Select(x => x.AccountTitle).Distinct().Should().ContainSingle().Which.Should().Be(title);
+    }
 
-    //[Fact]
-    //public async Task Should_Return_NotFound_When_Title_Has_No_Results()
-    //{
-    //    // Arrange
-    //    var unitOfWork = Substitute.For<IUnitOfWork>();
-    //    var faker = new Faker();
-    //    var title = faker.Finance.AccountName();
+    [Fact]
+    public async Task GetGroupAccounts_WhenCodeIsValid_ShouldReturnMatchingResults()
+    {
+        // Arrange
+        var unitOfWork = Substitute.For<IUnitOfWork>();
+        var faker = new Faker();
+        var code = faker.Finance.AccountName();
 
-    //    unitOfWork.GroupAccountRepository
-    //        .GetByTitleAsync(title, CancellationToken.None)
-    //        .Returns([]);
+        var existingGroupAccounts = new List<GroupAccountEntity>
+        {
+            new()
+            {
+                Id = Guid.NewGuid(),
+                AccountTitle = faker.Finance.AccountName(),
+                AccountCode = code,
+                IsActive = true,
+                JournalEntryType = JournalEntryType.Debit
+            },
+            new()
+            {
+                Id = Guid.NewGuid(),
+                AccountTitle = faker.Finance.AccountName(),
+                AccountCode = code,
+                IsActive = true,
+                JournalEntryType = JournalEntryType.Credit
+            }
+        };
 
-    //    var query = new GetGroupAccountByTitleQuery(title);
-    //    var handler = new GetGroupAccountByTitleQueryHandler(unitOfWork);
+        unitOfWork.GroupAccountRepository
+            .GetAllAsync(new GroupAccountFilter
+            {
+                Code = code
+            }, CancellationToken.None)
+            .Returns(existingGroupAccounts);
 
-    //    // Act
-    //    var result = await handler.Handle(query, CancellationToken.None);
+        var query = new GetGroupAccountsQuery
+        {
+            Code = code
+        };
+        var handler = new GetGroupAccountsQueryHandler(unitOfWork);
 
-    //    // Assert
-    //    result.IsSuccess.Should().BeFalse();
-    //    result.Result.Should().BeNull();
-    //    result.ErrorMessages.Should().Contain(
-    //        new KeyValuePair<string, string>(nameof(GetGroupAccountByTitleQueryResult.AccountTitle), "Group account not found.")
-    //    );
-    //}
+        // Act
+        var result = await handler.Handle(query, CancellationToken.None);
 
-    //[Fact]
-    //public async Task Should_Fail_When_Title_Is_Empty()
-    //{
-    //    // Arrange
-    //    var unitOfWork = Substitute.For<IUnitOfWork>();
+        // Assert
+        result.IsSuccess.Should().BeTrue();
+        result.Result.Should().HaveCount(2);
+        result.Result.Select(x => x.AccountCode).Distinct().Should().ContainSingle().Which.Should().Be(code);
+    }
 
-    //    var query = new GetGroupAccountByTitleQuery("");
-    //    var handler = new GetGroupAccountByTitleQueryHandler(unitOfWork);
+    [Fact]
+    public async Task GetGroupAccounts_WhenIsActiveIsValid_ShouldReturnMatchingResults()
+    {
+        // Arrange
+        var unitOfWork = Substitute.For<IUnitOfWork>();
+        var faker = new Faker();
+        const bool isActive = true;
 
-    //    // Act
-    //    var result = await handler.Handle(query, CancellationToken.None);
+        var existingGroupAccounts = new List<GroupAccountEntity>
+        {
+            new()
+            {
+                Id = Guid.NewGuid(),
+                AccountTitle = faker.Finance.AccountName(),
+                AccountCode = faker.Finance.AccountName(),
+                IsActive = isActive,
+                JournalEntryType = JournalEntryType.Debit
+            },
+            new()
+            {
+                Id = Guid.NewGuid(),
+                AccountTitle = faker.Finance.AccountName(),
+                AccountCode = faker.Finance.AccountName(),
+                IsActive = isActive,
+                JournalEntryType = JournalEntryType.Credit
+            }
+        };
 
-    //    // Assert
-    //    result.IsSuccess.Should().BeFalse();
-    //    result.Result.Should().BeNull();
-    //    result.ErrorMessages.Should()
-    //        .Contain(x => x.Key == nameof(GetGroupAccountByTitleQuery.AccountTitle) && x.Value.Contains("must not be empty"));
-    //}
+        unitOfWork.GroupAccountRepository
+            .GetAllAsync(new GroupAccountFilter
+            {
+                IsActive = true
+            }, CancellationToken.None)
+            .Returns(existingGroupAccounts);
 
-    //[Fact]
-    //public async Task Should_Fail_When_Active_Title_Exist()
-    //{
-    //    // Arrange
-    //    var unitOfWork = Substitute.For<IUnitOfWork>();
-    //    var accountCodeGenerator = Substitute.For<IAccountCodeGenerator>();
-    //    var faker = new Faker();
-    //    var accountTitle = faker.Finance.AccountName();
+        var query = new GetGroupAccountsQuery
+        {
+            IsActive = isActive
+        };
+        var handler = new GetGroupAccountsQueryHandler(unitOfWork);
 
-    //    unitOfWork.GroupAccountRepository
-    //        .FindActiveAccountByTitleAndTypeAsync(accountTitle, JournalEntryType.Credit)
-    //        .Returns(new GroupAccountEntity
-    //        {
-    //            AccountCode = "101",
-    //            AccountTitle = accountTitle,
-    //            JournalEntryType = JournalEntryType.Credit,
-    //            IsActive = true
-    //        });
+        // Act
+        var result = await handler.Handle(query, CancellationToken.None);
 
-    //    var createGroupAccountCommand = new CreateGroupAccountCommand(accountTitle,
-    //        null,
-    //        JournalEntryType.Credit,
-    //        true);
-    //    var createGroupAccountCommandHandler = new CreateGroupAccountCommandHandler(unitOfWork, accountCodeGenerator);
+        // Assert
+        result.IsSuccess.Should().BeTrue();
+        result.Result.Should().HaveCount(2);
+        result.Result.Select(x => x.IsActive).Distinct().Should().ContainSingle().Which.Should().Be(isActive);
+    }
 
-    //    // Act
-    //    var result = await createGroupAccountCommandHandler.Handle(createGroupAccountCommand, CancellationToken.None);
+    [Fact]
+    public async Task GetGroupAccounts_WhenJournalEntryTypeIsValid_ShouldReturnMatchingResults()
+    {
+        // Arrange
+        var unitOfWork = Substitute.For<IUnitOfWork>();
+        var faker = new Faker();
+        const JournalEntryType journalEntryType = JournalEntryType.Credit;
 
-    //    // Assert
-    //    result.Result.Should().BeFalse();
-    //    result.ErrorMessages.Should()
-    //        .Contain(x => x.Key == nameof(createGroupAccountCommand.Title) && x.Value.Contains("An active group account with the same title already exists."));
-    //}
+        var existingGroupAccounts = new List<GroupAccountEntity>
+        {
+            new()
+            {
+                Id = Guid.NewGuid(),
+                AccountTitle = faker.Finance.AccountName(),
+                AccountCode = faker.Finance.AccountName(),
+                IsActive = true,
+                JournalEntryType = JournalEntryType.Debit
+            },
+            new()
+            {
+                Id = Guid.NewGuid(),
+                AccountTitle = faker.Finance.AccountName(),
+                AccountCode = faker.Finance.AccountName(),
+                IsActive = true,
+                JournalEntryType = journalEntryType
+            }
+        };
+
+        unitOfWork.GroupAccountRepository
+            .GetAllAsync(Arg.Any<GroupAccountFilter>(), Arg.Any<CancellationToken>())
+            .Returns(callInfo =>
+            {
+                var filter = callInfo.Arg<GroupAccountFilter>();
+                return existingGroupAccounts
+                    .Where(x => filter.JournalEntryType == null || x.JournalEntryType == filter.JournalEntryType)
+                    .ToList()
+                    .AsReadOnly();
+            });
+
+        var query = new GetGroupAccountsQuery
+        {
+            JournalEntryType = journalEntryType
+        };
+        var handler = new GetGroupAccountsQueryHandler(unitOfWork);
+
+        // Act
+        var result = await handler.Handle(query, CancellationToken.None);
+
+        // Assert
+        result.IsSuccess.Should().BeTrue();
+        result.Result.Should().HaveCount(1);
+        result.Result.Select(x => x.JournalEntryType).Distinct().Should().ContainSingle().Which.Should().Be(journalEntryType);
+    }
+
+    [Fact]
+    public async Task GetGroupAccounts_WhenNoRecordsFound_ShouldReturnNotFound()
+    {
+        // Arrange
+        var unitOfWork = Substitute.For<IUnitOfWork>();
+        const JournalEntryType journalEntryType = JournalEntryType.Credit;
+
+        unitOfWork.GroupAccountRepository
+            .GetAllAsync(Arg.Any<GroupAccountFilter>(), Arg.Any<CancellationToken>())
+            .Returns([]);
+
+        var query = new GetGroupAccountsQuery
+        {
+            JournalEntryType = journalEntryType
+        };
+        var handler = new GetGroupAccountsQueryHandler(unitOfWork);
+
+        // Act
+        var result = await handler.Handle(query, CancellationToken.None);
+
+        // Assert
+        result.IsSuccess.Should().BeFalse();
+        result.Result.Should().BeNull();
+        result.ErrorMessages.Should().Contain(new KeyValuePair<string, string>(nameof(GetGroupAccountsQueryResult), "Group account not found."));
+    }
+
+    [Fact]
+    public async Task GetGroupAccounts_WhenMultipleFiltersAreApplied_ShouldReturnMatchingResults()
+    {
+        // Arrange
+        var unitOfWork = Substitute.For<IUnitOfWork>();
+        var faker = new Faker();
+        const JournalEntryType journalEntryType = JournalEntryType.Credit;
+        var accountTitle = faker.Finance.AccountName();
+
+        var existingGroupAccounts = new List<GroupAccountEntity>
+    {
+        new()
+        {
+            Id = Guid.NewGuid(),
+            AccountTitle = accountTitle,
+            AccountCode = faker.Finance.AccountName(),
+            IsActive = true,
+            JournalEntryType = JournalEntryType.Debit
+        },
+        new()
+        {
+            Id = Guid.NewGuid(),
+            AccountTitle = accountTitle,
+            AccountCode = faker.Finance.AccountName(),
+            IsActive = true,
+            JournalEntryType = journalEntryType
+        }
+    };
+
+        unitOfWork.GroupAccountRepository
+            .GetAllAsync(Arg.Any<GroupAccountFilter>(), Arg.Any<CancellationToken>())
+            .Returns(callInfo =>
+            {
+                var filter = callInfo.Arg<GroupAccountFilter>();
+                return existingGroupAccounts
+                    .Where(x => filter.JournalEntryType == null || x.JournalEntryType == filter.JournalEntryType)
+                    .Where(x => filter.Title == null || x.AccountTitle == filter.Title)
+                    .ToList()
+                    .AsReadOnly();
+            });
+
+        var query = new GetGroupAccountsQuery
+        {
+            JournalEntryType = journalEntryType,
+            Title = accountTitle
+        };
+        var handler = new GetGroupAccountsQueryHandler(unitOfWork);
+
+        // Act
+        var result = await handler.Handle(query, CancellationToken.None);
+
+        // Assert
+        result.IsSuccess.Should().BeTrue();
+        result.Result.Should().HaveCount(1);
+        result.Result.Select(x => x.AccountTitle).Distinct().Should().ContainSingle().Which.Should().Be(accountTitle);
+        result.Result.Select(x => x.JournalEntryType).Distinct().Should().ContainSingle().Which.Should().Be(journalEntryType);
+    }
+
+    [Fact]
+    public async Task GetGroupAccounts_WhenRecordsExist_ShouldMapPropertiesCorrectly()
+    {
+        // Arrange
+        var unitOfWork = Substitute.For<IUnitOfWork>();
+        var faker = new Faker();
+
+        var entity = new GroupAccountEntity
+        {
+            Id = Guid.NewGuid(),
+            AccountTitle = faker.Finance.AccountName(),
+            AccountCode = faker.Finance.AccountName(),
+            IsActive = true,
+            AccountDescription = faker.Lorem.Sentence(),
+            JournalEntryType = JournalEntryType.Debit
+        };
+
+        unitOfWork.GroupAccountRepository
+            .GetAllAsync(Arg.Any<GroupAccountFilter>(), Arg.Any<CancellationToken>())
+            .Returns(new List<GroupAccountEntity> { entity }.AsReadOnly());
+
+        var query = new GetGroupAccountsQuery { Title = entity.AccountTitle };
+        var handler = new GetGroupAccountsQueryHandler(unitOfWork);
+
+        // Act
+        var result = await handler.Handle(query, CancellationToken.None);
+
+        // Assert
+        result.IsSuccess.Should().BeTrue();
+        result.Result.Should().HaveCount(1);
+
+        var mapped = result.Result.First();
+        mapped.AccountTitle.Should().Be(entity.AccountTitle);
+        mapped.AccountCode.Should().Be(entity.AccountCode);
+        mapped.IsActive.Should().Be(entity.IsActive);
+        mapped.AccountDescription.Should().Be(entity.AccountDescription);
+        mapped.JournalEntryType.Should().Be(entity.JournalEntryType);
+    }
 }
