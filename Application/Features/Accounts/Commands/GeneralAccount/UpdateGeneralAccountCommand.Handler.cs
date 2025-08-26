@@ -14,11 +14,29 @@ public class UpdateGeneralAccountCommandHandler(IUnitOfWork unitOfWork)
         if (!validateResult.IsValid)
             return OperationResult<bool>.FailureResult(validateResult.Errors.ConvertToKeyValuePair());
 
-        var generalAccount = await unitOfWork.GeneralLegerAccountRepository.GetByIdAsync(request.GeneralAccountId, cancellationToken);
+        // Retrieve the existing general ledger account
+        var generalAccount = await unitOfWork.GeneralLedgerAccountRepository.GetByIdAsync(request.GeneralAccountId, cancellationToken);
 
         if (generalAccount is null)
             return OperationResult<bool>.NotFoundResult(nameof(UpdateGeneralAccountCommand.GeneralAccountId), "General Account Not Found.");
 
+        // Business Rule: Prevent duplicate active titles within the same group
+        if (!string.IsNullOrWhiteSpace(request.Title?.Value) || request.GroupAccountId?.Value != null)
+        {
+            var titleToCheck = request.Title?.Value ?? generalAccount.AccountTitle;
+            var groupToCheck = request.GroupAccountId?.Value ?? generalAccount.GroupAccountId;
+
+            var existingAccounts = await unitOfWork.GeneralLedgerAccountRepository
+                .FindActiveAccountByTitleAndGroupAsync(titleToCheck, groupToCheck, cancellationToken);
+
+            if (existingAccounts.Any(a => a.Id != generalAccount.Id))
+            {
+                return OperationResult<bool>.FailureResult(
+                    nameof(request.Title), "An active account with this title already exists in the selected group. Consider renaming or reactivating the existing account.");
+            }
+        }
+
+        // Update fields if provided
         if (request.Title?.Value != null)
             generalAccount.AccountTitle = request.Title.Value;
 
@@ -29,12 +47,27 @@ public class UpdateGeneralAccountCommandHandler(IUnitOfWork unitOfWork)
             generalAccount.JournalEntryType = request.JournalEntryType.Value;
 
         if (request.GroupAccountId?.Value != null)
-            generalAccount.GroupAccountId= request.GroupAccountId.Value;
+            generalAccount.GroupAccountId = request.GroupAccountId.Value;
 
-        if (request.IsActive != null && request.IsActive?.Value != generalAccount.IsActive)
-            if (request.IsActive?.Value != null)
-                generalAccount.IsActive = request.IsActive.Value;
+        if (request.IsActive?.Value != null && request.IsActive.Value != generalAccount.IsActive)
+            generalAccount.IsActive = request.IsActive.Value;
 
+        // Business Rule: Ensure AccountCode is unique and follows the group structure
+        if (request.Code?.Value != null && request.Code.Value != generalAccount.AccountCode)
+        {
+            var duplicateCode = await unitOfWork.GeneralLedgerAccountRepository
+                .FindByCodeAsync(request.Code.Value, cancellationToken);
+
+            if (duplicateCode != null)
+            {
+                return OperationResult<bool>.FailureResult(
+                    nameof(request.Code),
+                    "Account code already exists. Please provide a unique code.");
+            }
+            generalAccount.AccountCode = request.Code.Value;
+        }
+
+        generalAccount.ModifiedDate = DateTime.UtcNow;
         await unitOfWork.CommitAsync(cancellationToken);
 
         return OperationResult<bool>.SuccessResult(true);

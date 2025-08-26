@@ -3,9 +3,13 @@ using Domain.Enums;
 
 namespace Application.Features.Accounts.Commands.GeneralAccount;
 
-public record UpdateGeneralAccountCommand(Guid GeneralAccountId, 
-    Patch<string?>? Title, 
-    Patch<string?>? Description, 
-    Patch<JournalEntryType>? JournalEntryType, 
-    Patch<bool>? IsActive,
-    Patch<Guid>? GroupAccountId);
+public record UpdateGeneralAccountCommand
+{
+    public required Guid GeneralAccountId { get; init; }
+    public Patch<string>? Title { get; init; }
+    public Patch<string>? Description { get; init; }
+    public Patch<JournalEntryType>? JournalEntryType { get; init; }
+    public Patch<bool>? IsActive { get; init; }
+    public Patch<string>? Code { get; init; }
+    public Patch<Guid>? GroupAccountId { get; init; }
+}
