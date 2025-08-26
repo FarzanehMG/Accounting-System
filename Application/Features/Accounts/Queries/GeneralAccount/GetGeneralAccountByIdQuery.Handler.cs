@@ -14,7 +14,7 @@ public class GetGeneralAccountByIdQueryHandler(IUnitOfWork unitOfWork)
         if (!validateResult.IsValid)
             return OperationResult<GetGeneralAccountByIdQueryResult>.FailureResult(validateResult.Errors.ConvertToKeyValuePair());
 
-        var generalAccount = await unitOfWork.GeneralLegerAccountRepository.GetByIdAsync(request.Id, cancellationToken);
+        var generalAccount = await unitOfWork.GeneralLedgerAccountRepository.GetByIdAsync(request.Id, cancellationToken);
 
         if (generalAccount is null)
             return OperationResult<GetGeneralAccountByIdQueryResult>.NotFoundResult(nameof(GetGeneralAccountByIdQuery.Id), "General account not found.");

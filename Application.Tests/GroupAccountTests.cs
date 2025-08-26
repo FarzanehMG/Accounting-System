@@ -181,7 +181,7 @@ public class GroupAccountTests(ITestOutputHelper testOutputHelper)
     }
 
     [Fact]
-    public async Task CreateGroupAccountHandler_ShouldSuccess_WhenExistSameActiveTitle()
+    public async Task CreateGroupAccountHandler_ShouldSuccess_WhenExistSameActiveTitleWithDifferentJournalEntryType()
     {
         // Arrange
         var unitOfWork = Substitute.For<IUnitOfWork>();
