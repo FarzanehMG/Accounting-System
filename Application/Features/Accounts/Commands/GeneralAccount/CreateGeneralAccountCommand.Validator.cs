@@ -11,5 +11,15 @@ public class CreateGeneralAccountCommandValidator : AbstractValidator<CreateGene
 
         RuleFor(x=>x.JournalEntryType)
             .NotEmpty();
+
+        RuleFor(x => x.Code)
+            .NotEmpty();
+
+        RuleFor(x => x.IsActive)
+            .NotEmpty();
+
+
+        RuleFor(x => x.GroupAccountId)
+            .NotEmpty();
     }
 }

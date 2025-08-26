@@ -5,7 +5,7 @@ using Domain.Entities;
 
 namespace Application.Features.Accounts.Commands.GeneralAccount;
 
-public class CreateGeneralAccountCommandHandler(IUnitOfWork unitOfWork, IAccountCodeGenerator codeGenerator)
+public class CreateGeneralAccountCommandHandler(IUnitOfWork unitOfWork)
 {
     public async Task<OperationResult<bool>> Handle(CreateGeneralAccountCommand request, CancellationToken cancellationToken)
     {
@@ -14,19 +14,42 @@ public class CreateGeneralAccountCommandHandler(IUnitOfWork unitOfWork, IAccount
 
         if (!validateResult.IsValid)
             return OperationResult<bool>.FailureResult(validateResult.Errors.ConvertToKeyValuePair());
-        //TODO
-        //// منطق چک تکراری بودن عنوان توی همان GroupAccountId، فقط حساب‌های فعال رو چک کن
-        //var duplicateAccount = await unitOfWork.GeneralLedgerAccountRepository
-        //    .GetByTitleAndGroupAsync(request.Title, request.GroupAccountId, cancellationToken);
 
-        //if (duplicateAccount.Any(a => a.IsActive))
-        //{
-        //    return OperationResult<bool>.FailureResult(new List<KeyValuePair<string, string>>()
-        //    {
-        //        new KeyValuePair<string, string>("Title", "An active account with this title already exists in the selected group.")
-        //    });
-        //}
+        // Business Rule: Each active account within the same group must have a unique title.
+        // Prevents confusion in reporting and ensures accurate posting of journal entries.
+        var existingAccounts = await unitOfWork.GeneralLedgerAccountRepository
+            .FindAccountByTitleAndGroupAndTypeAsync(request.Title, request.GroupAccountId, request.JournalEntryType, cancellationToken);
 
+        if (request.IsActive && existingAccounts.Any(a => a.IsActive))
+        {
+            return OperationResult<bool>.FailureResult([
+                new KeyValuePair<string, string>("Title", "An active account with this title already exists in the selected group.")]);
+        }
+
+        // Business Rule: If an account with the same title already exists but is inactive,
+        // return its ID and code so the system can provide a direct "Reactivate" option.
+        var inactiveAccount = existingAccounts.FirstOrDefault(a => !a.IsActive);
+        if (inactiveAccount is not null)
+        {
+            return OperationResult<bool>.FailureResult([
+                new KeyValuePair<string, string>(
+                    "Title", $"An inactive account with this title already exists (Code: {inactiveAccount.AccountCode}). Consider reactivating it instead of creating a new one."),
+                new KeyValuePair<string, string>(
+                    "InactiveAccountId", inactiveAccount.Id.ToString())
+            ]);
+        }
+
+        // Technical Rule: Account code must always be unique to guarantee data integrity.
+        var duplicateCode = await unitOfWork.GeneralLedgerAccountRepository
+            .FindByCodeAsync(request.Code, cancellationToken);
+
+        if (duplicateCode is not null)
+        {
+            return OperationResult<bool>.FailureResult([new KeyValuePair<string, string>(
+                "Code", "Account code already exists.")]);
+        }
+
+        // Create new general ledger account entity
         var createGeneralAccount = new GeneralLedgerAccountEntity
         {
             AccountTitle = request.Title,
@@ -34,10 +57,10 @@ public class CreateGeneralAccountCommandHandler(IUnitOfWork unitOfWork, IAccount
             JournalEntryType = request.JournalEntryType,
             IsActive = request.IsActive,
             GroupAccountId = request.GroupAccountId,
-            AccountCode = codeGenerator.GenerateCode(),
+            AccountCode = request.Code,
         };
 
-        await unitOfWork.GeneralLegerAccountRepository.CreateAsync(createGeneralAccount, cancellationToken);
+        await unitOfWork.GeneralLedgerAccountRepository.CreateAsync(createGeneralAccount, cancellationToken);
         await unitOfWork.CommitAsync(cancellationToken);
 
         return OperationResult<bool>.SuccessResult(true);

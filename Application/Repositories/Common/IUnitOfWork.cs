@@ -5,7 +5,7 @@ namespace Application.Repositories.Common;
 public interface IUnitOfWork : IAsyncDisposable, IDisposable
 {
 	IGroupAccountRepository GroupAccountRepository { get; }
-    IGeneralLegerAccountRepository GeneralLegerAccountRepository { get; }
+    IGeneralLedgerAccountRepository GeneralLedgerAccountRepository { get; }
     ISubLegerAccountRepository SubLegerAccountRepository { get; }
     IDetailedAccountRepository DetailedAccountRepository { get; }
 
