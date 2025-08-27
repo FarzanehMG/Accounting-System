@@ -47,7 +47,17 @@ public class UpdateGeneralAccountCommandHandler(IUnitOfWork unitOfWork)
             generalAccount.JournalEntryType = request.JournalEntryType.Value;
 
         if (request.GroupAccountId?.Value != null)
+        {
+            if (request.GroupAccountId.Value == Guid.Empty)
+            {
+                return OperationResult<bool>.FailureResult(
+                    nameof(request.GroupAccountId),
+                    "GroupAccountId cannot be empty."
+                );
+            }
+
             generalAccount.GroupAccountId = request.GroupAccountId.Value;
+        }
 
         if (request.IsActive?.Value != null && request.IsActive.Value != generalAccount.IsActive)
             generalAccount.IsActive = request.IsActive.Value;
@@ -67,8 +77,11 @@ public class UpdateGeneralAccountCommandHandler(IUnitOfWork unitOfWork)
             generalAccount.AccountCode = request.Code.Value;
         }
 
-        generalAccount.ModifiedDate = DateTime.UtcNow;
-        await unitOfWork.CommitAsync(cancellationToken);
+        if (unitOfWork.HasChanges(generalAccount))
+        {
+            generalAccount.ModifiedDate = DateTime.UtcNow;
+            await unitOfWork.CommitAsync(cancellationToken);
+        }
 
         return OperationResult<bool>.SuccessResult(true);
     }

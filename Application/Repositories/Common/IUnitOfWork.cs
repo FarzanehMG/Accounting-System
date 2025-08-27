@@ -10,4 +10,5 @@ public interface IUnitOfWork : IAsyncDisposable, IDisposable
     IDetailedAccountRepository DetailedAccountRepository { get; }
 
     Task CommitAsync(CancellationToken cancellationToken = default);
+    bool HasChanges<TEntity>(TEntity entity) where TEntity : class;
 }
