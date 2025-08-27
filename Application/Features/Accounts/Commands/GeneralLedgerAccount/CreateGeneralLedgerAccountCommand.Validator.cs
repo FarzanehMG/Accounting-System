@@ -1,10 +1,10 @@
 ﻿using FluentValidation;
 
-namespace Application.Features.Accounts.Commands.GeneralAccount;
+namespace Application.Features.Accounts.Commands.GeneralLedgerAccount;
 
-public class CreateGeneralAccountCommandValidator : AbstractValidator<CreateGeneralAccountCommand>
+public class CreateGeneralLedgerAccountCommandValidator : AbstractValidator<CreateGeneralLedgerAccountCommand>
 {
-    public CreateGeneralAccountCommandValidator()
+    public CreateGeneralLedgerAccountCommandValidator()
     {
         RuleFor(x => x.Title)
             .NotEmpty();

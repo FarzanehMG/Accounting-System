@@ -1,6 +1,5 @@
 ﻿using Application.Common;
 using Application.Extensions;
-using Application.Features.Accounts.Queries.GeneralAccount;
 using Application.Repositories.Common;
 
 namespace Application.Features.Accounts.Queries.GeneralLedgerAccount;

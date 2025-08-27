@@ -2,23 +2,23 @@
 using Application.Extensions;
 using Application.Repositories.Common;
 
-namespace Application.Features.Accounts.Commands.GeneralAccount;
+namespace Application.Features.Accounts.Commands.GeneralLedgerAccount;
 
-public class UpdateGeneralAccountCommandHandler(IUnitOfWork unitOfWork)
+public class UpdateGeneralLedgerAccountCommandHandler(IUnitOfWork unitOfWork)
 {
-    public async Task<OperationResult<bool>> Handle(UpdateGeneralAccountCommand request, CancellationToken cancellationToken)
+    public async Task<OperationResult<bool>> Handle(UpdateGeneralLedgerAccountCommand request, CancellationToken cancellationToken)
     {
-        var validator = new UpdateGeneralAccountCommandValidator();
+        var validator = new UpdateGeneralLedgerAccountCommandValidator();
         var validateResult = await validator.ValidateAsync(request, cancellationToken);
 
         if (!validateResult.IsValid)
             return OperationResult<bool>.FailureResult(validateResult.Errors.ConvertToKeyValuePair());
 
         // Retrieve the existing general ledger account
-        var generalAccount = await unitOfWork.GeneralLedgerAccountRepository.GetByIdAsync(request.GeneralAccountId, cancellationToken);
+        var generalAccount = await unitOfWork.GeneralLedgerAccountRepository.GetByIdAsync(request.GeneralLedgerAccountId, cancellationToken);
 
         if (generalAccount is null)
-            return OperationResult<bool>.NotFoundResult(nameof(UpdateGeneralAccountCommand.GeneralAccountId), "General Account Not Found.");
+            return OperationResult<bool>.NotFoundResult(nameof(UpdateGeneralLedgerAccountCommand.GeneralLedgerAccountId), "General Account Not Found.");
 
         // Business Rule: Prevent duplicate active titles within the same group
         if (!string.IsNullOrWhiteSpace(request.Title?.Value) || request.GroupAccountId?.Value != null)

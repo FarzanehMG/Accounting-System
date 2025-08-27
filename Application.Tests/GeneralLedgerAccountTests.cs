@@ -1,5 +1,5 @@
 ﻿using Application.Common;
-using Application.Features.Accounts.Commands.GeneralAccount;
+using Application.Features.Accounts.Commands.GeneralLedgerAccount;
 using Application.Repositories.Common;
 using Application.Tests.Extensions;
 using Bogus;
@@ -11,7 +11,7 @@ using Xunit.Abstractions;
 
 namespace Application.Tests;
 
-public class GeneralAccountTests(ITestOutputHelper testOutputHelper)
+public class GeneralLedgerAccountTests(ITestOutputHelper testOutputHelper)
 {
     [Fact]
     public async Task CreateGGeneralLedgerAccountHandler_WhenGeneralLedgerAccountCommandIsValid_ShouldReturnSuccess()
@@ -20,7 +20,7 @@ public class GeneralAccountTests(ITestOutputHelper testOutputHelper)
         var unitOfWork = Substitute.For<IUnitOfWork>();
         var faker = new Faker();
 
-        var createGeneralAccountCommand = new CreateGeneralAccountCommand
+        var createGeneralAccountCommand = new CreateGeneralLedgerAccountCommand
         {
             Title = faker.Finance.AccountName(),
             Code = faker.Finance.Account(),
@@ -51,7 +51,7 @@ public class GeneralAccountTests(ITestOutputHelper testOutputHelper)
         var unitOfWork = Substitute.For<IUnitOfWork>();
         var faker = new Faker();
 
-        var createGeneralLedgerAccountCommand = new CreateGeneralAccountCommand
+        var createGeneralLedgerAccountCommand = new CreateGeneralLedgerAccountCommand
         {
             Title = "",
             Code = faker.Finance.Account(),
@@ -76,7 +76,7 @@ public class GeneralAccountTests(ITestOutputHelper testOutputHelper)
         var unitOfWork = Substitute.For<IUnitOfWork>();
         var faker = new Faker();
 
-        var createGeneralLedgerAccountCommand = new CreateGeneralAccountCommand
+        var createGeneralLedgerAccountCommand = new CreateGeneralLedgerAccountCommand
         {
             Title = faker.Finance.AccountName(),
             Code = faker.Finance.Account(),
@@ -101,7 +101,7 @@ public class GeneralAccountTests(ITestOutputHelper testOutputHelper)
         var unitOfWork = Substitute.For<IUnitOfWork>();
         var faker = new Faker();
 
-        var createGeneralLedgerAccountCommand = new CreateGeneralAccountCommand
+        var createGeneralLedgerAccountCommand = new CreateGeneralLedgerAccountCommand
         {
             Title = faker.Finance.AccountName(),
             Code = "",
@@ -126,7 +126,7 @@ public class GeneralAccountTests(ITestOutputHelper testOutputHelper)
         var unitOfWork = Substitute.For<IUnitOfWork>();
         var faker = new Faker();
 
-        var createGeneralLedgerAccountCommand = new CreateGeneralAccountCommand
+        var createGeneralLedgerAccountCommand = new CreateGeneralLedgerAccountCommand
         {
             Title = faker.Finance.AccountName(),
             Code = "",
@@ -166,7 +166,7 @@ public class GeneralAccountTests(ITestOutputHelper testOutputHelper)
             .FindAccountByTitleAndGroupAndTypeAsync(title, groupAccountId, journalEntryType, Arg.Any<CancellationToken>())
             .Returns(Task.FromResult<IReadOnlyList<GeneralLedgerAccountEntity>>(new List<GeneralLedgerAccountEntity> { existingGeneralLedgerAccount }));
 
-        var createGeneralLedgerAccountCommand = new CreateGeneralAccountCommand
+        var createGeneralLedgerAccountCommand = new CreateGeneralLedgerAccountCommand
         {
             Title = title,
             Code = faker.Finance.Account(),
@@ -211,7 +211,7 @@ public class GeneralAccountTests(ITestOutputHelper testOutputHelper)
             .FindAccountByTitleAndGroupAndTypeAsync(title, groupAccountId, journalEntryType, Arg.Any<CancellationToken>())
             .Returns(Task.FromResult<IReadOnlyList<GeneralLedgerAccountEntity>>(new List<GeneralLedgerAccountEntity> { existingGeneralLedgerAccount }));
 
-        var createGeneralLedgerAccountCommand = new CreateGeneralAccountCommand
+        var createGeneralLedgerAccountCommand = new CreateGeneralLedgerAccountCommand
         {
             Title = title,
             Code = faker.Finance.Account(),
@@ -257,7 +257,7 @@ public class GeneralAccountTests(ITestOutputHelper testOutputHelper)
             .FindAccountByTitleAndGroupAndTypeAsync(title, groupAccountId, journalEntryType, Arg.Any<CancellationToken>())
             .Returns(Task.FromResult<IReadOnlyList<GeneralLedgerAccountEntity>>(new List<GeneralLedgerAccountEntity> { existingGeneralLedgerAccount }));
 
-        var createGeneralLedgerAccountCommand = new CreateGeneralAccountCommand
+        var createGeneralLedgerAccountCommand = new CreateGeneralLedgerAccountCommand
         {
             Title = title,
             Code = faker.Finance.Account(),
@@ -307,7 +307,7 @@ public class GeneralAccountTests(ITestOutputHelper testOutputHelper)
             .FindByCodeAsync(accountCode, Arg.Any<CancellationToken>())
             .Returns(existingGeneralLedgerAccount);
 
-        var createGeneralLedgerAccountCommand = new CreateGeneralAccountCommand
+        var createGeneralLedgerAccountCommand = new CreateGeneralLedgerAccountCommand
         {
             Title = faker.Finance.AccountName(),
             Code = accountCode,
@@ -338,7 +338,7 @@ public class GeneralAccountTests(ITestOutputHelper testOutputHelper)
         var accountCode = faker.Finance.AccountName();
         const JournalEntryType journalEntryType = JournalEntryType.Debit;
 
-        var createGeneralLedgerAccountCommand = new CreateGeneralAccountCommand
+        var createGeneralLedgerAccountCommand = new CreateGeneralLedgerAccountCommand
         {
             Title = faker.Finance.AccountName(),
             Code = accountCode,
@@ -366,18 +366,18 @@ public class GeneralAccountTests(ITestOutputHelper testOutputHelper)
         // Arrange
         var unitOfWork = Substitute.For<IUnitOfWork>();
 
-        var updateGeneralLedgerAccountCommand = new UpdateGeneralAccountCommand
+        var updateGeneralLedgerAccountCommand = new UpdateGeneralLedgerAccountCommand
         {
-            GeneralAccountId = Guid.Empty
+            GeneralLedgerAccountId = Guid.Empty
         };
-        var updateGeneralLedgerAccountHandler = new UpdateGeneralAccountCommandHandler(unitOfWork);
+        var updateGeneralLedgerAccountHandler = new UpdateGeneralLedgerAccountCommandHandler(unitOfWork);
 
         // Act
         var result = await updateGeneralLedgerAccountHandler.Handle(updateGeneralLedgerAccountCommand, CancellationToken.None);
 
         // Assert
         result.IsSuccess.Should().BeFalse();
-        result.ErrorMessages.Should().ContainKey(nameof(updateGeneralLedgerAccountCommand.GeneralAccountId))
+        result.ErrorMessages.Should().ContainKey(nameof(updateGeneralLedgerAccountCommand.GeneralLedgerAccountId))
             .WhoseValue.Should().Contain("'General Account Id' must not be empty.");
     }
 
@@ -399,18 +399,18 @@ public class GeneralAccountTests(ITestOutputHelper testOutputHelper)
         };
         unitOfWork.GeneralLedgerAccountRepository.GetByIdAsync(Guid.NewGuid(), CancellationToken.None).Returns(existingGeneralLedgerAccountEntity);
 
-        var updateGeneralLedgerAccountCommand = new UpdateGeneralAccountCommand
+        var updateGeneralLedgerAccountCommand = new UpdateGeneralLedgerAccountCommand
         {
-            GeneralAccountId = Guid.NewGuid()
+            GeneralLedgerAccountId = Guid.NewGuid()
         };
-        var updateGeneralLedgerAccountHandler = new UpdateGeneralAccountCommandHandler(unitOfWork);
+        var updateGeneralLedgerAccountHandler = new UpdateGeneralLedgerAccountCommandHandler(unitOfWork);
 
         // Act
         var result = await updateGeneralLedgerAccountHandler.Handle(updateGeneralLedgerAccountCommand, CancellationToken.None);
 
         // Assert
         result.IsSuccess.Should().BeFalse();
-        result.ErrorMessages.Should().ContainKey(nameof(updateGeneralLedgerAccountCommand.GeneralAccountId))
+        result.ErrorMessages.Should().ContainKey(nameof(updateGeneralLedgerAccountCommand.GeneralLedgerAccountId))
             .WhoseValue.Should().Contain("General Account Not Found.");
     }
 
@@ -435,12 +435,12 @@ public class GeneralAccountTests(ITestOutputHelper testOutputHelper)
 
         unitOfWork.HasChanges(existingGeneralLedgerAccountEntity).Returns(true);
 
-        var updateGeneralLedgerAccountCommand = new UpdateGeneralAccountCommand
+        var updateGeneralLedgerAccountCommand = new UpdateGeneralLedgerAccountCommand
         {
-            GeneralAccountId = generalLegerAccountId,
+            GeneralLedgerAccountId = generalLegerAccountId,
             Title = new Patch<string>(faker.Finance.AccountName())
         };
-        var updateGeneralLedgerAccountHandler = new UpdateGeneralAccountCommandHandler(unitOfWork);
+        var updateGeneralLedgerAccountHandler = new UpdateGeneralLedgerAccountCommandHandler(unitOfWork);
 
         // Act
         var result = await updateGeneralLedgerAccountHandler.Handle(updateGeneralLedgerAccountCommand, CancellationToken.None);
@@ -474,12 +474,12 @@ public class GeneralAccountTests(ITestOutputHelper testOutputHelper)
 
         unitOfWork.HasChanges(existingGeneralLedgerAccountEntity).Returns(true);
 
-        var updateGeneralLedgerAccountCommand = new UpdateGeneralAccountCommand
+        var updateGeneralLedgerAccountCommand = new UpdateGeneralLedgerAccountCommand
         {
-            GeneralAccountId = generalLegerAccountId,
+            GeneralLedgerAccountId = generalLegerAccountId,
             JournalEntryType = new Patch<JournalEntryType>(JournalEntryType.Debit)
         };
-        var updateGeneralLedgerAccountHandler = new UpdateGeneralAccountCommandHandler(unitOfWork);
+        var updateGeneralLedgerAccountHandler = new UpdateGeneralLedgerAccountCommandHandler(unitOfWork);
 
         // Act
         var result = await updateGeneralLedgerAccountHandler.Handle(updateGeneralLedgerAccountCommand, CancellationToken.None);
@@ -513,12 +513,12 @@ public class GeneralAccountTests(ITestOutputHelper testOutputHelper)
 
         unitOfWork.HasChanges(existingGeneralLedgerAccountEntity).Returns(true);
 
-        var updateGeneralLedgerAccountCommand = new UpdateGeneralAccountCommand
+        var updateGeneralLedgerAccountCommand = new UpdateGeneralLedgerAccountCommand
         {
-            GeneralAccountId = generalLegerAccountId,
+            GeneralLedgerAccountId = generalLegerAccountId,
             GroupAccountId = new Patch<Guid>(Guid.NewGuid())
         };
-        var updateGeneralLedgerAccountHandler = new UpdateGeneralAccountCommandHandler(unitOfWork);
+        var updateGeneralLedgerAccountHandler = new UpdateGeneralLedgerAccountCommandHandler(unitOfWork);
 
         // Act
         var result = await updateGeneralLedgerAccountHandler.Handle(updateGeneralLedgerAccountCommand, CancellationToken.None);
@@ -550,12 +550,12 @@ public class GeneralAccountTests(ITestOutputHelper testOutputHelper)
         };
         unitOfWork.GeneralLedgerAccountRepository.GetByIdAsync(generalLegerAccountId, CancellationToken.None).Returns(existingGeneralLedgerAccountEntity);
 
-        var updateGeneralLedgerAccountCommand = new UpdateGeneralAccountCommand
+        var updateGeneralLedgerAccountCommand = new UpdateGeneralLedgerAccountCommand
         {
-            GeneralAccountId = generalLegerAccountId,
+            GeneralLedgerAccountId = generalLegerAccountId,
             GroupAccountId = new Patch<Guid>(Guid.Empty)
         };
-        var updateGeneralLedgerAccountHandler = new UpdateGeneralAccountCommandHandler(unitOfWork);
+        var updateGeneralLedgerAccountHandler = new UpdateGeneralLedgerAccountCommandHandler(unitOfWork);
 
         // Act
         var result = await updateGeneralLedgerAccountHandler.Handle(updateGeneralLedgerAccountCommand, CancellationToken.None);
@@ -590,12 +590,12 @@ public class GeneralAccountTests(ITestOutputHelper testOutputHelper)
 
         unitOfWork.HasChanges(existingGeneralLedgerAccountEntity).Returns(true);
 
-        var updateGeneralLedgerAccountCommand = new UpdateGeneralAccountCommand
+        var updateGeneralLedgerAccountCommand = new UpdateGeneralLedgerAccountCommand
         {
-            GeneralAccountId = generalLegerAccountId,
+            GeneralLedgerAccountId = generalLegerAccountId,
             IsActive = new Patch<bool>(false)
         };
-        var updateGeneralLedgerAccountHandler = new UpdateGeneralAccountCommandHandler(unitOfWork);
+        var updateGeneralLedgerAccountHandler = new UpdateGeneralLedgerAccountCommandHandler(unitOfWork);
 
         // Act
         var result = await updateGeneralLedgerAccountHandler.Handle(updateGeneralLedgerAccountCommand, CancellationToken.None);
@@ -629,12 +629,12 @@ public class GeneralAccountTests(ITestOutputHelper testOutputHelper)
 
         unitOfWork.HasChanges(existingGeneralLedgerAccountEntity).Returns(true);
 
-        var updateGeneralLedgerAccountCommand = new UpdateGeneralAccountCommand
+        var updateGeneralLedgerAccountCommand = new UpdateGeneralLedgerAccountCommand
         {
-            GeneralAccountId = generalLegerAccountId,
+            GeneralLedgerAccountId = generalLegerAccountId,
             Code = new Patch<string>(faker.Finance.Account())
         };
-        var updateGeneralLedgerAccountHandler = new UpdateGeneralAccountCommandHandler(unitOfWork);
+        var updateGeneralLedgerAccountHandler = new UpdateGeneralLedgerAccountCommandHandler(unitOfWork);
 
         // Act
         var result = await updateGeneralLedgerAccountHandler.Handle(updateGeneralLedgerAccountCommand, CancellationToken.None);
@@ -685,12 +685,12 @@ public class GeneralAccountTests(ITestOutputHelper testOutputHelper)
         unitOfWork.GeneralLedgerAccountRepository.FindActiveAccountByTitleAndGroupAsync(title, groupAccountId, CancellationToken.None)
             .Returns(Task.FromResult<IReadOnlyList<GeneralLedgerAccountEntity>>(new List<GeneralLedgerAccountEntity> { duplicateGeneralLedgerAccountEntity }));
 
-        var updateGeneralLedgerAccountCommand = new UpdateGeneralAccountCommand
+        var updateGeneralLedgerAccountCommand = new UpdateGeneralLedgerAccountCommand
         {
-            GeneralAccountId = generalLegerAccountId,
+            GeneralLedgerAccountId = generalLegerAccountId,
             Title = title
         };
-        var updateGeneralLedgerAccountHandler = new UpdateGeneralAccountCommandHandler(unitOfWork);
+        var updateGeneralLedgerAccountHandler = new UpdateGeneralLedgerAccountCommandHandler(unitOfWork);
 
         // Act
         var result = await updateGeneralLedgerAccountHandler.Handle(updateGeneralLedgerAccountCommand, CancellationToken.None);
@@ -724,12 +724,12 @@ public class GeneralAccountTests(ITestOutputHelper testOutputHelper)
         };
         unitOfWork.GeneralLedgerAccountRepository.GetByIdAsync(generalLegerAccountId, CancellationToken.None).Returns(existingGeneralLedgerAccountEntity);
 
-        var updateGeneralLedgerAccountCommand = new UpdateGeneralAccountCommand
+        var updateGeneralLedgerAccountCommand = new UpdateGeneralLedgerAccountCommand
         {
-            GeneralAccountId = generalLegerAccountId,
+            GeneralLedgerAccountId = generalLegerAccountId,
             Code = new Patch<string>(faker.Finance.Account())
         };
-        var updateGeneralLedgerAccountHandler = new UpdateGeneralAccountCommandHandler(unitOfWork);
+        var updateGeneralLedgerAccountHandler = new UpdateGeneralLedgerAccountCommandHandler(unitOfWork);
 
         unitOfWork.GeneralLedgerAccountRepository.FindByCodeAsync(updateGeneralLedgerAccountCommand.Code, CancellationToken.None)
             .Returns(existingGeneralLedgerAccountEntity);
@@ -767,13 +767,13 @@ public class GeneralAccountTests(ITestOutputHelper testOutputHelper)
 
         unitOfWork.HasChanges(existingGeneralLedgerAccountEntity).Returns(true);
 
-        var updateGeneralLedgerAccountCommand = new UpdateGeneralAccountCommand
+        var updateGeneralLedgerAccountCommand = new UpdateGeneralLedgerAccountCommand
         {
-            GeneralAccountId = generalLegerAccountId,
+            GeneralLedgerAccountId = generalLegerAccountId,
             Code = new Patch<string>(faker.Finance.Account()),
             Title = new Patch<string>(faker.Finance.AccountName())
         };
-        var updateGeneralLedgerAccountHandler = new UpdateGeneralAccountCommandHandler(unitOfWork);
+        var updateGeneralLedgerAccountHandler = new UpdateGeneralLedgerAccountCommandHandler(unitOfWork);
 
         // Act
         var result = await updateGeneralLedgerAccountHandler.Handle(updateGeneralLedgerAccountCommand, CancellationToken.None);
@@ -818,12 +818,12 @@ public class GeneralAccountTests(ITestOutputHelper testOutputHelper)
 
         unitOfWork.HasChanges(existingGeneralLedgerAccountEntity).Returns(true);
 
-        var updateGeneralLedgerAccountCommand = new UpdateGeneralAccountCommand
+        var updateGeneralLedgerAccountCommand = new UpdateGeneralLedgerAccountCommand
         {
-            GeneralAccountId = generalLedgerAccountId,
+            GeneralLedgerAccountId = generalLedgerAccountId,
             Title = new Patch<string>(faker.Finance.AccountName())
         };
-        var updateGeneralLedgerAccountHandler = new UpdateGeneralAccountCommandHandler(unitOfWork);
+        var updateGeneralLedgerAccountHandler = new UpdateGeneralLedgerAccountCommandHandler(unitOfWork);
 
         // Act
         var result = await updateGeneralLedgerAccountHandler.Handle(updateGeneralLedgerAccountCommand, CancellationToken.None);
@@ -862,11 +862,11 @@ public class GeneralAccountTests(ITestOutputHelper testOutputHelper)
 
         unitOfWork.HasChanges(existingAccount).Returns(false);
 
-        var handler = new UpdateGeneralAccountCommandHandler(unitOfWork);
+        var handler = new UpdateGeneralLedgerAccountCommandHandler(unitOfWork);
 
-        var command = new UpdateGeneralAccountCommand
+        var command = new UpdateGeneralLedgerAccountCommand
         {
-            GeneralAccountId = generalLedgerAccountId,
+            GeneralLedgerAccountId = generalLedgerAccountId,
             Title = new Patch<string>(title),
             JournalEntryType = new Patch<JournalEntryType>(JournalEntryType.Credit),
             GroupAccountId = new Patch<Guid>(groupAccountId),

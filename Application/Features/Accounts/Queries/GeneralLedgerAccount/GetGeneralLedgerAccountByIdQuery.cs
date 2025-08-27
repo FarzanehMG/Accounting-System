@@ -1,4 +1,4 @@
-﻿namespace Application.Features.Accounts.Queries.GeneralAccount;
+﻿namespace Application.Features.Accounts.Queries.GeneralLedgerAccount;
 
 public record GetGeneralLedgerAccountByIdQuery
 {

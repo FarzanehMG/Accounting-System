@@ -1,11 +1,11 @@
 ﻿using Application.Common;
 using Domain.Enums;
 
-namespace Application.Features.Accounts.Commands.GeneralAccount;
+namespace Application.Features.Accounts.Commands.GeneralLedgerAccount;
 
-public record UpdateGeneralAccountCommand
+public record UpdateGeneralLedgerAccountCommand
 {
-    public required Guid GeneralAccountId { get; init; }
+    public required Guid GeneralLedgerAccountId { get; init; }
     public Patch<string>? Title { get; init; }
     public Patch<string>? Description { get; init; }
     public Patch<JournalEntryType>? JournalEntryType { get; init; }

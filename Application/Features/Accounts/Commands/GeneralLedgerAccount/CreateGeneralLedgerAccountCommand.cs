@@ -1,8 +1,8 @@
 ﻿using Domain.Enums;
 
-namespace Application.Features.Accounts.Commands.GeneralAccount;
+namespace Application.Features.Accounts.Commands.GeneralLedgerAccount;
 
-public record CreateGeneralAccountCommand
+public record CreateGeneralLedgerAccountCommand
 {
     public required string Title { get; init; }
     public required string Code { get; init; }

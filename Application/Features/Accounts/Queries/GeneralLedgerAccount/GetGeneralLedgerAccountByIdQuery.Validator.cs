@@ -1,5 +1,4 @@
-﻿using Application.Features.Accounts.Queries.GeneralAccount;
-using FluentValidation;
+﻿using FluentValidation;
 
 namespace Application.Features.Accounts.Queries.GeneralLedgerAccount;
 

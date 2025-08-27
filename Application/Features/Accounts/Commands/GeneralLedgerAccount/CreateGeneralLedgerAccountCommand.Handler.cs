@@ -3,13 +3,13 @@ using Application.Extensions;
 using Application.Repositories.Common;
 using Domain.Entities;
 
-namespace Application.Features.Accounts.Commands.GeneralAccount;
+namespace Application.Features.Accounts.Commands.GeneralLedgerAccount;
 
 public class CreateGeneralAccountCommandHandler(IUnitOfWork unitOfWork)
 {
-    public async Task<OperationResult<bool>> Handle(CreateGeneralAccountCommand request, CancellationToken cancellationToken)
+    public async Task<OperationResult<bool>> Handle(CreateGeneralLedgerAccountCommand request, CancellationToken cancellationToken)
     {
-        var validator = new CreateGeneralAccountCommandValidator();
+        var validator = new CreateGeneralLedgerAccountCommandValidator();
         var validateResult = await validator.ValidateAsync(request, cancellationToken);
 
         if (!validateResult.IsValid)
