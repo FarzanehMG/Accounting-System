@@ -1,4 +1,5 @@
-﻿using Domain.Entities;
+﻿using Application.Features.Accounts.Queries.GeneralLedgerAccount.Dtos;
+using Domain.Entities;
 using Domain.Enums;
 
 namespace Application.Repositories.AccountRepositories;
@@ -10,5 +11,5 @@ public interface IGeneralLedgerAccountRepository
     Task<IReadOnlyList<GeneralLedgerAccountEntity>> FindAccountByTitleAndGroupAndTypeAsync(string title, Guid groupAccountId, JournalEntryType journalEntryType, CancellationToken cancellationToken = default);
     Task<GeneralLedgerAccountEntity?> FindByCodeAsync(string code, CancellationToken cancellationToken = default);
     Task<IReadOnlyList<GeneralLedgerAccountEntity>> FindActiveAccountByTitleAndGroupAsync(string title, Guid groupAccountId, CancellationToken cancellationToken = default);
-    Task<List<GeneralLedgerAccountEntity>> GetByTitleAsync(string title, CancellationToken cancellationToken = default);
+    Task<IReadOnlyList<GeneralLedgerAccountEntity>> GetAllAsync(GeneralLedgerAccountFilter generalLedgerAccountFilter, CancellationToken cancellationToken = default);
 }
