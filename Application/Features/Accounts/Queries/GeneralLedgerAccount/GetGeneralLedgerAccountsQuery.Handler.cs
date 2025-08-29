@@ -26,7 +26,7 @@ public class GetGeneralLedgerAccountsQueryHandler(IUnitOfWork unitOfWork)
         var generalAccount = await unitOfWork.GeneralLedgerAccountRepository.GetAllAsync(generalLedgerAccountFilter, cancellationToken);
 
         if (!generalAccount.Any())
-            return OperationResult<IReadOnlyList<GetGeneralLedgerAccountsQueryResult>>.NotFoundResult(nameof(GetGeneralLedgerAccountsQuery), "General account not found.");
+            return OperationResult<IReadOnlyList<GetGeneralLedgerAccountsQueryResult>>.NotFoundResult(nameof(GetGeneralLedgerAccountsQueryResult), "General account not found.");
 
         return OperationResult<IReadOnlyList<GetGeneralLedgerAccountsQueryResult>>
             .SuccessResult(generalAccount.Select(x => new GetGeneralLedgerAccountsQueryResult

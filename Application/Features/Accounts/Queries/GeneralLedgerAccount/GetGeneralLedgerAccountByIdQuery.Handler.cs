@@ -6,7 +6,7 @@ namespace Application.Features.Accounts.Queries.GeneralLedgerAccount;
 
 public class GetGeneralAccountByIdQueryHandler(IUnitOfWork unitOfWork)
 {
-    public async Task<OperationResult<GetGeneralAccountByIdQueryResult>> Handel(GetGeneralLedgerAccountByIdQuery request, CancellationToken cancellationToken)
+    public async Task<OperationResult<GetGeneralAccountByIdQueryResult>> Handle(GetGeneralLedgerAccountByIdQuery request, CancellationToken cancellationToken)
     {
         var validator = new GetGeneralLedgerAccountByIdQueryValidator();
         var validateResult = await validator.ValidateAsync(request, cancellationToken);
