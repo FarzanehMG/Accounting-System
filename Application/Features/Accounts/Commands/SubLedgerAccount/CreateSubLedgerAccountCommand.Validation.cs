@@ -12,7 +12,14 @@ public class CreateSubLedgerAccountCommandValidator : AbstractValidator<CreateSu
         RuleFor(x => x.JournalEntryType)
             .NotEmpty();
 
-        RuleFor(x=>x.IsActive)
+        RuleFor(x => x.Code)
+            .NotEmpty();
+
+        RuleFor(x => x.IsActive)
+            .NotEmpty();
+
+
+        RuleFor(x => x.GeneralLedgerAccountId)
             .NotEmpty();
     }
 }
