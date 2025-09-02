@@ -27,8 +27,14 @@ public class CreateSubLedgerAccountCommandHandler(IUnitOfWork unitOfWork)
         if (generalLedger.JournalEntryType != request.JournalEntryType)
         {
             return OperationResult<bool>.FailureResult([
-                new KeyValuePair<string, string>("JournalEntryType",
+                new KeyValuePair<string, string>(nameof(request.JournalEntryType),
                     "Sub Ledger account must have the same nature (JournalEntryType) as its General Ledger account.")]);
+        }
+
+        if (!generalLedger.IsActive)
+        {
+            return OperationResult<bool>.FailureResult([new KeyValuePair<string, string>(nameof(request.GeneralLedgerAccountId),
+                "The General Ledger account must be active.")]);
         }
 
         // Business Rule: Each active account within the same generalLedger must have a unique title.
@@ -39,7 +45,7 @@ public class CreateSubLedgerAccountCommandHandler(IUnitOfWork unitOfWork)
         if (request.IsActive && existingAccounts.Any(x => x.IsActive))
         {
             return OperationResult<bool>.FailureResult([
-                new KeyValuePair<string, string>("Title", "An active account with this title already exists in the selected generalLedger.")]);
+                new KeyValuePair<string, string>(nameof(request.Title), "An active account with this title already exists in the selected generalLedger.")]);
         }
 
         // Business Rule: If an account with the same title already exists but is inactive,
@@ -49,7 +55,7 @@ public class CreateSubLedgerAccountCommandHandler(IUnitOfWork unitOfWork)
         {
             return OperationResult<bool>.FailureResult([
                 new KeyValuePair<string, string>(
-                    "Title", $"An inactive account with this title already exists (Code: {inactiveAccount.AccountCode}). Consider reactivating it instead of creating a new one."),
+                    nameof(request.Title), $"An inactive account with this title already exists (Code: {inactiveAccount.AccountCode}). Consider reactivating it instead of creating a new one."),
                 new KeyValuePair<string, string>(
                     "InactiveAccountId", inactiveAccount.Id.ToString())
             ]);

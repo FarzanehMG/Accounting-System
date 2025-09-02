@@ -324,7 +324,7 @@ public class GeneralLedgerAccountTests(ITestOutputHelper testOutputHelper)
 
         // Assert
         result.IsSuccess.Should().BeFalse();
-        result.ErrorMessages.Should().ContainKey(nameof(createGeneralLedgerAccountCommand.Code))
+        result.ErrorMessages.Should().ContainKey("Code")
             .WhoseValue.Should().Contain("Account code already exists.");
 
         await unitOfWork.GeneralLedgerAccountRepository.DidNotReceive()
