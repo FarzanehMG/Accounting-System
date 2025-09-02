@@ -19,6 +19,10 @@ public class GetSubLegerAccountByIdQueryHandler(IUnitOfWork unitOfWork)
         if (subLedgerAccount is null)
             return OperationResult<GetSubLegerAccountByIdQueryResult>.NotFoundResult(nameof(GetSubLedgerAccountByIdQuery), "SubLedger account not found");
 
-        return OperationResult<GetSubLegerAccountByIdQueryResult>.SuccessResult(new GetSubLegerAccountByIdQueryResult(subLedgerAccount.Id, subLedgerAccount.AccountTitle));
+        return OperationResult<GetSubLegerAccountByIdQueryResult>.SuccessResult(new GetSubLegerAccountByIdQueryResult
+        {
+            Id = subLedgerAccount.Id,
+            AccountTitle = subLedgerAccount.AccountTitle
+        });
     }
 }
