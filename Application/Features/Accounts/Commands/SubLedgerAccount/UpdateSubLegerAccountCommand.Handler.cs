@@ -6,7 +6,7 @@ namespace Application.Features.Accounts.Commands.SubLedgerAccount;
 
 public class UpdateSubLegerAccountCommandHandler(IUnitOfWork unitOfWork)
 {
-    public async Task<OperationResult<bool>> Handel(UpdateSubLegerAccountCommand request, CancellationToken cancellationToken)
+    public async Task<OperationResult<bool>> Handle(UpdateSubLegerAccountCommand request, CancellationToken cancellationToken)
     {
         var validator = new UpdateSubLegerAccountCommandValidator();
         var validateResult = await validator.ValidateAsync(request, cancellationToken);
@@ -14,28 +14,52 @@ public class UpdateSubLegerAccountCommandHandler(IUnitOfWork unitOfWork)
         if (!validateResult.IsValid)
             return OperationResult<bool>.FailureResult(validateResult.Errors.ConvertToKeyValuePair());
 
+        // Retrieve the existing sub ledger account
         var subLegerAccount = await unitOfWork.SubLegerAccountRepository.GetByIdAsync(request.SubLegerAccountId, cancellationToken);
 
         if (subLegerAccount is null)
             return OperationResult<bool>.NotFoundResult(nameof(UpdateSubLegerAccountCommand), "SubLeger account not found.");
 
-        if (request.Title?.Value != null)
+        // Update fields if provided
+        if (!string.IsNullOrWhiteSpace(request.Title?.Value))
+        {
+            if (subLegerAccount.IsActive && request.Title.Value == subLegerAccount.AccountTitle)
+            {
+                return OperationResult<bool>.FailureResult(nameof(request.Title), "Active subLeger account exist."
+                );
+            }
+
             subLegerAccount.AccountTitle = request.Title.Value;
+        }
 
         if (request.Description?.Value != null)
             subLegerAccount.AccountDescription = request.Description.Value;
 
-        if (request.JournalEntryType?.Value != null)
-            subLegerAccount.JournalEntryType = request.JournalEntryType.Value;
+        if (request.IsActive?.Value != null && request.IsActive.Value != subLegerAccount.IsActive)
+        {
+            subLegerAccount.IsActive = request.IsActive.Value;
+        }
 
-        if (request.GeneralLedgerAccountId?.Value != null)
-            subLegerAccount.GeneralLedgerAccountId = request.GeneralLedgerAccountId.Value;
+        // Business Rule: Ensure AccountCode is unique and follows the subLedger structure
+        if (request.Code?.Value != null && request.Code.Value != subLegerAccount.AccountCode)
+        {
+            var duplicateCode = await unitOfWork.SubLegerAccountRepository
+                .FindByCodeAsync(request.Code.Value, cancellationToken);
 
-        if (request.IsActive != null && request.IsActive?.Value != subLegerAccount.IsActive)
-            if (request.IsActive?.Value != null)
-                subLegerAccount.IsActive = request.IsActive.Value;
+            if (duplicateCode != null)
+            {
+                return OperationResult<bool>.FailureResult(
+                    nameof(request.Code),
+                    "Account code already exists. Please provide a unique code.");
+            }
+            subLegerAccount.AccountCode = request.Code.Value;
+        }
 
-        await unitOfWork.CommitAsync(cancellationToken);
+        if (unitOfWork.HasChanges(subLegerAccount))
+        {
+            subLegerAccount.ModifiedDate = DateTime.UtcNow;
+            await unitOfWork.CommitAsync(cancellationToken);
+        }
 
         return OperationResult<bool>.SuccessResult(true);
     }

@@ -1,4 +1,5 @@
-﻿using Application.Features.Accounts.Commands.SubLedgerAccount;
+﻿using Application.Common;
+using Application.Features.Accounts.Commands.SubLedgerAccount;
 using Application.Repositories.Common;
 using Application.Tests.Extensions;
 using Bogus;
@@ -501,5 +502,390 @@ public class SubLedgerAccountTests(ITestOutputHelper testOutputHelper)
         result.IsSuccess.Should().BeFalse();
         result.ErrorMessages.Should().ContainKey("GeneralLedgerAccountId")
             .WhoseValue.Should().Contain("The General Ledger account must be active.");
+    }
+
+    [Fact]
+    public async Task UpdateSubLedgerAccountHandler_ShouldFail_WhenSubLedgerAccountIdEmpty()
+    {
+        // Arrange
+        var unitOfWork = Substitute.For<IUnitOfWork>();
+
+        var updateSubLedgerAccountCommand = new UpdateSubLegerAccountCommand
+        {
+            SubLegerAccountId = Guid.Empty
+        };
+        var handler = new UpdateSubLegerAccountCommandHandler(unitOfWork);
+
+        // Act
+        var result = await handler.Handle(updateSubLedgerAccountCommand, CancellationToken.None);
+
+        // Assert
+        result.IsSuccess.Should().BeFalse();
+        testOutputHelper.WriteLineOperationResultErrors(result);
+    }
+
+    [Fact]
+    public async Task UpdateSubLedgerAccountHandler_ShouldFail_WhenSubLedgerAccountNotExist()
+    {
+        // Arrange
+        var unitOfWork = Substitute.For<IUnitOfWork>();
+
+        var updateSubLedgerAccountCommand = new UpdateSubLegerAccountCommand
+        {
+            SubLegerAccountId = Guid.NewGuid()
+        };
+        var handler = new UpdateSubLegerAccountCommandHandler(unitOfWork);
+
+        unitOfWork.SubLegerAccountRepository.GetByIdAsync(Guid.NewGuid(), CancellationToken.None)
+            .Returns(null as SubLedgerAccountEntity);
+
+        // Act
+        var result = await handler.Handle(updateSubLedgerAccountCommand, CancellationToken.None);
+
+        // Assert
+        result.IsSuccess.Should().BeFalse();
+        result.ErrorMessages.Should().ContainKey(nameof(UpdateSubLegerAccountCommand))
+            .WhoseValue.Should().Contain("SubLeger account not found.");
+    }
+
+    [Fact]
+    public async Task UpdateSubLedgerAccountHandler_ShouldSuccess_WhenTitleNotEmpty()
+    {
+        // Arrange
+        var unitOfWork = Substitute.For<IUnitOfWork>();
+        var faker = new Faker();
+        var subLedgerAccountId = Guid.NewGuid();
+
+        var updateSubLedgerAccountCommand = new UpdateSubLegerAccountCommand
+        {
+            SubLegerAccountId = subLedgerAccountId,
+            Title = new Patch<string>(faker.Finance.AccountName())
+        };
+        var handler = new UpdateSubLegerAccountCommandHandler(unitOfWork);
+
+        var existingSubLedgerAccount = new SubLedgerAccountEntity
+        {
+            Id = subLedgerAccountId,
+            AccountTitle = faker.Finance.AccountName(),
+            AccountCode = faker.Finance.Account(),
+            IsActive = true,
+            JournalEntryType = JournalEntryType.Credit,
+            GeneralLedgerAccountId = Guid.NewGuid()
+        };
+        unitOfWork.SubLegerAccountRepository.GetByIdAsync(subLedgerAccountId, CancellationToken.None)
+            .Returns(existingSubLedgerAccount);
+
+        unitOfWork.HasChanges(existingSubLedgerAccount).Returns(true);
+
+        // Act
+        var result = await handler.Handle(updateSubLedgerAccountCommand, CancellationToken.None);
+
+        // Assert
+        result.IsSuccess.Should().BeTrue();
+        existingSubLedgerAccount.AccountTitle.Should().Be(existingSubLedgerAccount.AccountTitle);
+
+        await unitOfWork.Received(1)
+            .CommitAsync(CancellationToken.None);
+    }
+
+    [Fact]
+    public async Task UpdateSubLedgerAccountHandler_ShouldSuccess_WhenIsActiveNotEmpty()
+    {
+        // Arrange
+        var unitOfWork = Substitute.For<IUnitOfWork>();
+        var faker = new Faker();
+        var subLedgerAccountId = Guid.NewGuid();
+
+        var updateSubLedgerAccountCommand = new UpdateSubLegerAccountCommand
+        {
+            SubLegerAccountId = subLedgerAccountId,
+            IsActive = new Patch<bool>(false)
+        };
+        var handler = new UpdateSubLegerAccountCommandHandler(unitOfWork);
+
+        var existingSubLedgerAccount = new SubLedgerAccountEntity
+        {
+            Id = subLedgerAccountId,
+            AccountTitle = faker.Finance.AccountName(),
+            AccountCode = faker.Finance.Account(),
+            IsActive = true,
+            JournalEntryType = JournalEntryType.Credit,
+            GeneralLedgerAccountId = Guid.NewGuid()
+        };
+        unitOfWork.SubLegerAccountRepository.GetByIdAsync(subLedgerAccountId, CancellationToken.None)
+            .Returns(existingSubLedgerAccount);
+
+        unitOfWork.HasChanges(existingSubLedgerAccount).Returns(true);
+
+        // Act
+        var result = await handler.Handle(updateSubLedgerAccountCommand, CancellationToken.None);
+
+        // Assert
+        result.IsSuccess.Should().BeTrue();
+        existingSubLedgerAccount.AccountTitle.Should().Be(existingSubLedgerAccount.AccountTitle);
+
+        await unitOfWork.Received(1)
+            .CommitAsync(CancellationToken.None);
+    }
+
+    [Fact]
+    public async Task UpdateSubLedgerAccountHandler_ShouldSuccess_WhenCodeNotEmpty()
+    {
+        // Arrange
+        var unitOfWork = Substitute.For<IUnitOfWork>();
+        var faker = new Faker();
+        var subLedgerAccountId = Guid.NewGuid();
+        var code = faker.Finance.Account();
+
+        var updateSubLedgerAccountCommand = new UpdateSubLegerAccountCommand
+        {
+            SubLegerAccountId = subLedgerAccountId,
+            Code = code
+        };
+        var handler = new UpdateSubLegerAccountCommandHandler(unitOfWork);
+
+        var existingSubLedgerAccount = new SubLedgerAccountEntity
+        {
+            Id = subLedgerAccountId,
+            AccountTitle = faker.Finance.AccountName(),
+            AccountCode = faker.Finance.Account(),
+            IsActive = true,
+            JournalEntryType = JournalEntryType.Credit,
+            GeneralLedgerAccountId = Guid.NewGuid()
+        };
+        unitOfWork.SubLegerAccountRepository.GetByIdAsync(subLedgerAccountId, CancellationToken.None)
+            .Returns(existingSubLedgerAccount);
+
+        unitOfWork.HasChanges(existingSubLedgerAccount).Returns(true);
+
+        unitOfWork.SubLegerAccountRepository.FindByCodeAsync(code, CancellationToken.None)
+            .Returns(null as SubLedgerAccountEntity);
+
+        // Act
+        var result = await handler.Handle(updateSubLedgerAccountCommand, CancellationToken.None);
+
+        // Assert
+        result.IsSuccess.Should().BeTrue();
+        existingSubLedgerAccount.AccountTitle.Should().Be(existingSubLedgerAccount.AccountTitle);
+
+        await unitOfWork.Received(1)
+            .CommitAsync(CancellationToken.None);
+    }
+
+    [Fact]
+    public async Task UpdateSubLedgerAccountHandler_ShouldFail_WhenDuplicateActiveTitleExists()
+    {
+        // Arrange
+        var unitOfWork = Substitute.For<IUnitOfWork>();
+        var faker = new Faker();
+        var subLedgerAccountId = Guid.NewGuid();
+        var title = faker.Finance.AccountName();
+
+        var updateSubLedgerAccountCommand = new UpdateSubLegerAccountCommand
+        {
+            SubLegerAccountId = subLedgerAccountId,
+            Title = new Patch<string>(title)
+        };
+        var handler = new UpdateSubLegerAccountCommandHandler(unitOfWork);
+
+        var existingSubLedgerAccount = new SubLedgerAccountEntity
+        {
+            Id = subLedgerAccountId,
+            AccountTitle = title,
+            AccountCode = faker.Finance.Account(),
+            IsActive = true,
+            JournalEntryType = JournalEntryType.Credit,
+            GeneralLedgerAccountId = Guid.NewGuid()
+        };
+        unitOfWork.SubLegerAccountRepository.GetByIdAsync(subLedgerAccountId, CancellationToken.None)
+            .Returns(existingSubLedgerAccount);
+
+        unitOfWork.HasChanges(existingSubLedgerAccount).Returns(true);
+
+        // Act
+        var result = await handler.Handle(updateSubLedgerAccountCommand, CancellationToken.None);
+
+        // Assert
+        result.IsSuccess.Should().BeFalse();
+        result.ErrorMessages.Should().ContainKey("Title")
+            .WhoseValue.Should().Contain("Active subLeger account exist.");
+
+        await unitOfWork.DidNotReceive()
+            .CommitAsync(CancellationToken.None);
+    }
+
+    [Fact]
+    public async Task UpdateSubLedgerAccountHandler_ShouldFail_WhenAccountCodeAlreadyExists()
+    {
+        // Arrange
+        var unitOfWork = Substitute.For<IUnitOfWork>();
+        var faker = new Faker();
+        var subLedgerAccountId = Guid.NewGuid();
+        var code = faker.Finance.Account();
+
+        var updateSubLedgerAccountCommand = new UpdateSubLegerAccountCommand
+        {
+            SubLegerAccountId = subLedgerAccountId,
+            Code = new Patch<string>(code)
+        };
+        var handler = new UpdateSubLegerAccountCommandHandler(unitOfWork);
+
+        var existingSubLedgerAccount = new SubLedgerAccountEntity
+        {
+            Id = subLedgerAccountId,
+            AccountTitle = faker.Finance.AccountName(),
+            AccountCode = faker.Finance.Account(),
+            IsActive = true,
+            JournalEntryType = JournalEntryType.Credit,
+            GeneralLedgerAccountId = Guid.NewGuid()
+        };
+        unitOfWork.SubLegerAccountRepository.GetByIdAsync(subLedgerAccountId, CancellationToken.None)
+            .Returns(existingSubLedgerAccount);
+
+        unitOfWork.SubLegerAccountRepository.FindByCodeAsync(code, CancellationToken.None)
+            .Returns(existingSubLedgerAccount);
+
+        unitOfWork.HasChanges(existingSubLedgerAccount).Returns(true);
+
+        // Act
+        var result = await handler.Handle(updateSubLedgerAccountCommand, CancellationToken.None);
+
+        // Assert
+        result.IsSuccess.Should().BeFalse();
+        result.ErrorMessages.Should().ContainKey("Code")
+            .WhoseValue.Should().Contain("Account code already exists. Please provide a unique code.");
+
+        await unitOfWork.DidNotReceive()
+            .CommitAsync(CancellationToken.None);
+    }
+
+    [Fact]
+    public async Task UpdateSubLedgerAccountHandler_ShouldSucceed_WhenMultipleFieldsAreUpdated()
+    {
+        // Arrange
+        var unitOfWork = Substitute.For<IUnitOfWork>();
+        var faker = new Faker();
+        var subLedgerAccountId = Guid.NewGuid();
+
+        var updateSubLedgerAccountCommand = new UpdateSubLegerAccountCommand
+        {
+            SubLegerAccountId = subLedgerAccountId,
+            Code = new Patch<string>(faker.Finance.Account()),
+            Title = new Patch<string>(faker.Finance.AccountName())
+        };
+        var handler = new UpdateSubLegerAccountCommandHandler(unitOfWork);
+
+        var existingSubLedgerAccount = new SubLedgerAccountEntity
+        {
+            Id = subLedgerAccountId,
+            AccountTitle = faker.Finance.AccountName(),
+            AccountCode = faker.Finance.Account(),
+            IsActive = true,
+            JournalEntryType = JournalEntryType.Credit,
+            GeneralLedgerAccountId = Guid.NewGuid()
+        };
+        unitOfWork.SubLegerAccountRepository.GetByIdAsync(subLedgerAccountId, CancellationToken.None)
+            .Returns(existingSubLedgerAccount);
+
+        unitOfWork.HasChanges(existingSubLedgerAccount).Returns(true);
+
+        // Act
+        var result = await handler.Handle(updateSubLedgerAccountCommand, CancellationToken.None);
+
+        // Assert
+        result.IsSuccess.Should().BeTrue();
+        existingSubLedgerAccount.AccountTitle.Should().Be(existingSubLedgerAccount.AccountTitle);
+        existingSubLedgerAccount.AccountCode.Should().Be(existingSubLedgerAccount.AccountCode);
+
+        await unitOfWork.Received(1)
+            .CommitAsync(CancellationToken.None);
+    }
+
+    [Fact]
+    public async Task UpdateSubLedgerAccountHandler_ShouldUpdateModifiedDate_WhenAccountIsUpdated()
+    {
+        // Arrange
+        var unitOfWork = Substitute.For<IUnitOfWork>();
+        var faker = new Faker();
+        var subLedgerAccountId = Guid.NewGuid();
+        var oldModifiedDate = DateTime.UtcNow.AddDays(-5);
+
+        var updateSubLedgerAccountCommand = new UpdateSubLegerAccountCommand
+        {
+            SubLegerAccountId = subLedgerAccountId,
+            Code = new Patch<string>(faker.Finance.Account()),
+            Title = new Patch<string>(faker.Finance.AccountName())
+        };
+        var handler = new UpdateSubLegerAccountCommandHandler(unitOfWork);
+
+        var existingSubLedgerAccount = new SubLedgerAccountEntity
+        {
+            Id = subLedgerAccountId,
+            AccountTitle = faker.Finance.AccountName(),
+            AccountCode = faker.Finance.Account(),
+            IsActive = true,
+            JournalEntryType = JournalEntryType.Credit,
+            GeneralLedgerAccountId = Guid.NewGuid(),
+            ModifiedDate = oldModifiedDate
+        };
+        unitOfWork.SubLegerAccountRepository.GetByIdAsync(subLedgerAccountId, CancellationToken.None)
+            .Returns(existingSubLedgerAccount);
+
+        unitOfWork.HasChanges(existingSubLedgerAccount).Returns(true);
+
+        // Act
+        var result = await handler.Handle(updateSubLedgerAccountCommand, CancellationToken.None);
+
+        // Assert
+        result.IsSuccess.Should().BeTrue();
+        existingSubLedgerAccount.AccountTitle.Should().Be(existingSubLedgerAccount.AccountTitle);
+        existingSubLedgerAccount.AccountCode.Should().Be(existingSubLedgerAccount.AccountCode);
+        existingSubLedgerAccount.ModifiedDate.Should().BeAfter(oldModifiedDate.Date);
+
+        await unitOfWork.Received(1)
+            .CommitAsync(CancellationToken.None);
+    }
+
+    [Fact]
+    public async Task UpdateSubLedgerAccountHandler_ShouldSucceed_WhenNoFieldsAreChanged()
+    {
+        // Arrange
+        var unitOfWork = Substitute.For<IUnitOfWork>();
+        var faker = new Faker();
+        var subLedgerAccountId = Guid.NewGuid();
+        var title = faker.Finance.AccountName();
+        var code = faker.Finance.Account();
+
+        var existingAccount = new SubLedgerAccountEntity
+        {
+            Id = subLedgerAccountId,
+            AccountTitle = title,
+            JournalEntryType = JournalEntryType.Credit,
+            GeneralLedgerAccountId = Guid.NewGuid(),
+            IsActive = true,
+            AccountCode = code,
+            ModifiedDate = DateTime.UtcNow.AddDays(-1)
+        };
+        unitOfWork.SubLegerAccountRepository.GetByIdAsync(subLedgerAccountId, CancellationToken.None)
+            .Returns(existingAccount);
+
+        unitOfWork.HasChanges(existingAccount).Returns(false);
+
+        var handler = new UpdateSubLegerAccountCommandHandler(unitOfWork);
+
+        var command = new UpdateSubLegerAccountCommand
+        {
+            SubLegerAccountId = subLedgerAccountId,
+        };
+
+        // Act
+        var result = await handler.Handle(command, CancellationToken.None);
+
+        // Assert
+        result.IsSuccess.Should().BeTrue();
+        existingAccount.ModifiedDate.Should().BeCloseTo((DateTime)existingAccount.ModifiedDate, TimeSpan.FromSeconds(1));
+
+        await unitOfWork.DidNotReceive()
+            .CommitAsync(CancellationToken.None);
     }
 }

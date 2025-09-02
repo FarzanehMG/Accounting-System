@@ -3,9 +3,11 @@ using Domain.Enums;
 
 namespace Application.Features.Accounts.Commands.SubLedgerAccount;
 
-public record UpdateSubLegerAccountCommand(Guid SubLegerAccountId,
-    Patch<string?>? Title,
-    Patch<string?>? Description,
-    Patch<JournalEntryType>? JournalEntryType,
-    Patch<bool>? IsActive,
-    Patch<Guid>? GeneralLedgerAccountId);
+public record UpdateSubLegerAccountCommand
+{
+    public required Guid SubLegerAccountId { get; init; }
+    public Patch<string>? Title { get; init; }
+    public Patch<string>? Description { get; init; }
+    public Patch<bool>? IsActive { get; init; }
+    public Patch<string>? Code { get; init; }
+}
