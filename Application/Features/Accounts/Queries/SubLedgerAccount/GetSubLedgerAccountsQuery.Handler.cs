@@ -23,10 +23,10 @@ public class GetSubLedgerAccountsQueryHandler(IUnitOfWork unitOfWork)
             IsActive = request.IsActive,
             JournalEntryType = request.JournalEntryType
         };
-        var subLedgerAccount = await unitOfWork.SubLegerAccountRepository.GetAllAsync(subLedgerAccountFilter, cancellationToken);
+        var subLedgerAccount = await unitOfWork.SubLedgerAccountRepository.GetAllAsync(subLedgerAccountFilter, cancellationToken);
 
         if (!subLedgerAccount.Any())
-            return OperationResult<IReadOnlyList<GetSubLedgerAccountsQueryResult>>.NotFoundResult(nameof(GetSubLedgerAccountsQueryResult), "General account not found.");
+            return OperationResult<IReadOnlyList<GetSubLedgerAccountsQueryResult>>.NotFoundResult(nameof(GetSubLedgerAccountsQueryResult), "SubLedger account not found.");
 
         return OperationResult<IReadOnlyList<GetSubLedgerAccountsQueryResult>>
             .SuccessResult(subLedgerAccount.Select(x => new GetSubLedgerAccountsQueryResult

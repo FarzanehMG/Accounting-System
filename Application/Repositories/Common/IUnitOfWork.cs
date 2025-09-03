@@ -6,7 +6,7 @@ public interface IUnitOfWork : IAsyncDisposable, IDisposable
 {
 	IGroupAccountRepository GroupAccountRepository { get; }
     IGeneralLedgerAccountRepository GeneralLedgerAccountRepository { get; }
-    ISubLegerAccountRepository SubLegerAccountRepository { get; }
+    ISubLedgerAccountRepository SubLedgerAccountRepository { get; }
     IDetailedAccountRepository DetailedAccountRepository { get; }
 
     Task CommitAsync(CancellationToken cancellationToken = default);

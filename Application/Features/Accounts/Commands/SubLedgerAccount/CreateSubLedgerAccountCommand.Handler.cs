@@ -39,7 +39,7 @@ public class CreateSubLedgerAccountCommandHandler(IUnitOfWork unitOfWork)
 
         // Business Rule: Each active account within the same generalLedger must have a unique title.
         // Prevents confusion in reporting and ensures accurate posting of journal entries.
-        var existingAccounts = await unitOfWork.SubLegerAccountRepository
+        var existingAccounts = await unitOfWork.SubLedgerAccountRepository
             .FindAccountByTitleAndGeneralLedgerAndTypeAsync(request.Title, request.GeneralLedgerAccountId, request.JournalEntryType, cancellationToken);
 
         if (request.IsActive && existingAccounts.Any(x => x.IsActive))
@@ -62,7 +62,7 @@ public class CreateSubLedgerAccountCommandHandler(IUnitOfWork unitOfWork)
         }
 
         // Technical Rule: Account code must always be unique to guarantee data integrity.
-        var duplicateCode = await unitOfWork.SubLegerAccountRepository
+        var duplicateCode = await unitOfWork.SubLedgerAccountRepository
             .FindByCodeAsync(request.Code, cancellationToken);
 
         if (duplicateCode is not null)
@@ -82,7 +82,7 @@ public class CreateSubLedgerAccountCommandHandler(IUnitOfWork unitOfWork)
             AccountCode = request.Code
         };
 
-        await unitOfWork.SubLegerAccountRepository.CreateAsync(createSubLegerAccount, cancellationToken);
+        await unitOfWork.SubLedgerAccountRepository.CreateAsync(createSubLegerAccount, cancellationToken);
         await unitOfWork.CommitAsync(cancellationToken);
 
         return OperationResult<bool>.SuccessResult(true);

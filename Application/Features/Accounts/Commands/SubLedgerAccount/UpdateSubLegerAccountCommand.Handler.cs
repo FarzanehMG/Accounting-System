@@ -15,7 +15,7 @@ public class UpdateSubLegerAccountCommandHandler(IUnitOfWork unitOfWork)
             return OperationResult<bool>.FailureResult(validateResult.Errors.ConvertToKeyValuePair());
 
         // Retrieve the existing sub ledger account
-        var subLegerAccount = await unitOfWork.SubLegerAccountRepository.GetByIdAsync(request.SubLegerAccountId, cancellationToken);
+        var subLegerAccount = await unitOfWork.SubLedgerAccountRepository.GetByIdAsync(request.SubLegerAccountId, cancellationToken);
 
         if (subLegerAccount is null)
             return OperationResult<bool>.NotFoundResult(nameof(UpdateSubLegerAccountCommand), "SubLeger account not found.");
@@ -43,7 +43,7 @@ public class UpdateSubLegerAccountCommandHandler(IUnitOfWork unitOfWork)
         // Business Rule: Ensure AccountCode is unique and follows the subLedger structure
         if (request.Code?.Value != null && request.Code.Value != subLegerAccount.AccountCode)
         {
-            var duplicateCode = await unitOfWork.SubLegerAccountRepository
+            var duplicateCode = await unitOfWork.SubLedgerAccountRepository
                 .FindByCodeAsync(request.Code.Value, cancellationToken);
 
             if (duplicateCode != null)

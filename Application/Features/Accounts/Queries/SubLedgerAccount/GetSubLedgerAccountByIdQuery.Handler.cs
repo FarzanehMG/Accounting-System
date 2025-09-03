@@ -4,7 +4,7 @@ using Application.Repositories.Common;
 
 namespace Application.Features.Accounts.Queries.SubLedgerAccount;
 
-public class GetSubLegerAccountByIdQueryHandler(IUnitOfWork unitOfWork)
+public class GetSubLedgerAccountByIdQueryHandler(IUnitOfWork unitOfWork)
 {
     public async Task<OperationResult<GetSubLegerAccountByIdQueryResult>> Handle(GetSubLedgerAccountByIdQuery request, CancellationToken cancellationToken)
     {
@@ -14,10 +14,10 @@ public class GetSubLegerAccountByIdQueryHandler(IUnitOfWork unitOfWork)
         if (!validateResult.IsValid)
             return OperationResult<GetSubLegerAccountByIdQueryResult>.FailureResult(validateResult.Errors.ConvertToKeyValuePair());
 
-        var subLedgerAccount = await unitOfWork.SubLegerAccountRepository.GetByIdAsync(request.Id, cancellationToken);
+        var subLedgerAccount = await unitOfWork.SubLedgerAccountRepository.GetByIdAsync(request.Id, cancellationToken);
 
         if (subLedgerAccount is null)
-            return OperationResult<GetSubLegerAccountByIdQueryResult>.NotFoundResult(nameof(GetSubLedgerAccountByIdQuery), "SubLedger account not found");
+            return OperationResult<GetSubLegerAccountByIdQueryResult>.NotFoundResult(nameof(GetSubLedgerAccountByIdQuery.Id), "SubLedger account not found");
 
         return OperationResult<GetSubLegerAccountByIdQueryResult>.SuccessResult(new GetSubLegerAccountByIdQueryResult
         {

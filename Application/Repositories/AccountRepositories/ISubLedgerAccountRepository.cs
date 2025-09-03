@@ -4,7 +4,7 @@ using Domain.Enums;
 
 namespace Application.Repositories.AccountRepositories;
 
-public interface ISubLegerAccountRepository
+public interface ISubLedgerAccountRepository
 {
     Task CreateAsync(SubLedgerAccountEntity subLedgerAccountEntity, CancellationToken cancellationToken = default);
     Task<SubLedgerAccountEntity?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default);
