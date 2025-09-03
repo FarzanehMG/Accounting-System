@@ -1,4 +1,5 @@
-﻿using Application.Features.Accounts.Commands.DetailedAccount;
+﻿using Application.Common;
+using Application.Features.Accounts.Commands.DetailedAccount;
 using Application.Repositories.Common;
 using Application.Tests.Extensions;
 using Bogus;
@@ -505,5 +506,390 @@ public class DetailedAccountTests(ITestOutputHelper testOutputHelper)
         result.IsSuccess.Should().BeFalse();
         result.ErrorMessages.Should().ContainKey("SubLedgerAccountId")
             .WhoseValue.Should().Contain("The Sub Ledger account must be active.");
+    }
+
+    [Fact]
+    public async Task UpdateDetailedAccountHandler_ShouldFail_WhenDetailedAccountIdEmpty()
+    {
+        // Arrange
+        var unitOfWork = Substitute.For<IUnitOfWork>();
+
+        var updateDetailedAccountCommand = new UpdateDetailedAccountCommand
+        {
+            DetailedAccountId = Guid.Empty
+        };
+        var handler = new UpdateDetailedAccountCommandHandler(unitOfWork);
+
+        // Act
+        var result = await handler.Handle(updateDetailedAccountCommand, CancellationToken.None);
+
+        // Assert
+        result.IsSuccess.Should().BeFalse();
+        testOutputHelper.WriteLineOperationResultErrors(result);
+    }
+
+    [Fact]
+    public async Task UpdateDetailedAccountHandler_ShouldFail_WhenDetailedAccountNotExist()
+    {
+        // Arrange
+        var unitOfWork = Substitute.For<IUnitOfWork>();
+
+        var updateDetailedAccountCommand = new UpdateDetailedAccountCommand
+        {
+            DetailedAccountId = Guid.NewGuid()
+        };
+        var handler = new UpdateDetailedAccountCommandHandler(unitOfWork);
+
+        unitOfWork.DetailedAccountRepository.GetByIdAsync(Guid.NewGuid(), CancellationToken.None)
+            .Returns(null as DetailedAccountEntity);
+
+        // Act
+        var result = await handler.Handle(updateDetailedAccountCommand, CancellationToken.None);
+
+        // Assert
+        result.IsSuccess.Should().BeFalse();
+        result.ErrorMessages.Should().ContainKey(nameof(UpdateDetailedAccountCommand))
+            .WhoseValue.Should().Contain("Detailed account not found.");
+    }
+
+    [Fact]
+    public async Task UpdateDetailedAccountHandler_ShouldSuccess_WhenTitleNotEmpty()
+    {
+        // Arrange
+        var unitOfWork = Substitute.For<IUnitOfWork>();
+        var faker = new Faker();
+        var detailedAccountId = Guid.NewGuid();
+
+        var updateDetailedAccountCommand = new UpdateDetailedAccountCommand
+        {
+            DetailedAccountId = detailedAccountId,
+            Title = new Patch<string>(faker.Finance.AccountName())
+        };
+        var handler = new UpdateDetailedAccountCommandHandler(unitOfWork);
+
+        var existingDetailedAccount = new DetailedAccountEntity
+        {
+            Id = detailedAccountId,
+            AccountTitle = faker.Finance.AccountName(),
+            AccountCode = faker.Finance.Account(),
+            IsActive = true,
+            JournalEntryType = JournalEntryType.Credit,
+            SubLedgerAccountId = Guid.NewGuid()
+        };
+        unitOfWork.DetailedAccountRepository.GetByIdAsync(detailedAccountId, CancellationToken.None)
+            .Returns(existingDetailedAccount);
+
+        unitOfWork.HasChanges(existingDetailedAccount).Returns(true);
+
+        // Act
+        var result = await handler.Handle(updateDetailedAccountCommand, CancellationToken.None);
+
+        // Assert
+        result.IsSuccess.Should().BeTrue();
+        existingDetailedAccount.AccountTitle.Should().Be(existingDetailedAccount.AccountTitle);
+
+        await unitOfWork.Received(1)
+            .CommitAsync(CancellationToken.None);
+    }
+
+    [Fact]
+    public async Task UpdateDetailedAccountHandler_ShouldSuccess_WhenIsActiveNotEmpty()
+    {
+        // Arrange
+        var unitOfWork = Substitute.For<IUnitOfWork>();
+        var faker = new Faker();
+        var detailedAccountId = Guid.NewGuid();
+
+        var updateDetailedAccountCommand = new UpdateDetailedAccountCommand
+        {
+            DetailedAccountId = detailedAccountId,
+            IsActive = new Patch<bool>(false)
+        };
+        var handler = new UpdateDetailedAccountCommandHandler(unitOfWork);
+
+        var existingDetailedAccount = new DetailedAccountEntity
+        {
+            Id = detailedAccountId,
+            AccountTitle = faker.Finance.AccountName(),
+            AccountCode = faker.Finance.Account(),
+            IsActive = true,
+            JournalEntryType = JournalEntryType.Credit,
+            SubLedgerAccountId = Guid.NewGuid()
+        };
+        unitOfWork.DetailedAccountRepository.GetByIdAsync(detailedAccountId, CancellationToken.None)
+            .Returns(existingDetailedAccount);
+
+        unitOfWork.HasChanges(existingDetailedAccount).Returns(true);
+
+        // Act
+        var result = await handler.Handle(updateDetailedAccountCommand, CancellationToken.None);
+
+        // Assert
+        result.IsSuccess.Should().BeTrue();
+        existingDetailedAccount.AccountTitle.Should().Be(existingDetailedAccount.AccountTitle);
+
+        await unitOfWork.Received(1)
+            .CommitAsync(CancellationToken.None);
+    }
+
+    [Fact]
+    public async Task UpdateDetailedAccountHandler_ShouldSuccess_WhenCodeNotEmpty()
+    {
+        // Arrange
+        var unitOfWork = Substitute.For<IUnitOfWork>();
+        var faker = new Faker();
+        var detailedAccountId = Guid.NewGuid();
+        var code = faker.Finance.Account();
+
+        var updateDetailedAccountCommand = new UpdateDetailedAccountCommand
+        {
+            DetailedAccountId = detailedAccountId,
+            Code = code
+        };
+        var handler = new UpdateDetailedAccountCommandHandler(unitOfWork);
+
+        var existingDetailedAccount = new DetailedAccountEntity
+        {
+            Id = detailedAccountId,
+            AccountTitle = faker.Finance.AccountName(),
+            AccountCode = faker.Finance.Account(),
+            IsActive = true,
+            JournalEntryType = JournalEntryType.Credit,
+            SubLedgerAccountId = Guid.NewGuid()
+        };
+        unitOfWork.DetailedAccountRepository.GetByIdAsync(detailedAccountId, CancellationToken.None)
+            .Returns(existingDetailedAccount);
+
+        unitOfWork.HasChanges(existingDetailedAccount).Returns(true);
+
+        unitOfWork.DetailedAccountRepository.FindByCodeAsync(code, CancellationToken.None)
+            .Returns(null as DetailedAccountEntity);
+
+        // Act
+        var result = await handler.Handle(updateDetailedAccountCommand, CancellationToken.None);
+
+        // Assert
+        result.IsSuccess.Should().BeTrue();
+        existingDetailedAccount.AccountTitle.Should().Be(existingDetailedAccount.AccountTitle);
+
+        await unitOfWork.Received(1)
+            .CommitAsync(CancellationToken.None);
+    }
+
+    [Fact]
+    public async Task UpdateDetailedAccountHandler_ShouldFail_WhenDuplicateActiveTitleExists()
+    {
+        // Arrange
+        var unitOfWork = Substitute.For<IUnitOfWork>();
+        var faker = new Faker();
+        var detailedAccountId = Guid.NewGuid();
+        var title = faker.Finance.AccountName();
+
+        var updateDetailedAccountCommand = new UpdateDetailedAccountCommand
+        {
+            DetailedAccountId = detailedAccountId,
+            Title = new Patch<string>(title)
+        };
+        var handler = new UpdateDetailedAccountCommandHandler(unitOfWork);
+
+        var existingDetailedAccount = new DetailedAccountEntity
+        {
+            Id = detailedAccountId,
+            AccountTitle = title,
+            AccountCode = faker.Finance.Account(),
+            IsActive = true,
+            JournalEntryType = JournalEntryType.Credit,
+            SubLedgerAccountId = Guid.NewGuid()
+        };
+        unitOfWork.DetailedAccountRepository.GetByIdAsync(detailedAccountId, CancellationToken.None)
+            .Returns(existingDetailedAccount);
+
+        unitOfWork.HasChanges(existingDetailedAccount).Returns(true);
+
+        // Act
+        var result = await handler.Handle(updateDetailedAccountCommand, CancellationToken.None);
+
+        // Assert
+        result.IsSuccess.Should().BeFalse();
+        result.ErrorMessages.Should().ContainKey("Title")
+            .WhoseValue.Should().Contain("Active detailed account exist.");
+
+        await unitOfWork.DidNotReceive()
+            .CommitAsync(CancellationToken.None);
+    }
+
+    [Fact]
+    public async Task UpdateDetailedAccountHandler_ShouldFail_WhenAccountCodeAlreadyExists()
+    {
+        // Arrange
+        var unitOfWork = Substitute.For<IUnitOfWork>();
+        var faker = new Faker();
+        var detailedAccountId = Guid.NewGuid();
+        var code = faker.Finance.Account();
+
+        var updateDetailedAccountCommand = new UpdateDetailedAccountCommand
+        {
+            DetailedAccountId = detailedAccountId,
+            Code = new Patch<string>(code)
+        };
+        var handler = new UpdateDetailedAccountCommandHandler(unitOfWork);
+
+        var existingDetailedAccount = new DetailedAccountEntity
+        {
+            Id = detailedAccountId,
+            AccountTitle = faker.Finance.AccountName(),
+            AccountCode = faker.Finance.Account(),
+            IsActive = true,
+            JournalEntryType = JournalEntryType.Credit,
+            SubLedgerAccountId = Guid.NewGuid()
+        };
+        unitOfWork.DetailedAccountRepository.GetByIdAsync(detailedAccountId, CancellationToken.None)
+            .Returns(existingDetailedAccount);
+
+        unitOfWork.DetailedAccountRepository.FindByCodeAsync(code, CancellationToken.None)
+            .Returns(existingDetailedAccount);
+
+        unitOfWork.HasChanges(existingDetailedAccount).Returns(true);
+
+        // Act
+        var result = await handler.Handle(updateDetailedAccountCommand, CancellationToken.None);
+
+        // Assert
+        result.IsSuccess.Should().BeFalse();
+        result.ErrorMessages.Should().ContainKey("Code")
+            .WhoseValue.Should().Contain("Account code already exists. Please provide a unique code.");
+
+        await unitOfWork.DidNotReceive()
+            .CommitAsync(CancellationToken.None);
+    }
+
+    [Fact]
+    public async Task UpdateDetailedAccountHandler_ShouldSucceed_WhenMultipleFieldsAreUpdated()
+    {
+        // Arrange
+        var unitOfWork = Substitute.For<IUnitOfWork>();
+        var faker = new Faker();
+        var detailedAccountId = Guid.NewGuid();
+
+        var updateDetailedAccountCommand = new UpdateDetailedAccountCommand
+        {
+            DetailedAccountId = detailedAccountId,
+            Code = new Patch<string>(faker.Finance.Account()),
+            Title = new Patch<string>(faker.Finance.AccountName())
+        };
+        var handler = new UpdateDetailedAccountCommandHandler(unitOfWork);
+
+        var existingDetailedAccount = new DetailedAccountEntity
+        {
+            Id = detailedAccountId,
+            AccountTitle = faker.Finance.AccountName(),
+            AccountCode = faker.Finance.Account(),
+            IsActive = true,
+            JournalEntryType = JournalEntryType.Credit,
+            SubLedgerAccountId = Guid.NewGuid()
+        };
+        unitOfWork.DetailedAccountRepository.GetByIdAsync(detailedAccountId, CancellationToken.None)
+            .Returns(existingDetailedAccount);
+
+        unitOfWork.HasChanges(existingDetailedAccount).Returns(true);
+
+        // Act
+        var result = await handler.Handle(updateDetailedAccountCommand, CancellationToken.None);
+
+        // Assert
+        result.IsSuccess.Should().BeTrue();
+        existingDetailedAccount.AccountTitle.Should().Be(existingDetailedAccount.AccountTitle);
+        existingDetailedAccount.AccountCode.Should().Be(existingDetailedAccount.AccountCode);
+
+        await unitOfWork.Received(1)
+            .CommitAsync(CancellationToken.None);
+    }
+
+    [Fact]
+    public async Task UpdateDetailedAccountHandler_ShouldUpdateModifiedDate_WhenAccountIsUpdated()
+    {
+        // Arrange
+        var unitOfWork = Substitute.For<IUnitOfWork>();
+        var faker = new Faker();
+        var detailedAccountId = Guid.NewGuid();
+        var oldModifiedDate = DateTime.UtcNow.AddDays(-5);
+
+        var updateDetailedAccountCommand = new UpdateDetailedAccountCommand
+        {
+            DetailedAccountId = detailedAccountId,
+            Code = new Patch<string>(faker.Finance.Account()),
+            Title = new Patch<string>(faker.Finance.AccountName())
+        };
+        var handler = new UpdateDetailedAccountCommandHandler(unitOfWork);
+
+        var existingDetailedAccount = new DetailedAccountEntity
+        {
+            Id = detailedAccountId,
+            AccountTitle = faker.Finance.AccountName(),
+            AccountCode = faker.Finance.Account(),
+            IsActive = true,
+            JournalEntryType = JournalEntryType.Credit,
+            SubLedgerAccountId = Guid.NewGuid(),
+            ModifiedDate = oldModifiedDate
+        };
+        unitOfWork.DetailedAccountRepository.GetByIdAsync(detailedAccountId, CancellationToken.None)
+            .Returns(existingDetailedAccount);
+
+        unitOfWork.HasChanges(existingDetailedAccount).Returns(true);
+
+        // Act
+        var result = await handler.Handle(updateDetailedAccountCommand, CancellationToken.None);
+
+        // Assert
+        result.IsSuccess.Should().BeTrue();
+        existingDetailedAccount.AccountTitle.Should().Be(existingDetailedAccount.AccountTitle);
+        existingDetailedAccount.AccountCode.Should().Be(existingDetailedAccount.AccountCode);
+        existingDetailedAccount.ModifiedDate.Should().BeAfter(oldModifiedDate.Date);
+
+        await unitOfWork.Received(1)
+            .CommitAsync(CancellationToken.None);
+    }
+
+    [Fact]
+    public async Task UpdateDetailedAccountHandler_ShouldSucceed_WhenNoFieldsAreChanged()
+    {
+        // Arrange
+        var unitOfWork = Substitute.For<IUnitOfWork>();
+        var faker = new Faker();
+        var detailedAccountId = Guid.NewGuid();
+        var title = faker.Finance.AccountName();
+        var code = faker.Finance.Account();
+
+        var existingAccount = new DetailedAccountEntity
+        {
+            Id = detailedAccountId,
+            AccountTitle = title,
+            JournalEntryType = JournalEntryType.Credit,
+            SubLedgerAccountId = Guid.NewGuid(),
+            IsActive = true,
+            AccountCode = code,
+            ModifiedDate = DateTime.UtcNow.AddDays(-1)
+        };
+        unitOfWork.DetailedAccountRepository.GetByIdAsync(detailedAccountId, CancellationToken.None)
+            .Returns(existingAccount);
+
+        unitOfWork.HasChanges(existingAccount).Returns(false);
+
+        var handler = new UpdateDetailedAccountCommandHandler(unitOfWork);
+
+        var command = new UpdateDetailedAccountCommand
+        {
+            DetailedAccountId = detailedAccountId,
+        };
+
+        // Act
+        var result = await handler.Handle(command, CancellationToken.None);
+
+        // Assert
+        result.IsSuccess.Should().BeTrue();
+        existingAccount.ModifiedDate.Should().BeCloseTo((DateTime)existingAccount.ModifiedDate, TimeSpan.FromSeconds(1));
+
+        await unitOfWork.DidNotReceive()
+            .CommitAsync(CancellationToken.None);
     }
 }

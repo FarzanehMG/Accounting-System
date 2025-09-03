@@ -1,11 +1,12 @@
 ﻿using Application.Common;
-using Domain.Enums;
 
 namespace Application.Features.Accounts.Commands.DetailedAccount;
 
-public record UpdateDetailedAccountCommand(Guid DetailedAccountId,
-    Patch<string?>? Title,
-    Patch<string?>? Description,
-    Patch<JournalEntryType>? JournalEntryType,
-    Patch<bool>? IsActive,
-    Patch<Guid>? SubLedgerAccountId);
+public record UpdateDetailedAccountCommand
+{
+    public required Guid DetailedAccountId { get; init; }
+    public Patch<string>? Title { get; init; }
+    public Patch<string>? Description { get; init; }
+    public Patch<bool>? IsActive { get; init; }
+    public Patch<string>? Code { get; init; }
+}

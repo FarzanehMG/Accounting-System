@@ -14,28 +14,52 @@ public class UpdateDetailedAccountCommandHandler(IUnitOfWork unitOfWork)
         if (!validateResult.IsValid)
             return OperationResult<bool>.FailureResult(validateResult.Errors.ConvertToKeyValuePair());
 
+        // Retrieve the existing detailed account
         var detailedAccount = await unitOfWork.DetailedAccountRepository.GetByIdAsync(request.DetailedAccountId, cancellationToken);
 
         if (detailedAccount is null)
-            return OperationResult<bool>.NotFoundResult(nameof(UpdateDetailedAccountCommand.DetailedAccountId), "Detailed Account Not Found.");
+            return OperationResult<bool>.NotFoundResult(nameof(UpdateDetailedAccountCommand), "Detailed account not found.");
 
-        if (request.Title?.Value != null)
+        // Update fields if provided
+        if (!string.IsNullOrWhiteSpace(request.Title?.Value))
+        {
+            if (detailedAccount.IsActive && request.Title.Value == detailedAccount.AccountTitle)
+            {
+                return OperationResult<bool>.FailureResult(nameof(request.Title), "Active detailed account exist."
+                );
+            }
+
             detailedAccount.AccountTitle = request.Title.Value;
+        }
 
         if (request.Description?.Value != null)
             detailedAccount.AccountDescription = request.Description.Value;
 
-        if (request.JournalEntryType?.Value != null)
-            detailedAccount.JournalEntryType = request.JournalEntryType.Value;
+        if (request.IsActive?.Value != null && request.IsActive.Value != detailedAccount.IsActive)
+        {
+            detailedAccount.IsActive = request.IsActive.Value;
+        }
 
-        if (request.SubLedgerAccountId?.Value != null)
-            detailedAccount.SubLedgerAccountId = request.SubLedgerAccountId.Value;
+        // Business Rule: Ensure AccountCode is unique and follows the detailed structure
+        if (request.Code?.Value != null && request.Code.Value != detailedAccount.AccountCode)
+        {
+            var duplicateCode = await unitOfWork.DetailedAccountRepository
+                .FindByCodeAsync(request.Code.Value, cancellationToken);
 
-        if (request.IsActive != null && request.IsActive?.Value != detailedAccount.IsActive)
-            if (request.IsActive?.Value != null)
-                detailedAccount.IsActive = request.IsActive.Value;
+            if (duplicateCode != null)
+            {
+                return OperationResult<bool>.FailureResult(
+                    nameof(request.Code),
+                    "Account code already exists. Please provide a unique code.");
+            }
+            detailedAccount.AccountCode = request.Code.Value;
+        }
 
-        await unitOfWork.CommitAsync(cancellationToken);
+        if (unitOfWork.HasChanges(detailedAccount))
+        {
+            detailedAccount.ModifiedDate = DateTime.UtcNow;
+            await unitOfWork.CommitAsync(cancellationToken);
+        }
 
         return OperationResult<bool>.SuccessResult(true);
     }
