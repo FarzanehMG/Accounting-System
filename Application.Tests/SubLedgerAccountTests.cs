@@ -40,7 +40,8 @@ public class SubLedgerAccountTests(ITestOutputHelper testOutputHelper)
             AccountTitle = faker.Finance.AccountName(),
             AccountCode = faker.Finance.Account(),
             JournalEntryType = JournalEntryType.Credit,
-            GroupAccountId = Guid.NewGuid()
+            GroupAccountId = Guid.NewGuid(),
+            IsActive = true
         };
         unitOfWork.GeneralLedgerAccountRepository.GetByIdAsync(generalLedgerAccountId, CancellationToken.None)
             .Returns(existingGeneralLedgerAccount);
@@ -191,7 +192,8 @@ public class SubLedgerAccountTests(ITestOutputHelper testOutputHelper)
             AccountTitle = faker.Finance.AccountName(),
             AccountCode = faker.Finance.Account(),
             JournalEntryType = JournalEntryType.Credit,
-            GroupAccountId = Guid.NewGuid()
+            GroupAccountId = Guid.NewGuid(),
+            IsActive = true
         };
         unitOfWork.GeneralLedgerAccountRepository.GetByIdAsync(generalLedgerAccountId, CancellationToken.None)
             .Returns(existingGeneralLedgerAccount);
@@ -257,7 +259,8 @@ public class SubLedgerAccountTests(ITestOutputHelper testOutputHelper)
             AccountTitle = title,
             AccountCode = faker.Finance.Account(),
             JournalEntryType = journalEntryType,
-            GroupAccountId = Guid.NewGuid()
+            GroupAccountId = Guid.NewGuid(),
+            IsActive = true
         };
         unitOfWork.GeneralLedgerAccountRepository.GetByIdAsync(generalLedgerAccountId, CancellationToken.None)
             .Returns(existingGeneralLedgerAccount);
@@ -311,7 +314,8 @@ public class SubLedgerAccountTests(ITestOutputHelper testOutputHelper)
             AccountTitle = title,
             AccountCode = faker.Finance.Account(),
             JournalEntryType = journalEntryType,
-            GroupAccountId = Guid.NewGuid()
+            GroupAccountId = Guid.NewGuid(),
+            IsActive = true
         };
         unitOfWork.GeneralLedgerAccountRepository.GetByIdAsync(generalLedgerAccountId, CancellationToken.None)
             .Returns(existingGeneralLedgerAccount);
@@ -358,7 +362,8 @@ public class SubLedgerAccountTests(ITestOutputHelper testOutputHelper)
             AccountTitle = title,
             AccountCode = faker.Finance.Account(),
             JournalEntryType = journalEntryType,
-            GroupAccountId = Guid.NewGuid()
+            GroupAccountId = Guid.NewGuid(),
+            IsActive = true
         };
         unitOfWork.GeneralLedgerAccountRepository.GetByIdAsync(generalLedgerAccountId, CancellationToken.None)
             .Returns(existingGeneralLedgerAccount);
@@ -411,7 +416,8 @@ public class SubLedgerAccountTests(ITestOutputHelper testOutputHelper)
             AccountTitle = faker.Finance.AccountName(),
             AccountCode = faker.Finance.Account(),
             JournalEntryType = JournalEntryType.Credit,
-            GroupAccountId = Guid.NewGuid()
+            GroupAccountId = Guid.NewGuid(),
+            IsActive = true
         };
         unitOfWork.GeneralLedgerAccountRepository.GetByIdAsync(generalLedgerAccountId, CancellationToken.None)
             .Returns(existingGeneralLedgerAccount);

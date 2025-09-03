@@ -903,7 +903,8 @@ public class GeneralLedgerAccountTests(ITestOutputHelper testOutputHelper)
             AccountTitle = title,
             AccountCode = faker.Finance.Account(),
             JournalEntryType = JournalEntryType.Debit,
-            GroupAccountId = Guid.NewGuid()
+            GroupAccountId = Guid.NewGuid(),
+            IsActive = true
         };
 
         unitOfWork.GeneralLedgerAccountRepository.GetByIdAsync(generalLedgerAccountId, CancellationToken.None)

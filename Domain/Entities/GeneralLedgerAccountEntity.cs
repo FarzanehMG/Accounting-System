@@ -8,7 +8,7 @@ public sealed class GeneralLedgerAccountEntity : BaseEntity
 	public required string AccountTitle { get; set; }
 	public required string AccountCode { get; set; }
 	public string? AccountDescription { get; set; }
-    public bool IsActive { get; set; } = true;
+    public required bool IsActive { get; set; } = true;
     public required JournalEntryType JournalEntryType { get; set; }
 
     public required Guid GroupAccountId { get; set; }
