@@ -1,3 +1,6 @@
 ﻿namespace Application.Features.Accounts.Queries.DetailedAccount;
 
-public record GetDetailedAccountByIdQuery(Guid Id);
+public record GetDetailedAccountByIdQuery
+{
+    public required Guid Id { get; init; }
+}

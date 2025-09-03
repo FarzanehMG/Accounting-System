@@ -19,7 +19,11 @@ public class GetDetailedAccountByIdQueryHandler(IUnitOfWork unitOfWork)
         if (detailedAccount is null)
             return OperationResult<GetDetailedAccountByIdQueryResult>.NotFoundResult(nameof(GetDetailedAccountByIdQuery.Id), "Detailed account not found.");
 
-        return OperationResult<GetDetailedAccountByIdQueryResult>.SuccessResult(new GetDetailedAccountByIdQueryResult(detailedAccount.Id, detailedAccount.AccountTitle));
+        return OperationResult<GetDetailedAccountByIdQueryResult>.SuccessResult(new GetDetailedAccountByIdQueryResult
+        {
+            Id = detailedAccount.Id,
+            AccountTitle = detailedAccount.AccountTitle
+        });
 
     }
 }
