@@ -26,7 +26,7 @@ public class GetDetailedAccountsQueryHandler(IUnitOfWork unitOfWork)
         var detailedAccount = await unitOfWork.DetailedAccountRepository.GetAllAsync(detailedAccountFilter, cancellationToken);
 
         if (!detailedAccount.Any())
-            return OperationResult<IReadOnlyList<GetDetailedAccountsQueryResult>>.NotFoundResult(nameof(GetDetailedAccountsQueryResult), "SubLedger account not found.");
+            return OperationResult<IReadOnlyList<GetDetailedAccountsQueryResult>>.NotFoundResult(nameof(GetDetailedAccountsQueryResult), "Detailed account not found.");
 
         return OperationResult<IReadOnlyList<GetDetailedAccountsQueryResult>>
             .SuccessResult(detailedAccount.Select(x => new GetDetailedAccountsQueryResult

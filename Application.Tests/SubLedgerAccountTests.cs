@@ -1229,7 +1229,7 @@ public class SubLedgerAccountTests(ITestOutputHelper testOutputHelper)
         const JournalEntryType journalEntryType = JournalEntryType.Credit;
         var accountTitle = faker.Finance.AccountName();
 
-        var existingGeneralLedgerAccounts = new List<SubLedgerAccountEntity>
+        var existingSubLedgerAccounts = new List<SubLedgerAccountEntity>
         {
             new()
             {
@@ -1256,7 +1256,7 @@ public class SubLedgerAccountTests(ITestOutputHelper testOutputHelper)
             .Returns(callInfo =>
             {
                 var filter = callInfo.Arg<SubLedgerAccountFilter>();
-                return existingGeneralLedgerAccounts
+                return existingSubLedgerAccounts
                     .Where(x => filter.JournalEntryType == null || x.JournalEntryType == filter.JournalEntryType)
                     .Where(x => filter.Title == null || x.AccountTitle == filter.Title)
                     .ToList()

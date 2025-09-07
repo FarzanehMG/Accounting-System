@@ -1,5 +1,7 @@
 ﻿using Application.Common;
 using Application.Features.Accounts.Commands.DetailedAccount;
+using Application.Features.Accounts.Queries.DetailedAccount;
+using Application.Features.Accounts.Queries.DetailedAccount.Dtos;
 using Application.Repositories.Common;
 using Application.Tests.Extensions;
 using Bogus;
@@ -891,5 +893,428 @@ public class DetailedAccountTests(ITestOutputHelper testOutputHelper)
 
         await unitOfWork.DidNotReceive()
             .CommitAsync(CancellationToken.None);
+    }
+
+    [Fact]
+    public async Task GetDetailedAccount_WithValidId_ShouldReturnAccount()
+    {
+        // Arrange
+        var unitOfWork = Substitute.For<IUnitOfWork>();
+        var handler = new GetDetailedAccountByIdQueryHandler(unitOfWork);
+        var faker = new Faker();
+        var detailedAccountId = Guid.NewGuid();
+        var title = faker.Finance.AccountName();
+
+        var existingDetailedAccount = new DetailedAccountEntity
+        {
+            Id = detailedAccountId,
+            AccountTitle = title,
+            AccountCode = faker.Finance.Account(),
+            JournalEntryType = JournalEntryType.Debit,
+            SubLedgerAccountId = Guid.NewGuid(),
+            IsActive = true
+        };
+
+        unitOfWork.DetailedAccountRepository.GetByIdAsync(detailedAccountId, CancellationToken.None)
+            .Returns(existingDetailedAccount);
+
+        // Act
+        var request = new GetDetailedAccountByIdQuery
+        {
+            Id = detailedAccountId
+        };
+        var result = await handler.Handle(request, CancellationToken.None);
+
+        // Assert
+        result.IsSuccess.Should().BeTrue();
+        result.Result.Should().NotBeNull();
+        result.Result!.Id.Should().Be(detailedAccountId);
+        result.Result.AccountTitle.Should().Be(title);
+    }
+
+    [Fact]
+    public async Task GetDetailedAccount_WithInvalidId_ShouldReturnNotFound()
+    {
+        // Arrange
+        var unitOfWork = Substitute.For<IUnitOfWork>();
+        var handler = new GetDetailedAccountByIdQueryHandler(unitOfWork);
+
+        unitOfWork.DetailedAccountRepository.GetByIdAsync(Arg.Any<Guid>(), CancellationToken.None)
+            .Returns((DetailedAccountEntity?)null);
+
+        // Act
+        var request = new GetDetailedAccountByIdQuery
+        {
+            Id = Guid.NewGuid()
+        };
+        var result = await handler.Handle(request, CancellationToken.None);
+
+        // Assert
+        result.IsSuccess.Should().BeFalse();
+        result.ErrorMessages.Should().ContainKey(nameof(request.Id))
+            .WhoseValue.Should().Contain("Detailed account not found");
+    }
+
+    [Fact]
+    public async Task GetDetailedAccount_WhenValidationFails_ReturnsFailureResult()
+    {
+        // Arrange
+        var unitOfWork = Substitute.For<IUnitOfWork>();
+        var handler = new GetDetailedAccountByIdQueryHandler(unitOfWork);
+
+        // Act
+        var result = await handler.Handle(new GetDetailedAccountByIdQuery
+        {
+            Id = Guid.Empty
+        }, CancellationToken.None);
+
+        // Assert
+        result.IsSuccess.Should().BeFalse();
+        result.ErrorMessages.Should()
+            .Contain(x => x.Key == nameof(GetDetailedAccountByIdQuery.Id) && x.Value.Contains("must not be empty"));
+
+    }
+
+    [Fact]
+    public async Task GetDetailedAccounts_WhenTitleIsValid_ShouldReturnMatchingResults()
+    {
+        // Arrange
+        var unitOfWork = Substitute.For<IUnitOfWork>();
+        var faker = new Faker();
+        var title = faker.Finance.AccountName();
+
+        var existingDetailedAccounts = new List<DetailedAccountEntity>
+        {
+            new()
+            {
+                Id = Guid.NewGuid(),
+                AccountTitle = title,
+                AccountCode = faker.Finance.AccountName(),
+                IsActive = true,
+                JournalEntryType = JournalEntryType.Debit,
+                SubLedgerAccountId = Guid.NewGuid()
+            },
+            new()
+            {
+                Id = Guid.NewGuid(),
+                AccountTitle = title,
+                AccountCode = faker.Finance.AccountName(),
+                IsActive = true,
+                JournalEntryType = JournalEntryType.Credit,
+                SubLedgerAccountId  = Guid.NewGuid()
+            }
+        };
+
+        unitOfWork.DetailedAccountRepository
+            .GetAllAsync(new DetailedAccountFilter
+            {
+                Title = title
+            }, CancellationToken.None)
+            .Returns(existingDetailedAccounts);
+
+        var query = new GetDetailedAccountsQuery
+        {
+            Title = title
+        };
+        var handler = new GetDetailedAccountsQueryHandler(unitOfWork);
+
+        // Act
+        var result = await handler.Handle(query, CancellationToken.None);
+
+        // Assert
+        result.IsSuccess.Should().BeTrue();
+        result.Result.Should().HaveCount(2);
+        result.Result.Select(x => x.AccountTitle).Distinct().Should().ContainSingle().Which.Should().Be(title);
+
+    }
+
+    [Fact]
+    public async Task GetDetailedAccounts_WhenCodeIsValid_ShouldReturnMatchingResults()
+    {
+        // Arrange
+        var unitOfWork = Substitute.For<IUnitOfWork>();
+        var faker = new Faker();
+        var code = faker.Finance.AccountName();
+
+        var existingDetailedAccounts = new List<DetailedAccountEntity>
+        {
+            new()
+            {
+                Id = Guid.NewGuid(),
+                AccountTitle = faker.Finance.AccountName(),
+                AccountCode = code,
+                IsActive = true,
+                JournalEntryType = JournalEntryType.Debit,
+                SubLedgerAccountId = Guid.NewGuid()
+            },
+            new()
+            {
+                Id = Guid.NewGuid(),
+                AccountTitle = faker.Finance.AccountName(),
+                AccountCode = code,
+                IsActive = true,
+                JournalEntryType = JournalEntryType.Credit,
+                SubLedgerAccountId  = Guid.NewGuid()
+            }
+        };
+
+        unitOfWork.DetailedAccountRepository
+            .GetAllAsync(new DetailedAccountFilter
+            {
+                Code = code
+            }, CancellationToken.None)
+            .Returns(existingDetailedAccounts);
+
+        var query = new GetDetailedAccountsQuery
+        {
+            Code = code
+        };
+        var handler = new GetDetailedAccountsQueryHandler(unitOfWork);
+
+        // Act
+        var result = await handler.Handle(query, CancellationToken.None);
+
+        // Assert
+        result.IsSuccess.Should().BeTrue();
+        result.Result.Should().HaveCount(2);
+        result.Result.Select(x => x.AccountCode).Distinct().Should().ContainSingle().Which.Should().Be(code);
+
+    }
+
+    [Fact]
+    public async Task GetDetailedAccounts_WhenIsActiveIsValid_ShouldReturnMatchingResults()
+    {
+        // Arrange
+        var unitOfWork = Substitute.For<IUnitOfWork>();
+        var faker = new Faker();
+        const bool isActive = true;
+
+        var existingDetailedAccounts = new List<DetailedAccountEntity>
+        {
+            new()
+            {
+                Id = Guid.NewGuid(),
+                AccountTitle = faker.Finance.AccountName(),
+                AccountCode = faker.Finance.AccountName(),
+                IsActive = true,
+                JournalEntryType = JournalEntryType.Debit,
+                SubLedgerAccountId = Guid.NewGuid()
+            },
+            new()
+            {
+                Id = Guid.NewGuid(),
+                AccountTitle = faker.Finance.AccountName(),
+                AccountCode = faker.Finance.AccountName(),
+                IsActive = true,
+                JournalEntryType = JournalEntryType.Credit,
+                SubLedgerAccountId = Guid.NewGuid()
+            }
+        };
+
+        unitOfWork.DetailedAccountRepository
+            .GetAllAsync(new DetailedAccountFilter
+            {
+                IsActive = true
+            }, CancellationToken.None)
+            .Returns(existingDetailedAccounts);
+
+        var query = new GetDetailedAccountsQuery
+        {
+            IsActive = isActive
+        };
+        var handler = new GetDetailedAccountsQueryHandler(unitOfWork);
+
+        // Act
+        var result = await handler.Handle(query, CancellationToken.None);
+
+        // Assert
+        result.IsSuccess.Should().BeTrue();
+        result.Result.Should().HaveCount(2);
+        result.Result.Select(x => x.IsActive).Distinct().Should().ContainSingle().Which.Should().Be(isActive);
+
+    }
+
+    [Fact]
+    public async Task GetDetailedAccounts_WhenJournalEntryTypeIsValid_ShouldReturnMatchingResults()
+    {
+        // Arrange
+        var unitOfWork = Substitute.For<IUnitOfWork>();
+        var faker = new Faker();
+        const JournalEntryType journalEntryType = JournalEntryType.Credit;
+
+        var existingDetailedAccounts = new List<DetailedAccountEntity>
+        {
+            new()
+            {
+                Id = Guid.NewGuid(),
+                AccountTitle = faker.Finance.AccountName(),
+                AccountCode = faker.Finance.AccountName(),
+                IsActive = true,
+                JournalEntryType = JournalEntryType.Debit,
+                SubLedgerAccountId = Guid.NewGuid()
+            },
+            new()
+            {
+                Id = Guid.NewGuid(),
+                AccountTitle = faker.Finance.AccountName(),
+                AccountCode = faker.Finance.AccountName(),
+                IsActive = true,
+                JournalEntryType = journalEntryType,
+                SubLedgerAccountId  = Guid.NewGuid()
+            }
+        };
+
+        unitOfWork.DetailedAccountRepository
+            .GetAllAsync(Arg.Any<DetailedAccountFilter>(), Arg.Any<CancellationToken>())
+            .Returns(callInfo =>
+            {
+                var filter = callInfo.Arg<DetailedAccountFilter>();
+                return existingDetailedAccounts
+                    .Where(x => filter.JournalEntryType == null || x.JournalEntryType == filter.JournalEntryType)
+                    .ToList()
+                    .AsReadOnly();
+            });
+
+        var query = new GetDetailedAccountsQuery
+        {
+            JournalEntryType = journalEntryType
+        };
+        var handler = new GetDetailedAccountsQueryHandler(unitOfWork);
+
+        // Act
+        var result = await handler.Handle(query, CancellationToken.None);
+
+        // Assert
+        result.IsSuccess.Should().BeTrue();
+        result.Result.Should().HaveCount(1);
+        result.Result.Select(x => x.JournalEntryType).Distinct().Should().ContainSingle().Which.Should().Be(journalEntryType);
+
+    }
+
+    [Fact]
+    public async Task GetDetailedAccounts_WhenNoRecordsFound_ShouldReturnNotFound()
+    {
+        // Arrange
+        var unitOfWork = Substitute.For<IUnitOfWork>();
+        const JournalEntryType journalEntryType = JournalEntryType.Credit;
+
+        unitOfWork.DetailedAccountRepository
+            .GetAllAsync(Arg.Any<DetailedAccountFilter>(), Arg.Any<CancellationToken>())
+            .Returns([]);
+
+        var query = new GetDetailedAccountsQuery
+        {
+            JournalEntryType = journalEntryType
+        };
+        var handler = new GetDetailedAccountsQueryHandler(unitOfWork);
+
+        // Act
+        var result = await handler.Handle(query, CancellationToken.None);
+
+        // Assert
+        result.IsSuccess.Should().BeFalse();
+        result.Result.Should().BeNull();
+        result.ErrorMessages.Should().Contain(new KeyValuePair<string, string>(nameof(GetDetailedAccountsQueryResult), "Detailed account not found."));
+
+    }
+
+    [Fact]
+    public async Task GetDetailedAccounts_WhenMultipleFiltersAreApplied_ShouldReturnMatchingResults()
+    {
+        // Arrange
+        var unitOfWork = Substitute.For<IUnitOfWork>();
+        var faker = new Faker();
+        const JournalEntryType journalEntryType = JournalEntryType.Credit;
+        var accountTitle = faker.Finance.AccountName();
+
+        var existingDetailedAccounts = new List<DetailedAccountEntity>
+        {
+            new()
+            {
+                Id = Guid.NewGuid(),
+                AccountTitle = accountTitle,
+                AccountCode = faker.Finance.AccountName(),
+                IsActive = true,
+                JournalEntryType = JournalEntryType.Debit,
+                SubLedgerAccountId = Guid.NewGuid()
+            },
+            new()
+            {
+                Id = Guid.NewGuid(),
+                AccountTitle = accountTitle,
+                AccountCode = faker.Finance.AccountName(),
+                IsActive = true,
+                JournalEntryType = journalEntryType,
+                SubLedgerAccountId = Guid.NewGuid()
+            }
+        };
+
+        unitOfWork.DetailedAccountRepository
+            .GetAllAsync(Arg.Any<DetailedAccountFilter>(), Arg.Any<CancellationToken>())
+            .Returns(callInfo =>
+            {
+                var filter = callInfo.Arg<DetailedAccountFilter>();
+                return existingDetailedAccounts
+                    .Where(x => filter.JournalEntryType == null || x.JournalEntryType == filter.JournalEntryType)
+                    .Where(x => filter.Title == null || x.AccountTitle == filter.Title)
+                    .ToList()
+                    .AsReadOnly();
+            });
+
+        var query = new GetDetailedAccountsQuery
+        {
+            JournalEntryType = journalEntryType,
+            Title = accountTitle
+        };
+        var handler = new GetDetailedAccountsQueryHandler(unitOfWork);
+
+        // Act
+        var result = await handler.Handle(query, CancellationToken.None);
+
+        // Assert
+        result.IsSuccess.Should().BeTrue();
+        result.Result.Should().HaveCount(1);
+        result.Result.Select(x => x.AccountTitle).Distinct().Should().ContainSingle().Which.Should().Be(accountTitle);
+        result.Result.Select(x => x.JournalEntryType).Distinct().Should().ContainSingle().Which.Should().Be(journalEntryType);
+
+    }
+
+    [Fact]
+    public async Task GetDetailedAccounts_WhenRecordsExist_ShouldMapPropertiesCorrectly()
+    {
+        // Arrange
+        var unitOfWork = Substitute.For<IUnitOfWork>();
+        var faker = new Faker();
+
+        var entity = new DetailedAccountEntity
+        {
+            Id = Guid.NewGuid(),
+            AccountTitle = faker.Finance.AccountName(),
+            AccountCode = faker.Finance.AccountName(),
+            IsActive = true,
+            AccountDescription = faker.Lorem.Sentence(),
+            JournalEntryType = JournalEntryType.Debit,
+            SubLedgerAccountId = Guid.NewGuid()
+        };
+
+        unitOfWork.DetailedAccountRepository
+            .GetAllAsync(Arg.Any<DetailedAccountFilter>(), Arg.Any<CancellationToken>())
+            .Returns(new List<DetailedAccountEntity> { entity }.AsReadOnly());
+
+        var query = new GetDetailedAccountsQuery { Title = entity.AccountTitle };
+        var handler = new GetDetailedAccountsQueryHandler(unitOfWork);
+
+        // Act
+        var result = await handler.Handle(query, CancellationToken.None);
+
+        // Assert
+        result.IsSuccess.Should().BeTrue();
+        result.Result.Should().HaveCount(1);
+
+        var mapped = result.Result.First();
+        mapped.AccountTitle.Should().Be(entity.AccountTitle);
+        mapped.AccountCode.Should().Be(entity.AccountCode);
+        mapped.IsActive.Should().Be(entity.IsActive);
+        mapped.JournalEntryType.Should().Be(entity.JournalEntryType);
     }
 }
