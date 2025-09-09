@@ -18,7 +18,7 @@ public class CreateFinancialPeriodCommandHandler(IUnitOfWork unitOfWork)
         if (command.EndDate <= command.StartDate)
             return OperationResult<bool>.FailureResult(nameof(command.StartDate), "The end date must be later than the start date of the financial period.");
 
-        var overlappingFinancialPeriod = await unitOfWork.FinancialPeriodRepository.GetOverlappingFinancialPeriodAsync(command.StartDate, command.EndDate, cancellationToken);
+        var overlappingFinancialPeriod = await unitOfWork.FinancialPeriodRepository.GetOverlappingFinancialPeriodAsync(cancellationToken, command.StartDate, command.EndDate);
 
         if (overlappingFinancialPeriod is not null)
             return OperationResult<bool>.FailureResult(nameof(command.EndDate), "The selected period overlaps with an existing financial period.");
