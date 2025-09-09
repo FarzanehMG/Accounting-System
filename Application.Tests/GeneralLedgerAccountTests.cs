@@ -16,7 +16,7 @@ namespace Application.Tests;
 public class GeneralLedgerAccountTests(ITestOutputHelper testOutputHelper)
 {
     [Fact]
-    public async Task CreateGGeneralLedgerAccountHandler_WhenGeneralLedgerAccountCommandIsValid_ShouldReturnSuccess()
+    public async Task CreateGeneralLedgerAccountHandler_WhenGeneralLedgerAccountCommandIsValid_ShouldReturnSuccess()
     {
         // Arrange
         var unitOfWork = Substitute.For<IUnitOfWork>();
@@ -832,7 +832,8 @@ public class GeneralLedgerAccountTests(ITestOutputHelper testOutputHelper)
 
         // Assert
         result.IsSuccess.Should().BeTrue();
-        existingGeneralLedgerAccountEntity.ModifiedDate.Should().BeAfter(oldModifiedDate.Date);
+        existingGeneralLedgerAccountEntity.ModifiedDate.Should().BeCloseTo(DateTime.UtcNow, TimeSpan.FromSeconds(2));
+
 
         await unitOfWork.Received(1)
             .CommitAsync(CancellationToken.None);
@@ -848,6 +849,7 @@ public class GeneralLedgerAccountTests(ITestOutputHelper testOutputHelper)
         var title = faker.Finance.AccountName();
         var code = faker.Finance.Account();
         var groupAccountId = Guid.NewGuid();
+        var oldModifiedDate = DateTime.UtcNow.AddDays(-5);
 
         var existingAccount = new GeneralLedgerAccountEntity
         {
@@ -857,7 +859,7 @@ public class GeneralLedgerAccountTests(ITestOutputHelper testOutputHelper)
             GroupAccountId = groupAccountId,
             IsActive = true,
             AccountCode = code,
-            ModifiedDate = DateTime.UtcNow.AddDays(-1)
+            ModifiedDate = oldModifiedDate
         };
         unitOfWork.GeneralLedgerAccountRepository.GetByIdAsync(generalLedgerAccountId, CancellationToken.None)
             .Returns(existingAccount);
@@ -881,7 +883,7 @@ public class GeneralLedgerAccountTests(ITestOutputHelper testOutputHelper)
 
         // Assert
         result.IsSuccess.Should().BeTrue();
-        existingAccount.ModifiedDate.Should().BeCloseTo((DateTime)existingAccount.ModifiedDate, TimeSpan.FromSeconds(1));
+        existingAccount.ModifiedDate.Should().Be(oldModifiedDate);
 
         await unitOfWork.DidNotReceive()
             .CommitAsync(CancellationToken.None);

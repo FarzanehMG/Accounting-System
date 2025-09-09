@@ -588,7 +588,7 @@ public class DetailedAccountTests(ITestOutputHelper testOutputHelper)
 
         // Assert
         result.IsSuccess.Should().BeTrue();
-        existingDetailedAccount.AccountTitle.Should().Be(existingDetailedAccount.AccountTitle);
+        existingDetailedAccount.AccountTitle.Should().Be(updateDetailedAccountCommand.Title);
 
         await unitOfWork.Received(1)
             .CommitAsync(CancellationToken.None);
@@ -628,7 +628,7 @@ public class DetailedAccountTests(ITestOutputHelper testOutputHelper)
 
         // Assert
         result.IsSuccess.Should().BeTrue();
-        existingDetailedAccount.AccountTitle.Should().Be(existingDetailedAccount.AccountTitle);
+        existingDetailedAccount.IsActive.Should().Be(updateDetailedAccountCommand.IsActive);
 
         await unitOfWork.Received(1)
             .CommitAsync(CancellationToken.None);
@@ -672,7 +672,7 @@ public class DetailedAccountTests(ITestOutputHelper testOutputHelper)
 
         // Assert
         result.IsSuccess.Should().BeTrue();
-        existingDetailedAccount.AccountTitle.Should().Be(existingDetailedAccount.AccountTitle);
+        existingDetailedAccount.AccountCode.Should().Be(updateDetailedAccountCommand.Code);
 
         await unitOfWork.Received(1)
             .CommitAsync(CancellationToken.None);
@@ -800,8 +800,8 @@ public class DetailedAccountTests(ITestOutputHelper testOutputHelper)
 
         // Assert
         result.IsSuccess.Should().BeTrue();
-        existingDetailedAccount.AccountTitle.Should().Be(existingDetailedAccount.AccountTitle);
-        existingDetailedAccount.AccountCode.Should().Be(existingDetailedAccount.AccountCode);
+        existingDetailedAccount.AccountTitle.Should().Be(updateDetailedAccountCommand.Title);
+        existingDetailedAccount.AccountCode.Should().Be(updateDetailedAccountCommand.Code);
 
         await unitOfWork.Received(1)
             .CommitAsync(CancellationToken.None);
@@ -844,9 +844,9 @@ public class DetailedAccountTests(ITestOutputHelper testOutputHelper)
 
         // Assert
         result.IsSuccess.Should().BeTrue();
-        existingDetailedAccount.AccountTitle.Should().Be(existingDetailedAccount.AccountTitle);
-        existingDetailedAccount.AccountCode.Should().Be(existingDetailedAccount.AccountCode);
-        existingDetailedAccount.ModifiedDate.Should().BeAfter(oldModifiedDate.Date);
+        existingDetailedAccount.AccountTitle.Should().Be(updateDetailedAccountCommand.Title);
+        existingDetailedAccount.AccountCode.Should().Be(updateDetailedAccountCommand.Code);
+        existingDetailedAccount.ModifiedDate.Should().BeCloseTo(DateTime.UtcNow, TimeSpan.FromSeconds(2));
 
         await unitOfWork.Received(1)
             .CommitAsync(CancellationToken.None);
@@ -861,6 +861,7 @@ public class DetailedAccountTests(ITestOutputHelper testOutputHelper)
         var detailedAccountId = Guid.NewGuid();
         var title = faker.Finance.AccountName();
         var code = faker.Finance.Account();
+        var oldModifiedDate = DateTime.UtcNow.AddDays(-5);
 
         var existingAccount = new DetailedAccountEntity
         {
@@ -870,7 +871,7 @@ public class DetailedAccountTests(ITestOutputHelper testOutputHelper)
             SubLedgerAccountId = Guid.NewGuid(),
             IsActive = true,
             AccountCode = code,
-            ModifiedDate = DateTime.UtcNow.AddDays(-1)
+            ModifiedDate = oldModifiedDate
         };
         unitOfWork.DetailedAccountRepository.GetByIdAsync(detailedAccountId, CancellationToken.None)
             .Returns(existingAccount);
@@ -889,7 +890,7 @@ public class DetailedAccountTests(ITestOutputHelper testOutputHelper)
 
         // Assert
         result.IsSuccess.Should().BeTrue();
-        existingAccount.ModifiedDate.Should().BeCloseTo((DateTime)existingAccount.ModifiedDate, TimeSpan.FromSeconds(1));
+        existingAccount.ModifiedDate.Should().Be(oldModifiedDate);
 
         await unitOfWork.DidNotReceive()
             .CommitAsync(CancellationToken.None);

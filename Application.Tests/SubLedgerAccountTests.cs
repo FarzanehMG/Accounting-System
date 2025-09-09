@@ -590,7 +590,7 @@ public class SubLedgerAccountTests(ITestOutputHelper testOutputHelper)
 
         // Assert
         result.IsSuccess.Should().BeTrue();
-        existingSubLedgerAccount.AccountTitle.Should().Be(existingSubLedgerAccount.AccountTitle);
+        existingSubLedgerAccount.AccountTitle.Should().Be(updateSubLedgerAccountCommand.Title);
 
         await unitOfWork.Received(1)
             .CommitAsync(CancellationToken.None);
@@ -630,7 +630,7 @@ public class SubLedgerAccountTests(ITestOutputHelper testOutputHelper)
 
         // Assert
         result.IsSuccess.Should().BeTrue();
-        existingSubLedgerAccount.AccountTitle.Should().Be(existingSubLedgerAccount.AccountTitle);
+        existingSubLedgerAccount.IsActive.Should().Be(updateSubLedgerAccountCommand.IsActive);
 
         await unitOfWork.Received(1)
             .CommitAsync(CancellationToken.None);
@@ -674,7 +674,7 @@ public class SubLedgerAccountTests(ITestOutputHelper testOutputHelper)
 
         // Assert
         result.IsSuccess.Should().BeTrue();
-        existingSubLedgerAccount.AccountTitle.Should().Be(existingSubLedgerAccount.AccountTitle);
+        existingSubLedgerAccount.AccountCode.Should().Be(updateSubLedgerAccountCommand.Code);
 
         await unitOfWork.Received(1)
             .CommitAsync(CancellationToken.None);
@@ -802,8 +802,8 @@ public class SubLedgerAccountTests(ITestOutputHelper testOutputHelper)
 
         // Assert
         result.IsSuccess.Should().BeTrue();
-        existingSubLedgerAccount.AccountTitle.Should().Be(existingSubLedgerAccount.AccountTitle);
-        existingSubLedgerAccount.AccountCode.Should().Be(existingSubLedgerAccount.AccountCode);
+        existingSubLedgerAccount.AccountTitle.Should().Be(updateSubLedgerAccountCommand.Title);
+        existingSubLedgerAccount.AccountCode.Should().Be(updateSubLedgerAccountCommand.Code);
 
         await unitOfWork.Received(1)
             .CommitAsync(CancellationToken.None);
@@ -846,9 +846,9 @@ public class SubLedgerAccountTests(ITestOutputHelper testOutputHelper)
 
         // Assert
         result.IsSuccess.Should().BeTrue();
-        existingSubLedgerAccount.AccountTitle.Should().Be(existingSubLedgerAccount.AccountTitle);
-        existingSubLedgerAccount.AccountCode.Should().Be(existingSubLedgerAccount.AccountCode);
-        existingSubLedgerAccount.ModifiedDate.Should().BeAfter(oldModifiedDate.Date);
+        existingSubLedgerAccount.AccountTitle.Should().Be(updateSubLedgerAccountCommand.Title);
+        existingSubLedgerAccount.AccountCode.Should().Be(updateSubLedgerAccountCommand.Code);
+        existingSubLedgerAccount.ModifiedDate.Should().BeCloseTo(DateTime.UtcNow, TimeSpan.FromSeconds(2));
 
         await unitOfWork.Received(1)
             .CommitAsync(CancellationToken.None);
@@ -863,6 +863,7 @@ public class SubLedgerAccountTests(ITestOutputHelper testOutputHelper)
         var subLedgerAccountId = Guid.NewGuid();
         var title = faker.Finance.AccountName();
         var code = faker.Finance.Account();
+        var oldModifiedDate = DateTime.UtcNow.AddDays(-5);
 
         var existingAccount = new SubLedgerAccountEntity
         {
@@ -872,7 +873,7 @@ public class SubLedgerAccountTests(ITestOutputHelper testOutputHelper)
             GeneralLedgerAccountId = Guid.NewGuid(),
             IsActive = true,
             AccountCode = code,
-            ModifiedDate = DateTime.UtcNow.AddDays(-1)
+            ModifiedDate = oldModifiedDate
         };
         unitOfWork.SubLedgerAccountRepository.GetByIdAsync(subLedgerAccountId, CancellationToken.None)
             .Returns(existingAccount);
@@ -891,7 +892,7 @@ public class SubLedgerAccountTests(ITestOutputHelper testOutputHelper)
 
         // Assert
         result.IsSuccess.Should().BeTrue();
-        existingAccount.ModifiedDate.Should().BeCloseTo((DateTime)existingAccount.ModifiedDate, TimeSpan.FromSeconds(1));
+        existingAccount.ModifiedDate.Should().Be(oldModifiedDate);
 
         await unitOfWork.DidNotReceive()
             .CommitAsync(CancellationToken.None);
