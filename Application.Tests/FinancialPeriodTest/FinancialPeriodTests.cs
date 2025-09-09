@@ -216,6 +216,30 @@ public class FinancialPeriodTests(ITestOutputHelper testOutputHelper)
     }
 
     [Fact]
+    public async Task CreateFinancialPeriodHandler_ShouldFail_WhenEndDateEqualsStartDate()
+    {
+        // Arrange
+        var unitOfWork = Substitute.For<IUnitOfWork>();
+        var handler = new CreateFinancialPeriodCommandHandler(unitOfWork);
+
+        var command = new CreateFinancialPeriodCommand
+        {
+            FinancialPeriodTitle = "Test Period",
+            StartDate = new DateTime(2025, 01, 01),
+            EndDate = new DateTime(2025, 01, 01),
+        };
+
+        // Act
+        var result = await handler.Handle(command, CancellationToken.None);
+
+        // Assert
+        result.IsSuccess.Should().BeFalse();
+        result.ErrorMessages.Should().ContainKey(nameof(command.StartDate));
+        result.ErrorMessages.Should().ContainKey(nameof(command.StartDate))
+            .WhoseValue.Should().Contain("The end date must be later than the start date of the financial period.");
+    }
+
+    [Fact]
     public async Task When_Validation_Fails_Should_Not_Call_Commit()
     {
         // Arrange
