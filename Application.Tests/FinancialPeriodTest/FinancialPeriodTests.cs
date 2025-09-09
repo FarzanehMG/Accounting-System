@@ -1,5 +1,7 @@
 ﻿using Application.Common;
 using Application.Features.FinancialPeriod.Commands;
+using Application.Features.FinancialPeriod.Queries;
+using Application.Features.FinancialPeriod.Queries.Dtos;
 using Application.Repositories.Common;
 using Application.Tests.Extensions;
 using Bogus;
@@ -631,5 +633,419 @@ public class FinancialPeriodTests(ITestOutputHelper testOutputHelper)
 
         await unitOfWork.DidNotReceive()
             .CommitAsync(CancellationToken.None);
+    }
+
+    [Fact]
+    public async Task GetFinancialPeriod_WithValidId_ShouldReturnFinancialPeriod()
+    {
+        // Arrange
+        var unitOfWork = Substitute.For<IUnitOfWork>();
+        var handler = new GetFinancialPeriodByIdQueryHandler(unitOfWork);
+        var faker = new Faker();
+        var financialPeriodId = Guid.NewGuid();
+
+        var existingFinancialPeriodEntity = new FinancialPeriodEntity
+        {
+            Id = financialPeriodId,
+            FinancialPeriodTitle = faker.Finance.AccountName(),
+            StartDate = DateTime.UtcNow,
+            EndDate = DateTime.UtcNow,
+            IsActive = true,
+            JournalVouchers = [],
+            CreatedDate = DateTime.UtcNow,
+            ModifiedDate = DateTime.UtcNow
+        };
+
+        unitOfWork.FinancialPeriodRepository.GetFinancialPeriodByIdAsync(financialPeriodId, CancellationToken.None)
+            .Returns(existingFinancialPeriodEntity);
+
+        // Act
+        var request = new GetFinancialPeriodByIdQuery
+        {
+            Id = financialPeriodId
+        };
+        var result = await handler.Handle(request, CancellationToken.None);
+
+        // Assert
+        result.IsSuccess.Should().BeTrue();
+        result.Result.Should().NotBeNull();
+        result.Result!.Id.Should().Be(financialPeriodId);
+        result.Result.Title.Should().Be(existingFinancialPeriodEntity.FinancialPeriodTitle);
+    }
+
+    [Fact]
+    public async Task GetFinancialPeriod_WithInvalidId_ShouldReturnNotFound()
+    {
+        // Arrange
+        var unitOfWork = Substitute.For<IUnitOfWork>();
+        var handler = new GetFinancialPeriodByIdQueryHandler(unitOfWork);
+
+        unitOfWork.FinancialPeriodRepository.GetFinancialPeriodByIdAsync(Arg.Any<Guid>(), CancellationToken.None)
+            .Returns((FinancialPeriodEntity?)null);
+
+        // Act
+        var request = new GetFinancialPeriodByIdQuery
+        {
+            Id = Guid.NewGuid()
+        };
+        var result = await handler.Handle(request, CancellationToken.None);
+
+        // Assert
+        result.IsSuccess.Should().BeFalse();
+        result.ErrorMessages.Should().ContainKey(nameof(request.Id))
+            .WhoseValue.Should().Contain("Financial period not found");
+    }
+
+    [Fact]
+    public async Task GetFinancialPeriod_WhenValidationFails_ReturnsFailureResult()
+    {
+        // Arrange
+        var unitOfWork = Substitute.For<IUnitOfWork>();
+        var handler = new GetFinancialPeriodByIdQueryHandler(unitOfWork);
+
+        // Act
+        var result = await handler.Handle(new GetFinancialPeriodByIdQuery
+        {
+            Id = Guid.Empty
+        }, CancellationToken.None);
+
+        // Assert
+        result.IsSuccess.Should().BeFalse();
+        result.ErrorMessages.Should()
+            .Contain(x => x.Key == nameof(GetFinancialPeriodByIdQuery.Id) && x.Value.Contains("must not be empty"));
+
+    }
+
+    [Fact]
+    public async Task GetFinancialPeriods_WhenTitleIsValid_ShouldReturnMatchingResults()
+    {
+        // Arrange
+        var unitOfWork = Substitute.For<IUnitOfWork>();
+        var faker = new Faker();
+        var title = faker.Finance.AccountName();
+
+        var existingFinancialPeriods = new List<FinancialPeriodEntity>
+        {
+            new()
+            {
+                Id = Guid.NewGuid(),
+                FinancialPeriodTitle = title,
+                IsActive = true,
+                StartDate = DateTime.UtcNow,
+                EndDate = DateTime.UtcNow
+            },
+            new()
+            {
+                Id = Guid.NewGuid(),
+                FinancialPeriodTitle = title,
+                IsActive = true,
+                StartDate = DateTime.UtcNow,
+                EndDate = DateTime.UtcNow
+            }
+        };
+
+        unitOfWork.FinancialPeriodRepository
+            .GetAllAsync(new FinancialPeriodFilter
+            {
+                Title = title
+            }, CancellationToken.None)
+            .Returns(existingFinancialPeriods);
+
+        var query = new GetFinancialPeriodsQuery
+        {
+            Title = title
+        };
+        var handler = new GetFinancialPeriodsQueryHandler(unitOfWork);
+
+        // Act
+        var result = await handler.Handle(query, CancellationToken.None);
+
+        // Assert
+        result.IsSuccess.Should().BeTrue();
+        result.Result.Should().HaveCount(2);
+        result.Result.Select(x => x.Title).Distinct().Should().ContainSingle().Which.Should().Be(title);
+
+    }
+
+    [Fact]
+    public async Task GetFinancialPeriods_WhenIsActiveIsValid_ShouldReturnMatchingResults()
+    {
+        // Arrange
+        var unitOfWork = Substitute.For<IUnitOfWork>();
+        var faker = new Faker();
+        const bool isActive = true;
+
+        var existingFinancialPeriods = new List<FinancialPeriodEntity>
+        {
+            new()
+            {
+                Id = Guid.NewGuid(),
+                FinancialPeriodTitle = faker.Finance.AccountName(),
+                IsActive = isActive,
+                StartDate = DateTime.UtcNow,
+                EndDate = DateTime.UtcNow
+            },
+            new()
+            {
+                Id = Guid.NewGuid(),
+                FinancialPeriodTitle = faker.Finance.AccountName(),
+                IsActive = isActive,
+                StartDate = DateTime.UtcNow,
+                EndDate = DateTime.UtcNow
+            }
+        };
+
+        unitOfWork.FinancialPeriodRepository
+            .GetAllAsync(new FinancialPeriodFilter
+            {
+                IsActive = true
+            }, CancellationToken.None)
+            .Returns(existingFinancialPeriods);
+
+        var query = new GetFinancialPeriodsQuery
+        {
+            IsActive = isActive
+        };
+        var handler = new GetFinancialPeriodsQueryHandler(unitOfWork);
+
+        // Act
+        var result = await handler.Handle(query, CancellationToken.None);
+
+        // Assert
+        result.IsSuccess.Should().BeTrue();
+        result.Result.Should().HaveCount(2);
+        result.Result.Select(x => x.IsActive).Distinct().Should().ContainSingle().Which.Should().Be(isActive);
+
+    }
+
+    [Fact]
+    public async Task GetFinancialPeriods_WhenStartDateIsValid_ShouldReturnMatchingResults()
+    {
+        // Arrange
+        var unitOfWork = Substitute.For<IUnitOfWork>();
+        var faker = new Faker();
+        var startDate = DateTime.UtcNow.AddDays(2);
+
+        var existingFinancialPeriods = new List<FinancialPeriodEntity>
+        {
+            new()
+            {
+                Id = Guid.NewGuid(),
+                FinancialPeriodTitle = faker.Finance.AccountName(),
+                IsActive = true,
+                StartDate = DateTime.UtcNow,
+                EndDate = DateTime.UtcNow
+            },
+            new()
+            {
+                Id = Guid.NewGuid(),
+                FinancialPeriodTitle = faker.Finance.AccountName(),
+                IsActive = true,
+                StartDate = startDate,
+                EndDate = DateTime.UtcNow
+            }
+        };
+
+        unitOfWork.FinancialPeriodRepository
+            .GetAllAsync(Arg.Any<FinancialPeriodFilter>(), Arg.Any<CancellationToken>())
+            .Returns(callInfo =>
+            {
+                var filter = callInfo.Arg<FinancialPeriodFilter>();
+                return existingFinancialPeriods
+                    .Where(x => filter.StartDate == null || x.StartDate == filter.StartDate)
+                    .ToList()
+                    .AsReadOnly();
+            });
+
+        var query = new GetFinancialPeriodsQuery
+        {
+            StartDate = startDate
+        };
+        var handler = new GetFinancialPeriodsQueryHandler(unitOfWork);
+
+        // Act
+        var result = await handler.Handle(query, CancellationToken.None);
+
+        // Assert
+        result.IsSuccess.Should().BeTrue();
+        result.Result.Should().HaveCount(1);
+        result.Result.Select(x => x.StartDate).Distinct().Should().ContainSingle().Which.Should().Be(startDate);
+    }
+
+    [Fact]
+    public async Task GetFinancialPeriods_WhenEndDateIsValid_ShouldReturnMatchingResults()
+    {
+        // Arrange
+        var unitOfWork = Substitute.For<IUnitOfWork>();
+        var faker = new Faker();
+        var endDate = DateTime.UtcNow.AddDays(2);
+
+        var existingFinancialPeriods = new List<FinancialPeriodEntity>
+        {
+            new()
+            {
+                Id = Guid.NewGuid(),
+                FinancialPeriodTitle = faker.Finance.AccountName(),
+                IsActive = true,
+                StartDate = DateTime.UtcNow,
+                EndDate = DateTime.UtcNow
+            },
+            new()
+            {
+                Id = Guid.NewGuid(),
+                FinancialPeriodTitle = faker.Finance.AccountName(),
+                IsActive = true,
+                StartDate = DateTime.UtcNow,
+                EndDate = endDate
+            }
+        };
+
+        unitOfWork.FinancialPeriodRepository
+            .GetAllAsync(Arg.Any<FinancialPeriodFilter>(), Arg.Any<CancellationToken>())
+            .Returns(callInfo =>
+            {
+                var filter = callInfo.Arg<FinancialPeriodFilter>();
+                return existingFinancialPeriods
+                    .Where(x => filter.EndDate == null || x.EndDate == filter.EndDate)
+                    .ToList()
+                    .AsReadOnly();
+            });
+
+        var query = new GetFinancialPeriodsQuery
+        {
+            EndDate = endDate
+        };
+        var handler = new GetFinancialPeriodsQueryHandler(unitOfWork);
+
+        // Act
+        var result = await handler.Handle(query, CancellationToken.None);
+
+        // Assert
+        result.IsSuccess.Should().BeTrue();
+        result.Result.Should().HaveCount(1);
+        result.Result.Select(x => x.EndDate).Distinct().Should().ContainSingle().Which.Should().Be(endDate);
+        result.Result.Select(x => x.EndDate).Distinct().Should().ContainSingle().Which.Should().Be(endDate);
+    }
+
+    [Fact]
+    public async Task GetFinancialPeriods_WhenNoRecordsFound_ShouldReturnNotFound()
+    {
+        // Arrange
+        var unitOfWork = Substitute.For<IUnitOfWork>();
+        var startDate = DateTime.UtcNow.AddDays(1);
+
+        unitOfWork.FinancialPeriodRepository
+            .GetAllAsync(Arg.Any<FinancialPeriodFilter>(), Arg.Any<CancellationToken>())
+            .Returns([]);
+
+        var query = new GetFinancialPeriodsQuery
+        {
+            StartDate = startDate
+        };
+        var handler = new GetFinancialPeriodsQueryHandler(unitOfWork);
+
+        // Act
+        var result = await handler.Handle(query, CancellationToken.None);
+
+        // Assert
+        result.IsSuccess.Should().BeFalse();
+        result.Result.Should().BeNull();
+        result.ErrorMessages.Should().Contain(new KeyValuePair<string, string>(nameof(GetFinancialPeriodsQueryResult), "Financial period not found."));
+    }
+
+    [Fact]
+    public async Task GetFinancialPeriods_WhenMultipleFiltersAreApplied_ShouldReturnMatchingResults()
+    {
+        // Arrange
+        var unitOfWork = Substitute.For<IUnitOfWork>();
+        var faker = new Faker();
+        var startDate = DateTime.UtcNow.AddDays(2);
+        var title = faker.Finance.AccountName();
+
+        var existingFinancialPeriods = new List<FinancialPeriodEntity>
+        {
+            new()
+            {
+                Id = Guid.NewGuid(),
+                FinancialPeriodTitle = title,
+                IsActive = true,
+                StartDate = startDate,
+                EndDate = DateTime.UtcNow
+            },
+            new()
+            {
+                Id = Guid.NewGuid(),
+                FinancialPeriodTitle = title,
+                IsActive = true,
+                StartDate = DateTime.UtcNow,
+                EndDate = DateTime.UtcNow
+            }
+        };
+
+        unitOfWork.FinancialPeriodRepository
+            .GetAllAsync(Arg.Any<FinancialPeriodFilter>(), Arg.Any<CancellationToken>())
+            .Returns(callInfo =>
+            {
+                var filter = callInfo.Arg<FinancialPeriodFilter>();
+                return existingFinancialPeriods
+                    .Where(x => filter.StartDate == null || x.StartDate == filter.StartDate)
+                    .Where(x => filter.Title == null || x.FinancialPeriodTitle == filter.Title)
+                    .ToList()
+                    .AsReadOnly();
+            });
+
+        var query = new GetFinancialPeriodsQuery
+        {
+            StartDate = startDate,
+            Title = title
+        };
+        var handler = new GetFinancialPeriodsQueryHandler(unitOfWork);
+
+        // Act
+        var result = await handler.Handle(query, CancellationToken.None);
+
+        // Assert
+        result.IsSuccess.Should().BeTrue();
+        result.Result.Should().HaveCount(1);
+        result.Result.Select(x => x.Title).Distinct().Should().ContainSingle().Which.Should().Be(title);
+        result.Result.Select(x => x.StartDate).Distinct().Should().ContainSingle().Which.Should().Be(startDate);
+
+    }
+
+    [Fact]
+    public async Task GetFinancialPeriods_WhenRecordsExist_ShouldMapPropertiesCorrectly()
+    {
+        // Arrange
+        var unitOfWork = Substitute.For<IUnitOfWork>();
+        var faker = new Faker();
+
+        var entity = new FinancialPeriodEntity
+        {
+            Id = Guid.NewGuid(),
+            FinancialPeriodTitle = faker.Finance.AccountName(),
+            IsActive = true,
+            StartDate = DateTime.UtcNow,
+            EndDate = DateTime.UtcNow
+        };
+
+        unitOfWork.FinancialPeriodRepository
+            .GetAllAsync(Arg.Any<FinancialPeriodFilter>(), Arg.Any<CancellationToken>())
+            .Returns(new List<FinancialPeriodEntity> { entity }.AsReadOnly());
+
+        var query = new GetFinancialPeriodsQuery { Title = entity.FinancialPeriodTitle };
+        var handler = new GetFinancialPeriodsQueryHandler(unitOfWork);
+
+        // Act
+        var result = await handler.Handle(query, CancellationToken.None);
+
+        // Assert
+        result.IsSuccess.Should().BeTrue();
+        result.Result.Should().HaveCount(1);
+
+        var mapped = result.Result.First();
+        mapped.Title.Should().Be(entity.FinancialPeriodTitle);
+        mapped.StartDate.Should().Be(entity.StartDate);
+        mapped.IsActive.Should().Be(entity.IsActive);
+        mapped.EndDate.Should().Be(entity.EndDate);
     }
 }

@@ -7,7 +7,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Features\FinancialPeriod\Queries\" />
     <Folder Include="Repositories\Common\" />
     <Folder Include="Services\" />
   </ItemGroup>
