@@ -5,17 +5,17 @@ namespace Domain.Entities;
 
 public sealed class JournalVoucherEntity : BaseEntity
 {
-    public required string JournalVoucherTitle { get; init; }
+    public required string JournalVoucherTitle { get; set; }
     public string JournalVoucherNumber { get; init; } = null!;
-    public required string ReferenceNumber { get; init; }
-    public required DateTime TransactionTime { get; init; }
-    public required string Description { get; init; }
+    public required string ReferenceNumber { get; set; }
+    public required DateTime TransactionTime { get; set; }
+    public required string Description { get; set; }
     public required JournalVoucherState JournalVoucherState { get; set; }
-    public required Guid CreatedByUserId { get; init; }
+    public required Guid CreatedByUserId { get; set; }
     public Guid? ApprovedByUserId { get; set; }
     public DateTime? ApprovedTime { get; set; }
 
-    public required Guid FinancialPeriodId { get; init; }
+    public required Guid FinancialPeriodId { get; set; }
     public FinancialPeriodEntity? FinancialPeriod{ get; init; }
 
     public ICollection<JournalEntryEntity> JournalEntries { get; init; } = new List<JournalEntryEntity>();
