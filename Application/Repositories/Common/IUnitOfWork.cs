@@ -1,5 +1,6 @@
 ﻿using Application.Repositories.AccountRepositories;
 using Application.Repositories.FinancialPeriod;
+using Application.Repositories.JournalRepositories;
 
 namespace Application.Repositories.Common;
 
@@ -10,6 +11,8 @@ public interface IUnitOfWork : IAsyncDisposable, IDisposable
     ISubLedgerAccountRepository SubLedgerAccountRepository { get; }
     IDetailedAccountRepository DetailedAccountRepository { get; }
     IFinancialPeriodRepository FinancialPeriodRepository { get; }
+    IJournalVoucherRepository JournalVoucherRepository { get; }
+    IJournalEntryRepository JournalEntryRepository { get; }
 
     Task CommitAsync(CancellationToken cancellationToken = default);
     bool HasChanges<TEntity>(TEntity entity) where TEntity : class;

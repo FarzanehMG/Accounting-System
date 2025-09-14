@@ -5,14 +5,17 @@ namespace Domain.Entities;
 
 public sealed class JournalEntryEntity : BaseEntity
 {
-    public required string JournalEntryNumber { get; set; }
-    public required JournalEntryType JournalEntryType { get; set; }
-    public required decimal Amount { get; set; }
-    public required string Description { get; set; }
+    public required string JournalEntryNumber { get; init; }
+    public required JournalEntryType JournalEntryType { get; init; }
+    public required decimal Amount { get; init; }
+    public required string Description { get; init; }
 
-    public required Guid DetailedAccountId { get; set; }
-    public DetailedAccountEntity? DetailedAccount { get; set; }
+    public Guid? DetailedAccountId { get; init; }
+    public DetailedAccountEntity? DetailedAccount { get; init; }
 
-    public required Guid JournalVoucherId { get; set; }
-    public JournalVoucherEntity? JournalVoucher { get; set; }
+    public required Guid SubLedgerAccountId { get; init; }
+    public SubLedgerAccountEntity? SubLedgerAccount { get; init; }
+
+    public required Guid JournalVoucherId { get; init; }
+    public JournalVoucherEntity? JournalVoucher { get; init; }
 }
