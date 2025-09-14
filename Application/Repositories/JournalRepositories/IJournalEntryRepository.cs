@@ -6,4 +6,5 @@ public interface IJournalEntryRepository
 {
     Task CreateAsync(JournalEntryEntity entity, CancellationToken cancellationToken = default);
     Task<JournalEntryEntity?> GetLastEntryByVoucherIdAsync(Guid journalEntryId, CancellationToken cancellationToken = default);
+    public Task<JournalEntryEntity?> GetByIdAsync(Guid journalEntryId, CancellationToken cancellationToken = default);
 }

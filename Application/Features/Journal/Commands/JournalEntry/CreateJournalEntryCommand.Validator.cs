@@ -11,7 +11,7 @@ public class CreateJournalEntryCommandValidator : AbstractValidator<CreateJourna
 
         RuleFor(x => x.Amount)
             .NotEmpty()
-            .GreaterThanOrEqualTo(1);
+            .GreaterThanOrEqualTo(0);
 
         RuleFor(x => x.SubLedgerAccountId)
             .NotEmpty();
