@@ -286,7 +286,8 @@ public class FinancialPeriodTests(ITestOutputHelper testOutputHelper)
                     TransactionTime = DateTime.UtcNow,
                     Description = faker.Finance.AccountName(),
                     JournalVoucherState = JournalVoucherState.Draft,
-                    CompanyFinancialPeriodId = Guid.NewGuid()
+                    FinancialPeriodId = Guid.NewGuid(),
+                    CreatedByUserId = Guid.NewGuid()
                 }
             ],
             CreatedDate = DateTime.UtcNow,
@@ -336,7 +337,8 @@ public class FinancialPeriodTests(ITestOutputHelper testOutputHelper)
                     TransactionTime = DateTime.UtcNow,
                     Description = faker.Finance.AccountName(),
                     JournalVoucherState = JournalVoucherState.Draft,
-                    CompanyFinancialPeriodId = Guid.NewGuid()
+                    CreatedByUserId = Guid.NewGuid(),
+                    FinancialPeriodId = Guid.NewGuid()
                 }
             ],
             CreatedDate = DateTime.UtcNow,
@@ -391,7 +393,8 @@ public class FinancialPeriodTests(ITestOutputHelper testOutputHelper)
                     TransactionTime = DateTime.UtcNow,
                     Description = faker.Finance.AccountName(),
                     JournalVoucherState = JournalVoucherState.Draft,
-                    CompanyFinancialPeriodId = Guid.NewGuid()
+                    FinancialPeriodId = Guid.NewGuid(),
+                    CreatedByUserId = Guid.NewGuid()
                 }
             ],
             CreatedDate = DateTime.UtcNow,
@@ -442,7 +445,8 @@ public class FinancialPeriodTests(ITestOutputHelper testOutputHelper)
                     TransactionTime = DateTime.UtcNow,
                     Description = faker.Finance.AccountName(),
                     JournalVoucherState = JournalVoucherState.Draft,
-                    CompanyFinancialPeriodId = Guid.NewGuid()
+                    FinancialPeriodId = Guid.NewGuid(),
+                    CreatedByUserId = Guid.NewGuid()
                 }
             ],
             CreatedDate = DateTime.UtcNow,
@@ -493,7 +497,8 @@ public class FinancialPeriodTests(ITestOutputHelper testOutputHelper)
                     TransactionTime = DateTime.UtcNow,
                     Description = faker.Finance.AccountName(),
                     JournalVoucherState = JournalVoucherState.Draft,
-                    CompanyFinancialPeriodId = Guid.NewGuid()
+                    FinancialPeriodId = Guid.NewGuid(),
+                    CreatedByUserId = Guid.NewGuid()
                 }
             ],
             CreatedDate = DateTime.UtcNow,
