@@ -29,7 +29,7 @@ public class UpdateJournalVoucherCommandHandler(IUnitOfWork unitOfWork)
             return OperationResult<bool>.FailureResult("FinancialPeriod", "Financial period is closed. Cannot update journal voucher.");
 
         // Apply changes
-        if (command.JournalVoucherTitle?.Value != null)
+        if (!string.IsNullOrWhiteSpace(command.JournalVoucherTitle?.Value))
             journalVoucherEntity.JournalVoucherTitle = command.JournalVoucherTitle.Value;
 
         if (command.TransactionTime != null && journalVoucherEntity.FinancialPeriod != null && 
@@ -42,7 +42,7 @@ public class UpdateJournalVoucherCommandHandler(IUnitOfWork unitOfWork)
         if (command.TransactionTime != null) 
             journalVoucherEntity.TransactionTime = command.TransactionTime.Value;
 
-        if (command.ReferenceNumber?.Value != null)
+        if (!string.IsNullOrWhiteSpace(command.ReferenceNumber?.Value))
             journalVoucherEntity.ReferenceNumber = command.ReferenceNumber.Value;
 
         if (command.Description?.Value != null)

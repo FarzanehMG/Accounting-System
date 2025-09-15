@@ -9,7 +9,7 @@ public sealed class JournalVoucherEntity : BaseEntity
     public string JournalVoucherNumber { get; init; } = null!;
     public required string ReferenceNumber { get; set; }
     public required DateTime TransactionTime { get; set; }
-    public required string Description { get; set; }
+    public string? Description { get; set; } = null!;
     public required JournalVoucherState JournalVoucherState { get; set; }
     public required Guid CreatedByUserId { get; set; }
     public Guid? ApprovedByUserId { get; set; }
