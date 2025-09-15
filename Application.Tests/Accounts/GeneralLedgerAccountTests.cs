@@ -11,7 +11,7 @@ using FluentAssertions;
 using NSubstitute;
 using Xunit.Abstractions;
 
-namespace Application.Tests;
+namespace Application.Tests.Accounts;
 
 public class GeneralLedgerAccountTests(ITestOutputHelper testOutputHelper)
 {
