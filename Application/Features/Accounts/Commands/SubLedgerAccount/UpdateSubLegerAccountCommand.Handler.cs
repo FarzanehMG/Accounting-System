@@ -41,7 +41,7 @@ public class UpdateSubLegerAccountCommandHandler(IUnitOfWork unitOfWork)
         }
 
         // Business Rule: Ensure AccountCode is unique and follows the subLedger structure
-        if (request.Code?.Value != null && request.Code.Value != subLegerAccount.AccountCode)
+        if (!string.IsNullOrWhiteSpace(request.Code?.Value) && request.Code?.Value != null && request.Code.Value != subLegerAccount.AccountCode)
         {
             var duplicateCode = await unitOfWork.SubLedgerAccountRepository
                 .FindByCodeAsync(request.Code.Value, cancellationToken);

@@ -19,7 +19,7 @@ public class UpdateGroupAccountCommandHandler(IUnitOfWork unitOfWork)
         if (groupAccount is null)
             return OperationResult<bool>.NotFoundResult(nameof(UpdateGroupAccountCommand.GroupAccountId),"Group Account Not Found.");
 
-        if (request.Title?.Value != null)
+        if (!string.IsNullOrWhiteSpace(request.Title?.Value))
             groupAccount.AccountTitle = request.Title.Value;
 
         if (request.Description?.Value != null)
@@ -32,7 +32,7 @@ public class UpdateGroupAccountCommandHandler(IUnitOfWork unitOfWork)
             if (request.IsActive?.Value != null)
                 groupAccount.IsActive = request.IsActive.Value;
 
-        if (request.Code?.Value != null)
+        if (!string.IsNullOrWhiteSpace(request.Code?.Value))
             groupAccount.AccountCode = request.Code.Value;
 
         await unitOfWork.CommitAsync(cancellationToken);

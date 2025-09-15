@@ -37,7 +37,7 @@ public class UpdateGeneralLedgerAccountCommandHandler(IUnitOfWork unitOfWork)
         }
 
         // Update fields if provided
-        if (request.Title?.Value != null)
+        if (!string.IsNullOrWhiteSpace(request.Title?.Value))
             generalAccount.AccountTitle = request.Title.Value;
 
         if (request.Description?.Value != null)
