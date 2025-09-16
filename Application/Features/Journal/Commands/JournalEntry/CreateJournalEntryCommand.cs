@@ -6,7 +6,7 @@ public record CreateJournalEntryCommand
 {
     public required JournalEntryType JournalEntryType { get; init; }
     public required decimal Amount { get; init; }
-    public required string Description { get; init; }
+    public string? Description { get; init; }
     public required Guid SubLedgerAccountId { get; init; }
     public Guid? DetailedAccountId { get; init; }
     public required Guid JournalVoucherId { get; init; }

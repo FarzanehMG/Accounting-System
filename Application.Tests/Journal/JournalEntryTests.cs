@@ -1,11 +1,84 @@
-﻿namespace Application.Tests.Journal;
+﻿using Application.Features.Journal.Commands.JournalEntry;
+using Application.Repositories.Common;
+using Bogus;
+using Domain.Entities;
+using Domain.Enums;
+using FluentAssertions;
+using NSubstitute;
+
+namespace Application.Tests.Journal;
 
 public class JournalEntryTests
 {
     [Fact]
     public async Task CreateJournalEntryCommandHandler_ShouldSuccess_WhenValidationIsTrue()
     {
-        throw new NotImplementedException();
+        // Arrange
+        var unitOfWork = Substitute.For<IUnitOfWork>();
+        var faker = new Faker();
+        var journalVoucherId = Guid.NewGuid();
+        var subLedgerAccountId = Guid.NewGuid();
+        var subLedgerAccountId2 = Guid.NewGuid();
+        var detailedAccountId = Guid.NewGuid();
+
+        var existingJournalVoucherEntity = new JournalVoucherEntity
+        {
+            Id = journalVoucherId,
+            JournalVoucherTitle = faker.Finance.AccountName(),
+            ReferenceNumber = faker.Finance.RoutingNumber(),
+            TransactionTime = DateTime.UtcNow,
+            JournalVoucherState = JournalVoucherState.Draft,
+            CreatedByUserId = Guid.NewGuid(),
+            FinancialPeriodId = Guid.NewGuid()
+        };
+        unitOfWork.JournalVoucherRepository.GetByIdAsync(journalVoucherId)
+            .Returns(existingJournalVoucherEntity);
+
+        // SubLedger Accounts
+        unitOfWork.SubLedgerAccountRepository.GetByIdAsync(subLedgerAccountId, Arg.Any<CancellationToken>())
+            .Returns(Helper.CreateSubLedgerAccount(subLedgerAccountId, JournalEntryType.Credit, faker));
+        unitOfWork.SubLedgerAccountRepository.GetByIdAsync(subLedgerAccountId2, Arg.Any<CancellationToken>())
+            .Returns(Helper.CreateSubLedgerAccount(subLedgerAccountId2, JournalEntryType.Debit, faker));
+
+        // Detailed Account
+        unitOfWork.DetailedAccountRepository.GetByIdAsync(detailedAccountId, Arg.Any<CancellationToken>())
+            .Returns(Helper.CreateDetailedAccount(detailedAccountId, subLedgerAccountId2, JournalEntryType.Debit, faker));
+
+
+        var createJournalEntryCommand = new List<CreateJournalEntryCommand>
+        {
+            new()
+            {
+                JournalEntryType = JournalEntryType.Credit,
+                Amount = 2,
+                Description = null,
+                SubLedgerAccountId = subLedgerAccountId,
+                JournalVoucherId = journalVoucherId
+            },
+            new()
+            {
+                JournalEntryType = JournalEntryType.Debit,
+                Amount = 2,
+                Description = null,
+                SubLedgerAccountId = subLedgerAccountId2,
+                DetailedAccountId = detailedAccountId,
+                JournalVoucherId = journalVoucherId
+            }
+        };
+
+        var handle = new CreateJournalEntryCommandHandler(unitOfWork);
+
+        // Act
+        var result = await handle.Handle(createJournalEntryCommand, CancellationToken.None);
+
+        // Assert
+        result.IsSuccess.Should().BeTrue();
+
+        await unitOfWork.JournalEntryRepository.Received(1)
+            .CreateAsync(Arg.Is<JournalEntryEntity>(e => e.JournalEntryType == JournalEntryType.Credit && e.Amount == 2), CancellationToken.None);
+
+        await unitOfWork.JournalEntryRepository.Received(1)
+            .CreateAsync(Arg.Is<JournalEntryEntity>(e => e.JournalEntryType == JournalEntryType.Debit && e.Amount == 2), CancellationToken.None);
     }
 
     [Fact]
