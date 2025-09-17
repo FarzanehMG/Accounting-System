@@ -13,8 +13,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Features\Journal\Queries\JournalVoucher\" />
-    <Folder Include="Features\Journal\Queries\JournalEntry\" />
     <Folder Include="Repositories\Common\" />
     <Folder Include="Services\" />
   </ItemGroup>
