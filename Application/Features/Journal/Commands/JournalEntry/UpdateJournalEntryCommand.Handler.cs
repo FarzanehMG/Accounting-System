@@ -22,7 +22,7 @@ public class UpdateJournalEntryCommandHandler(IUnitOfWork unitOfWork)
 
         var journalVoucherEntity = await unitOfWork.JournalVoucherRepository.GetByIdAsync(journalEntryEntity.JournalVoucherId, cancellationToken);
         if (journalVoucherEntity is null)
-            return OperationResult<bool>.FailureResult("JournalVoucher", "Parent journal voucher not found.");
+            return OperationResult<bool>.FailureResult("JournalVoucher", "Journal voucher not found.");
 
         // Only Draft journal vouchers can be updated
         if (journalVoucherEntity.JournalVoucherState != JournalVoucherState.Draft)
@@ -78,7 +78,6 @@ public class UpdateJournalEntryCommandHandler(IUnitOfWork unitOfWork)
             journalEntryEntity.ModifiedDate = DateTime.UtcNow;
             await unitOfWork.CommitAsync(cancellationToken);
         }
-        await unitOfWork.CommitAsync(cancellationToken);
         return OperationResult<bool>.SuccessResult(true);
     }
 }

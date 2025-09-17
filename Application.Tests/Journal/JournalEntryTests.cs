@@ -1,4 +1,5 @@
-﻿using Application.Features.Journal.Commands.JournalEntry;
+﻿using Application.Common;
+using Application.Features.Journal.Commands.JournalEntry;
 using Application.Repositories.Common;
 using Application.Tests.Extensions;
 using Bogus;
@@ -91,7 +92,7 @@ public class JournalEntryTests(ITestOutputHelper testOutputHelper)
         var faker = new Faker();
         var journalVoucherId = Guid.NewGuid();
         var subLedgerAccountId = Guid.NewGuid();
-        
+
         var existingJournalVoucherEntity = new JournalVoucherEntity
         {
             Id = journalVoucherId,
@@ -733,7 +734,7 @@ public class JournalEntryTests(ITestOutputHelper testOutputHelper)
 
         // Detailed Account
         unitOfWork.DetailedAccountRepository.GetByIdAsync(detailedAccountId, CancellationToken.None)
-            .Returns((DetailedAccountEntity?) null);
+            .Returns((DetailedAccountEntity?)null);
 
 
         var createJournalEntryCommand = new List<CreateJournalEntryCommand>
@@ -1201,132 +1202,1400 @@ public class JournalEntryTests(ITestOutputHelper testOutputHelper)
     [Fact]
     public async Task UpdateJournalEntryCommandHandler_ShouldSuccess_WhenValidationIsTrue()
     {
-        throw new NotImplementedException();
+        // Arrange
+        var unitOfWork = Substitute.For<IUnitOfWork>();
+        var faker = new Faker();
+        var journalEntryId = Guid.NewGuid();
+        var journalVoucherId = Guid.NewGuid();
+        var oldModifiedDate = DateTime.UtcNow.AddDays(-5);
+
+        var existingJournalEntryEntity = new JournalEntryEntity
+        {
+            Id = journalEntryId,
+            JournalEntryNumber = "1",
+            JournalEntryType = JournalEntryType.Credit,
+            Amount = 2,
+            SubLedgerAccountId = Guid.NewGuid(),
+            JournalVoucherId = journalVoucherId,
+            ModifiedDate = oldModifiedDate
+        };
+
+        unitOfWork.JournalEntryRepository.GetByIdAsync(journalEntryId, CancellationToken.None)
+            .Returns(existingJournalEntryEntity);
+
+        var existingJournalVoucherEntity = new JournalVoucherEntity
+        {
+            Id = journalVoucherId,
+            JournalVoucherTitle = faker.Finance.AccountName(),
+            ReferenceNumber = faker.Finance.Locale,
+            TransactionTime = DateTime.UtcNow,
+            JournalVoucherState = JournalVoucherState.Draft,
+            CreatedByUserId = Guid.NewGuid(),
+            FinancialPeriodId = Guid.NewGuid(),
+            FinancialPeriod = new FinancialPeriodEntity
+            {
+                FinancialPeriodTitle = faker.Finance.AccountName(),
+                StartDate = DateTime.UtcNow,
+                EndDate = DateTime.UtcNow,
+                IsActive = true
+            }
+        };
+
+        unitOfWork.JournalVoucherRepository.GetByIdAsync(journalVoucherId, CancellationToken.None)
+            .Returns(existingJournalVoucherEntity);
+
+        unitOfWork.HasChanges(existingJournalEntryEntity)
+            .Returns(true);
+
+        var updateJournalEntryCommand = new UpdateJournalEntryCommand
+        {
+            JournalEntryId = journalEntryId,
+            Amount = new Patch<decimal>(5)
+        };
+
+        var handler = new UpdateJournalEntryCommandHandler(unitOfWork);
+
+        // Act
+        var result = await handler.Handle(updateJournalEntryCommand, CancellationToken.None);
+
+        // Assert
+        result.IsSuccess.Should().BeTrue();
+        existingJournalEntryEntity.Amount.Should().Be(updateJournalEntryCommand.Amount);
+        existingJournalEntryEntity.ModifiedDate.Should().BeAfter(oldModifiedDate);
+        await unitOfWork.Received(1)
+            .CommitAsync(CancellationToken.None);
     }
 
     [Fact]
     public async Task UpdateJournalEntryCommandHandler_ShouldFail_WhenValidationIsFalse()
     {
-        throw new NotImplementedException();
+        // Arrange
+        var unitOfWork = Substitute.For<IUnitOfWork>();
+        var faker = new Faker();
+        var journalEntryId = Guid.NewGuid();
+        var journalVoucherId = Guid.NewGuid();
+
+        var existingJournalEntryEntity = new JournalEntryEntity
+        {
+            Id = journalEntryId,
+            JournalEntryNumber = "1",
+            JournalEntryType = JournalEntryType.Credit,
+            Amount = 2,
+            SubLedgerAccountId = Guid.NewGuid(),
+            JournalVoucherId = journalVoucherId,
+        };
+
+        unitOfWork.JournalEntryRepository.GetByIdAsync(journalEntryId, CancellationToken.None)
+            .Returns(existingJournalEntryEntity);
+
+        var existingJournalVoucherEntity = new JournalVoucherEntity
+        {
+            Id = journalVoucherId,
+            JournalVoucherTitle = faker.Finance.AccountName(),
+            ReferenceNumber = faker.Finance.Locale,
+            TransactionTime = DateTime.UtcNow,
+            JournalVoucherState = JournalVoucherState.Draft,
+            CreatedByUserId = Guid.NewGuid(),
+            FinancialPeriodId = Guid.NewGuid(),
+            FinancialPeriod = new FinancialPeriodEntity
+            {
+                FinancialPeriodTitle = faker.Finance.AccountName(),
+                StartDate = DateTime.UtcNow,
+                EndDate = DateTime.UtcNow,
+                IsActive = true
+            }
+        };
+
+        unitOfWork.JournalVoucherRepository.GetByIdAsync(journalVoucherId, CancellationToken.None)
+            .Returns(existingJournalVoucherEntity);
+
+        var updateJournalEntryCommand = new UpdateJournalEntryCommand
+        {
+            JournalEntryId = Guid.Empty,
+        };
+
+        var handler = new UpdateJournalEntryCommandHandler(unitOfWork);
+
+        // Act
+        var result = await handler.Handle(updateJournalEntryCommand, CancellationToken.None);
+
+        // Assert
+        result.IsSuccess.Should().BeFalse();
+        testOutputHelper.WriteLineOperationResultErrors(result);
     }
 
     [Fact]
     public async Task UpdateJournalEntryCommandHandler_ShouldFail_WhenJournalEntryNotFound()
     {
-        throw new NotImplementedException();
+        // Arrange
+        var unitOfWork = Substitute.For<IUnitOfWork>();
+        var faker = new Faker();
+        var journalEntryId = Guid.NewGuid();
+        var journalVoucherId = Guid.NewGuid();
+
+        unitOfWork.JournalEntryRepository.GetByIdAsync(journalEntryId, CancellationToken.None)
+            .Returns((JournalEntryEntity?)null);
+
+        var existingJournalVoucherEntity = new JournalVoucherEntity
+        {
+            Id = journalVoucherId,
+            JournalVoucherTitle = faker.Finance.AccountName(),
+            ReferenceNumber = faker.Finance.Locale,
+            TransactionTime = DateTime.UtcNow,
+            JournalVoucherState = JournalVoucherState.Draft,
+            CreatedByUserId = Guid.NewGuid(),
+            FinancialPeriodId = Guid.NewGuid(),
+            FinancialPeriod = new FinancialPeriodEntity
+            {
+                FinancialPeriodTitle = faker.Finance.AccountName(),
+                StartDate = DateTime.UtcNow,
+                EndDate = DateTime.UtcNow,
+                IsActive = true
+            }
+        };
+
+        unitOfWork.JournalVoucherRepository.GetByIdAsync(journalVoucherId)
+            .Returns(existingJournalVoucherEntity);
+
+        var updateJournalEntryCommand = new UpdateJournalEntryCommand
+        {
+            JournalEntryId = journalEntryId,
+            Amount = new Patch<decimal>(5)
+        };
+
+        var handler = new UpdateJournalEntryCommandHandler(unitOfWork);
+
+        // Act
+        var result = await handler.Handle(updateJournalEntryCommand, CancellationToken.None);
+
+        // Assert
+        result.IsSuccess.Should().BeFalse();
+        result.ErrorMessages.Should().ContainKey("JournalEntryId")
+            .WhoseValue.Should().Contain("Journal entry not found.");
     }
 
     [Fact]
     public async Task UpdateJournalEntryCommandHandler_ShouldFail_WhenParentJournalVoucherNotFound()
     {
-        throw new NotImplementedException();
+        // Arrange
+        var unitOfWork = Substitute.For<IUnitOfWork>();
+        var journalEntryId = Guid.NewGuid();
+        var journalVoucherId = Guid.NewGuid();
+
+        var existingJournalEntryEntity = new JournalEntryEntity
+        {
+            Id = journalEntryId,
+            JournalEntryNumber = "1",
+            JournalEntryType = JournalEntryType.Credit,
+            Amount = 2,
+            SubLedgerAccountId = Guid.NewGuid(),
+            JournalVoucherId = journalVoucherId,
+        };
+
+        unitOfWork.JournalEntryRepository.GetByIdAsync(journalEntryId, CancellationToken.None)
+            .Returns(existingJournalEntryEntity);
+
+        unitOfWork.JournalVoucherRepository.GetByIdAsync(journalVoucherId, CancellationToken.None)
+            .Returns((JournalVoucherEntity?)null);
+
+        var updateJournalEntryCommand = new UpdateJournalEntryCommand
+        {
+            JournalEntryId = journalEntryId,
+            Amount = new Patch<decimal>(5)
+        };
+
+        var handler = new UpdateJournalEntryCommandHandler(unitOfWork);
+
+        // Act
+        var result = await handler.Handle(updateJournalEntryCommand, CancellationToken.None);
+
+        // Assert
+        result.IsSuccess.Should().BeFalse();
+        result.ErrorMessages.Should().ContainKey("JournalVoucher")
+            .WhoseValue.Should().Contain("Journal voucher not found.");
     }
 
     [Fact]
     public async Task UpdateJournalEntryCommandHandler_ShouldFail_WhenJournalVoucherStateNotDraft()
     {
-        throw new NotImplementedException();
+        // Arrange
+        var unitOfWork = Substitute.For<IUnitOfWork>();
+        var faker = new Faker();
+        var journalEntryId = Guid.NewGuid();
+        var journalVoucherId = Guid.NewGuid();
+
+        var existingJournalEntryEntity = new JournalEntryEntity
+        {
+            Id = journalEntryId,
+            JournalEntryNumber = "1",
+            JournalEntryType = JournalEntryType.Credit,
+            Amount = 2,
+            SubLedgerAccountId = Guid.NewGuid(),
+            JournalVoucherId = journalVoucherId,
+        };
+
+        unitOfWork.JournalEntryRepository.GetByIdAsync(journalEntryId, CancellationToken.None)
+            .Returns(existingJournalEntryEntity);
+
+        var existingJournalVoucherEntity = new JournalVoucherEntity
+        {
+            Id = journalVoucherId,
+            JournalVoucherTitle = faker.Finance.AccountName(),
+            ReferenceNumber = faker.Finance.Locale,
+            TransactionTime = DateTime.UtcNow,
+            JournalVoucherState = JournalVoucherState.Approved,
+            CreatedByUserId = Guid.NewGuid(),
+            FinancialPeriodId = Guid.NewGuid(),
+            FinancialPeriod = new FinancialPeriodEntity
+            {
+                FinancialPeriodTitle = faker.Finance.AccountName(),
+                StartDate = DateTime.UtcNow,
+                EndDate = DateTime.UtcNow,
+                IsActive = true
+            }
+        };
+
+        unitOfWork.JournalVoucherRepository.GetByIdAsync(journalVoucherId, CancellationToken.None)
+            .Returns(existingJournalVoucherEntity);
+
+        var updateJournalEntryCommand = new UpdateJournalEntryCommand
+        {
+            JournalEntryId = journalEntryId,
+            Amount = new Patch<decimal>(5)
+        };
+
+        var handler = new UpdateJournalEntryCommandHandler(unitOfWork);
+
+        // Act
+        var result = await handler.Handle(updateJournalEntryCommand, CancellationToken.None);
+
+        // Assert
+        result.IsSuccess.Should().BeFalse();
+        result.ErrorMessages.Should().ContainKey("JournalVoucher")
+            .WhoseValue.Should().Contain("Cannot update entry of a non-Draft voucher.");
     }
 
     [Fact]
     public async Task UpdateJournalEntryCommandHandler_ShouldFail_WhenFinancialPeriodInActive()
     {
-        throw new NotImplementedException();
+        // Arrange
+        var unitOfWork = Substitute.For<IUnitOfWork>();
+        var faker = new Faker();
+        var journalEntryId = Guid.NewGuid();
+        var journalVoucherId = Guid.NewGuid();
+
+        var existingJournalEntryEntity = new JournalEntryEntity
+        {
+            Id = journalEntryId,
+            JournalEntryNumber = "1",
+            JournalEntryType = JournalEntryType.Credit,
+            Amount = 2,
+            SubLedgerAccountId = Guid.NewGuid(),
+            JournalVoucherId = journalVoucherId,
+        };
+
+        unitOfWork.JournalEntryRepository.GetByIdAsync(journalEntryId, CancellationToken.None)
+            .Returns(existingJournalEntryEntity);
+
+        var existingJournalVoucherEntity = new JournalVoucherEntity
+        {
+            Id = journalVoucherId,
+            JournalVoucherTitle = faker.Finance.AccountName(),
+            ReferenceNumber = faker.Finance.Locale,
+            TransactionTime = DateTime.UtcNow,
+            JournalVoucherState = JournalVoucherState.Draft,
+            CreatedByUserId = Guid.NewGuid(),
+            FinancialPeriodId = Guid.NewGuid(),
+            FinancialPeriod = new FinancialPeriodEntity
+            {
+                FinancialPeriodTitle = faker.Finance.AccountName(),
+                StartDate = DateTime.UtcNow,
+                EndDate = DateTime.UtcNow,
+                IsActive = false
+            }
+        };
+
+        unitOfWork.JournalVoucherRepository.GetByIdAsync(journalVoucherId, CancellationToken.None)
+            .Returns(existingJournalVoucherEntity);
+
+        var updateJournalEntryCommand = new UpdateJournalEntryCommand
+        {
+            JournalEntryId = journalEntryId,
+            Amount = new Patch<decimal>(5)
+        };
+
+        var handler = new UpdateJournalEntryCommandHandler(unitOfWork);
+
+        // Act
+        var result = await handler.Handle(updateJournalEntryCommand, CancellationToken.None);
+
+        // Assert
+        result.IsSuccess.Should().BeFalse();
+        result.ErrorMessages.Should().ContainKey("FinancialPeriod")
+            .WhoseValue.Should().Contain("Financial period is closed. Cannot update entry.");
     }
 
     [Fact]
     public async Task UpdateJournalEntryCommandHandler_ShouldFail_WhenAmountIsZeroOrNegative()
     {
-        throw new NotImplementedException();
+        // Arrange
+        var unitOfWork = Substitute.For<IUnitOfWork>();
+        var faker = new Faker();
+        var journalEntryId = Guid.NewGuid();
+        var journalVoucherId = Guid.NewGuid();
+
+        var existingJournalEntryEntity = new JournalEntryEntity
+        {
+            Id = journalEntryId,
+            JournalEntryNumber = "1",
+            JournalEntryType = JournalEntryType.Credit,
+            Amount = 2,
+            SubLedgerAccountId = Guid.NewGuid(),
+            JournalVoucherId = journalVoucherId,
+        };
+
+        unitOfWork.JournalEntryRepository.GetByIdAsync(journalEntryId, CancellationToken.None)
+            .Returns(existingJournalEntryEntity);
+
+        var existingJournalVoucherEntity = new JournalVoucherEntity
+        {
+            Id = journalVoucherId,
+            JournalVoucherTitle = faker.Finance.AccountName(),
+            ReferenceNumber = faker.Finance.Locale,
+            TransactionTime = DateTime.UtcNow,
+            JournalVoucherState = JournalVoucherState.Draft,
+            CreatedByUserId = Guid.NewGuid(),
+            FinancialPeriodId = Guid.NewGuid(),
+            FinancialPeriod = new FinancialPeriodEntity
+            {
+                FinancialPeriodTitle = faker.Finance.AccountName(),
+                StartDate = DateTime.UtcNow,
+                EndDate = DateTime.UtcNow,
+                IsActive = true
+            }
+        };
+
+        unitOfWork.JournalVoucherRepository.GetByIdAsync(journalVoucherId, CancellationToken.None)
+            .Returns(existingJournalVoucherEntity);
+
+        var updateJournalEntryCommand = new UpdateJournalEntryCommand
+        {
+            JournalEntryId = journalEntryId,
+            Amount = new Patch<decimal>(0)
+        };
+
+        var handler = new UpdateJournalEntryCommandHandler(unitOfWork);
+
+        // Act
+        var result = await handler.Handle(updateJournalEntryCommand, CancellationToken.None);
+
+
+        // Assert
+        result.IsSuccess.Should().BeFalse();
+        result.ErrorMessages.Should().ContainKey("Amount")
+            .WhoseValue.Should().Contain("Amount must be greater than zero.");
     }
 
     [Fact]
-    public async Task WhenAmountIsZeroOrNegative_ShouldFail_WhenSubLedgerAccountNotFound()
+    public async Task UpdateJournalEntryCommandHandler_ShouldFail_WhenSubLedgerAccountNotFound()
     {
-        throw new NotImplementedException();
+        // Arrange
+        var unitOfWork = Substitute.For<IUnitOfWork>();
+        var faker = new Faker();
+        var journalEntryId = Guid.NewGuid();
+        var journalVoucherId = Guid.NewGuid();
+        var subLedgerAccountId = Guid.NewGuid();
+
+        var existingJournalEntryEntity = new JournalEntryEntity
+        {
+            Id = journalEntryId,
+            JournalEntryNumber = "1",
+            JournalEntryType = JournalEntryType.Credit,
+            Amount = 2,
+            SubLedgerAccountId = Guid.NewGuid(),
+            JournalVoucherId = journalVoucherId,
+        };
+
+        unitOfWork.JournalEntryRepository.GetByIdAsync(journalEntryId, CancellationToken.None)
+            .Returns(existingJournalEntryEntity);
+
+        var existingJournalVoucherEntity = new JournalVoucherEntity
+        {
+            Id = journalVoucherId,
+            JournalVoucherTitle = faker.Finance.AccountName(),
+            ReferenceNumber = faker.Finance.Locale,
+            TransactionTime = DateTime.UtcNow,
+            JournalVoucherState = JournalVoucherState.Draft,
+            CreatedByUserId = Guid.NewGuid(),
+            FinancialPeriodId = Guid.NewGuid(),
+            FinancialPeriod = new FinancialPeriodEntity
+            {
+                FinancialPeriodTitle = faker.Finance.AccountName(),
+                StartDate = DateTime.UtcNow,
+                EndDate = DateTime.UtcNow,
+                IsActive = true
+            }
+        };
+
+        unitOfWork.JournalVoucherRepository.GetByIdAsync(journalVoucherId, CancellationToken.None)
+            .Returns(existingJournalVoucherEntity);
+
+        unitOfWork.SubLedgerAccountRepository.GetByIdAsync(subLedgerAccountId, CancellationToken.None)
+            .Returns((SubLedgerAccountEntity?)null);
+
+        var updateJournalEntryCommand = new UpdateJournalEntryCommand
+        {
+            JournalEntryId = journalEntryId,
+            SubLedgerAccountId = new Patch<Guid>(subLedgerAccountId)
+        };
+
+        var handler = new UpdateJournalEntryCommandHandler(unitOfWork);
+
+        // Act
+        var result = await handler.Handle(updateJournalEntryCommand, CancellationToken.None);
+
+        // Assert
+        result.IsSuccess.Should().BeFalse();
+        result.ErrorMessages.Should().ContainKey("SubLedgerAccountId")
+            .WhoseValue.Should().Contain("SubLedger account not found.");
     }
 
     [Fact]
     public async Task UpdateJournalEntryCommandHandler_ShouldFail_WhenSubLedgerAccountInActive()
     {
-        throw new NotImplementedException();
+        // Arrange
+        var unitOfWork = Substitute.For<IUnitOfWork>();
+        var faker = new Faker();
+        var journalEntryId = Guid.NewGuid();
+        var journalVoucherId = Guid.NewGuid();
+        var subLedgerAccountId = Guid.NewGuid();
+
+        var existingJournalEntryEntity = new JournalEntryEntity
+        {
+            Id = journalEntryId,
+            JournalEntryNumber = "1",
+            JournalEntryType = JournalEntryType.Credit,
+            Amount = 2,
+            SubLedgerAccountId = Guid.NewGuid(),
+            JournalVoucherId = journalVoucherId,
+        };
+
+        unitOfWork.JournalEntryRepository.GetByIdAsync(journalEntryId, CancellationToken.None)
+            .Returns(existingJournalEntryEntity);
+
+        var existingJournalVoucherEntity = new JournalVoucherEntity
+        {
+            Id = journalVoucherId,
+            JournalVoucherTitle = faker.Finance.AccountName(),
+            ReferenceNumber = faker.Finance.Locale,
+            TransactionTime = DateTime.UtcNow,
+            JournalVoucherState = JournalVoucherState.Draft,
+            CreatedByUserId = Guid.NewGuid(),
+            FinancialPeriodId = Guid.NewGuid(),
+            FinancialPeriod = new FinancialPeriodEntity
+            {
+                FinancialPeriodTitle = faker.Finance.AccountName(),
+                StartDate = DateTime.UtcNow,
+                EndDate = DateTime.UtcNow,
+                IsActive = true
+            }
+        };
+
+        unitOfWork.JournalVoucherRepository.GetByIdAsync(journalVoucherId, CancellationToken.None)
+            .Returns(existingJournalVoucherEntity);
+
+        var existingSubLedgerAccountEntity = new SubLedgerAccountEntity
+        {
+            Id = subLedgerAccountId,
+            AccountTitle = faker.Finance.AccountName(),
+            AccountCode = faker.Finance.Account(),
+            JournalEntryType = JournalEntryType.Credit,
+            GeneralLedgerAccountId = Guid.NewGuid(),
+            IsActive = false
+        };
+
+        unitOfWork.SubLedgerAccountRepository.GetByIdAsync(subLedgerAccountId, CancellationToken.None)
+            .Returns(existingSubLedgerAccountEntity);
+
+        var updateJournalEntryCommand = new UpdateJournalEntryCommand
+        {
+            JournalEntryId = journalEntryId,
+            SubLedgerAccountId = new Patch<Guid>(subLedgerAccountId)
+        };
+
+        var handler = new UpdateJournalEntryCommandHandler(unitOfWork);
+
+        // Act
+        var result = await handler.Handle(updateJournalEntryCommand, CancellationToken.None);
+
+        // Assert
+        result.IsSuccess.Should().BeFalse();
+        result.ErrorMessages.Should().ContainKey("SubLedgerAccountId")
+            .WhoseValue.Should().Contain("SubLedger account is inactive.");
     }
 
     [Fact]
     public async Task UpdateJournalEntryCommandHandler_ShouldFail_WhenJournalEntryTypeNotMatchSubLedgerAccount()
     {
-        throw new NotImplementedException();
+        // Arrange
+        var unitOfWork = Substitute.For<IUnitOfWork>();
+        var faker = new Faker();
+        var journalEntryId = Guid.NewGuid();
+        var journalVoucherId = Guid.NewGuid();
+        var subLedgerAccountId = Guid.NewGuid();
+
+        var existingJournalEntryEntity = new JournalEntryEntity
+        {
+            Id = journalEntryId,
+            JournalEntryNumber = "1",
+            JournalEntryType = JournalEntryType.Credit,
+            Amount = 2,
+            SubLedgerAccountId = Guid.NewGuid(),
+            JournalVoucherId = journalVoucherId,
+        };
+
+        unitOfWork.JournalEntryRepository.GetByIdAsync(journalEntryId, CancellationToken.None)
+            .Returns(existingJournalEntryEntity);
+
+        var existingJournalVoucherEntity = new JournalVoucherEntity
+        {
+            Id = journalVoucherId,
+            JournalVoucherTitle = faker.Finance.AccountName(),
+            ReferenceNumber = faker.Finance.Locale,
+            TransactionTime = DateTime.UtcNow,
+            JournalVoucherState = JournalVoucherState.Draft,
+            CreatedByUserId = Guid.NewGuid(),
+            FinancialPeriodId = Guid.NewGuid(),
+            FinancialPeriod = new FinancialPeriodEntity
+            {
+                FinancialPeriodTitle = faker.Finance.AccountName(),
+                StartDate = DateTime.UtcNow,
+                EndDate = DateTime.UtcNow,
+                IsActive = true
+            }
+        };
+
+        unitOfWork.JournalVoucherRepository.GetByIdAsync(journalVoucherId, CancellationToken.None)
+            .Returns(existingJournalVoucherEntity);
+
+        var existingSubLedgerAccountEntity = new SubLedgerAccountEntity
+        {
+            Id = subLedgerAccountId,
+            AccountTitle = faker.Finance.AccountName(),
+            AccountCode = faker.Finance.Account(),
+            JournalEntryType = JournalEntryType.Debit,
+            GeneralLedgerAccountId = Guid.NewGuid(),
+            IsActive = true
+        };
+
+        unitOfWork.SubLedgerAccountRepository.GetByIdAsync(subLedgerAccountId, CancellationToken.None)
+            .Returns(existingSubLedgerAccountEntity);
+
+        var updateJournalEntryCommand = new UpdateJournalEntryCommand
+        {
+            JournalEntryId = journalEntryId,
+            SubLedgerAccountId = new Patch<Guid>(subLedgerAccountId)
+        };
+
+        var handler = new UpdateJournalEntryCommandHandler(unitOfWork);
+
+        // Act
+        var result = await handler.Handle(updateJournalEntryCommand, CancellationToken.None);
+
+        // Assert
+        result.IsSuccess.Should().BeFalse();
+        result.ErrorMessages.Should().ContainKey("JournalEntryType")
+            .WhoseValue.Should().Contain("Entry type does not match subLedger account.");
     }
 
     [Fact]
-    public async Task WhenAmountIsZeroOrNegative_ShouldFail_WhenDetailedAccountNotFound()
+    public async Task UpdateJournalEntryCommandHandler_ShouldFail_WhenDetailedAccountNotFound()
     {
-        throw new NotImplementedException();
+        // Arrange
+        var unitOfWork = Substitute.For<IUnitOfWork>();
+        var faker = new Faker();
+        var journalEntryId = Guid.NewGuid();
+        var journalVoucherId = Guid.NewGuid();
+        var detailedAccountId = Guid.NewGuid();
+
+        var existingJournalEntryEntity = new JournalEntryEntity
+        {
+            Id = journalEntryId,
+            JournalEntryNumber = "1",
+            JournalEntryType = JournalEntryType.Credit,
+            Amount = 2,
+            SubLedgerAccountId = Guid.NewGuid(),
+            JournalVoucherId = journalVoucherId,
+        };
+
+        unitOfWork.JournalEntryRepository.GetByIdAsync(journalEntryId, CancellationToken.None)
+            .Returns(existingJournalEntryEntity);
+
+        var existingJournalVoucherEntity = new JournalVoucherEntity
+        {
+            Id = journalVoucherId,
+            JournalVoucherTitle = faker.Finance.AccountName(),
+            ReferenceNumber = faker.Finance.Locale,
+            TransactionTime = DateTime.UtcNow,
+            JournalVoucherState = JournalVoucherState.Draft,
+            CreatedByUserId = Guid.NewGuid(),
+            FinancialPeriodId = Guid.NewGuid(),
+            FinancialPeriod = new FinancialPeriodEntity
+            {
+                FinancialPeriodTitle = faker.Finance.AccountName(),
+                StartDate = DateTime.UtcNow,
+                EndDate = DateTime.UtcNow,
+                IsActive = true
+            }
+        };
+
+        unitOfWork.JournalVoucherRepository.GetByIdAsync(journalVoucherId, CancellationToken.None)
+            .Returns(existingJournalVoucherEntity);
+
+        unitOfWork.DetailedAccountRepository.GetByIdAsync(detailedAccountId, CancellationToken.None)
+            .Returns((DetailedAccountEntity?)null);
+
+        var updateJournalEntryCommand = new UpdateJournalEntryCommand
+        {
+            JournalEntryId = journalEntryId,
+            DetailedAccountId = new Patch<Guid>(detailedAccountId)
+        };
+
+        var handler = new UpdateJournalEntryCommandHandler(unitOfWork);
+
+        // Act
+        var result = await handler.Handle(updateJournalEntryCommand, CancellationToken.None);
+
+        // Assert
+        result.IsSuccess.Should().BeFalse();
+        result.ErrorMessages.Should().ContainKey("DetailedAccountId")
+            .WhoseValue.Should().Contain("Detailed account not found.");
     }
 
     [Fact]
     public async Task UpdateJournalEntryCommandHandler_ShouldFail_WhenDetailedAccountInActive()
     {
-        throw new NotImplementedException();
+        // Arrange
+        var unitOfWork = Substitute.For<IUnitOfWork>();
+        var faker = new Faker();
+        var journalEntryId = Guid.NewGuid();
+        var journalVoucherId = Guid.NewGuid();
+        var detailedAccountId = Guid.NewGuid();
+
+        var existingJournalEntryEntity = new JournalEntryEntity
+        {
+            Id = journalEntryId,
+            JournalEntryNumber = "1",
+            JournalEntryType = JournalEntryType.Credit,
+            Amount = 2,
+            SubLedgerAccountId = Guid.NewGuid(),
+            JournalVoucherId = journalVoucherId,
+        };
+
+        unitOfWork.JournalEntryRepository.GetByIdAsync(journalEntryId, CancellationToken.None)
+            .Returns(existingJournalEntryEntity);
+
+        var existingJournalVoucherEntity = new JournalVoucherEntity
+        {
+            Id = journalVoucherId,
+            JournalVoucherTitle = faker.Finance.AccountName(),
+            ReferenceNumber = faker.Finance.Locale,
+            TransactionTime = DateTime.UtcNow,
+            JournalVoucherState = JournalVoucherState.Draft,
+            CreatedByUserId = Guid.NewGuid(),
+            FinancialPeriodId = Guid.NewGuid(),
+            FinancialPeriod = new FinancialPeriodEntity
+            {
+                FinancialPeriodTitle = faker.Finance.AccountName(),
+                StartDate = DateTime.UtcNow,
+                EndDate = DateTime.UtcNow,
+                IsActive = true
+            }
+        };
+
+        unitOfWork.JournalVoucherRepository.GetByIdAsync(journalVoucherId, CancellationToken.None)
+            .Returns(existingJournalVoucherEntity);
+
+        var existingDetailedAccountEntity = new DetailedAccountEntity
+        {
+            Id = detailedAccountId,
+            AccountTitle = faker.Finance.AccountName(),
+            AccountCode = faker.Finance.Account(),
+            JournalEntryType = JournalEntryType.Credit,
+            IsActive = false,
+            SubLedgerAccountId = Guid.NewGuid()
+        };
+
+        unitOfWork.DetailedAccountRepository.GetByIdAsync(detailedAccountId, CancellationToken.None)
+            .Returns(existingDetailedAccountEntity);
+
+        var updateJournalEntryCommand = new UpdateJournalEntryCommand
+        {
+            JournalEntryId = journalEntryId,
+            DetailedAccountId = new Patch<Guid>(detailedAccountId)
+        };
+
+        var handler = new UpdateJournalEntryCommandHandler(unitOfWork);
+
+        // Act
+        var result = await handler.Handle(updateJournalEntryCommand, CancellationToken.None);
+
+        // Assert
+        result.IsSuccess.Should().BeFalse();
+        result.ErrorMessages.Should().ContainKey("DetailedAccountId")
+            .WhoseValue.Should().Contain("Detailed account is inactive.");
     }
 
     [Fact]
     public async Task UpdateJournalEntryCommandHandler_ShouldFail_WhenJournalEntryTypeNotMatchDetailedAccount()
     {
-        throw new NotImplementedException();
+        // Arrange
+        var unitOfWork = Substitute.For<IUnitOfWork>();
+        var faker = new Faker();
+        var journalEntryId = Guid.NewGuid();
+        var journalVoucherId = Guid.NewGuid();
+        var detailedAccountId = Guid.NewGuid();
+
+        var existingJournalEntryEntity = new JournalEntryEntity
+        {
+            Id = journalEntryId,
+            JournalEntryNumber = "1",
+            JournalEntryType = JournalEntryType.Credit,
+            Amount = 2,
+            SubLedgerAccountId = Guid.NewGuid(),
+            JournalVoucherId = journalVoucherId,
+        };
+
+        unitOfWork.JournalEntryRepository.GetByIdAsync(journalEntryId, CancellationToken.None)
+            .Returns(existingJournalEntryEntity);
+
+        var existingJournalVoucherEntity = new JournalVoucherEntity
+        {
+            Id = journalVoucherId,
+            JournalVoucherTitle = faker.Finance.AccountName(),
+            ReferenceNumber = faker.Finance.Locale,
+            TransactionTime = DateTime.UtcNow,
+            JournalVoucherState = JournalVoucherState.Draft,
+            CreatedByUserId = Guid.NewGuid(),
+            FinancialPeriodId = Guid.NewGuid(),
+            FinancialPeriod = new FinancialPeriodEntity
+            {
+                FinancialPeriodTitle = faker.Finance.AccountName(),
+                StartDate = DateTime.UtcNow,
+                EndDate = DateTime.UtcNow,
+                IsActive = true
+            }
+        };
+
+        unitOfWork.JournalVoucherRepository.GetByIdAsync(journalVoucherId, CancellationToken.None)
+            .Returns(existingJournalVoucherEntity);
+
+        var existingDetailedAccountEntity = new DetailedAccountEntity
+        {
+            Id = detailedAccountId,
+            AccountTitle = faker.Finance.AccountName(),
+            AccountCode = faker.Finance.Account(),
+            JournalEntryType = JournalEntryType.Debit,
+            IsActive = true,
+            SubLedgerAccountId = Guid.NewGuid()
+        };
+
+        unitOfWork.DetailedAccountRepository.GetByIdAsync(detailedAccountId, CancellationToken.None)
+            .Returns(existingDetailedAccountEntity);
+
+        var updateJournalEntryCommand = new UpdateJournalEntryCommand
+        {
+            JournalEntryId = journalEntryId,
+            DetailedAccountId = new Patch<Guid>(detailedAccountId)
+        };
+
+        var handler = new UpdateJournalEntryCommandHandler(unitOfWork);
+
+        // Act
+        var result = await handler.Handle(updateJournalEntryCommand, CancellationToken.None);
+
+        // Assert
+        result.IsSuccess.Should().BeFalse();
+        result.ErrorMessages.Should().ContainKey("JournalEntryType")
+            .WhoseValue.Should().Contain("Entry type does not match detailed account.");
     }
 
     [Fact]
     public async Task UpdateJournalEntryCommandHandler_ShouldSuccess_WhenAmountNotEmpty()
     {
-        throw new NotImplementedException();
+        // Arrange
+        var unitOfWork = Substitute.For<IUnitOfWork>();
+        var faker = new Faker();
+        var journalEntryId = Guid.NewGuid();
+        var journalVoucherId = Guid.NewGuid();
+        var oldModifiedDate = DateTime.UtcNow.AddDays(-5);
+
+        var existingJournalEntryEntity = new JournalEntryEntity
+        {
+            Id = journalEntryId,
+            JournalEntryNumber = "1",
+            JournalEntryType = JournalEntryType.Credit,
+            Amount = 2,
+            SubLedgerAccountId = Guid.NewGuid(),
+            JournalVoucherId = journalVoucherId,
+            ModifiedDate = oldModifiedDate
+        };
+
+        unitOfWork.JournalEntryRepository.GetByIdAsync(journalEntryId, CancellationToken.None)
+            .Returns(existingJournalEntryEntity);
+
+        var existingJournalVoucherEntity = new JournalVoucherEntity
+        {
+            Id = journalVoucherId,
+            JournalVoucherTitle = faker.Finance.AccountName(),
+            ReferenceNumber = faker.Finance.Locale,
+            TransactionTime = DateTime.UtcNow,
+            JournalVoucherState = JournalVoucherState.Draft,
+            CreatedByUserId = Guid.NewGuid(),
+            FinancialPeriodId = Guid.NewGuid(),
+            FinancialPeriod = new FinancialPeriodEntity
+            {
+                FinancialPeriodTitle = faker.Finance.AccountName(),
+                StartDate = DateTime.UtcNow,
+                EndDate = DateTime.UtcNow,
+                IsActive = true
+            }
+        };
+
+        unitOfWork.JournalVoucherRepository.GetByIdAsync(journalVoucherId, CancellationToken.None)
+            .Returns(existingJournalVoucherEntity);
+
+        unitOfWork.HasChanges(existingJournalEntryEntity)
+            .Returns(true);
+
+        var updateJournalEntryCommand = new UpdateJournalEntryCommand
+        {
+            JournalEntryId = journalEntryId,
+            Amount = new Patch<decimal>(5)
+        };
+
+        var handler = new UpdateJournalEntryCommandHandler(unitOfWork);
+
+        // Act
+        var result = await handler.Handle(updateJournalEntryCommand, CancellationToken.None);
+
+        // Assert
+        result.IsSuccess.Should().BeTrue();
+        existingJournalEntryEntity.Amount.Should().Be(updateJournalEntryCommand.Amount);
+        existingJournalEntryEntity.ModifiedDate.Should().BeAfter(oldModifiedDate);
+
+        await unitOfWork.Received(1)
+            .CommitAsync(CancellationToken.None);
     }
 
     [Fact]
     public async Task UpdateJournalEntryCommandHandler_ShouldSuccess_WhenDescriptionNotEmpty()
     {
-        throw new NotImplementedException();
+        // Arrange
+        var unitOfWork = Substitute.For<IUnitOfWork>();
+        var faker = new Faker();
+        var journalEntryId = Guid.NewGuid();
+        var journalVoucherId = Guid.NewGuid();
+        var oldModifiedDate = DateTime.UtcNow.AddDays(-5);
+
+        var existingJournalEntryEntity = new JournalEntryEntity
+        {
+            Id = journalEntryId,
+            JournalEntryNumber = "1",
+            JournalEntryType = JournalEntryType.Credit,
+            Amount = 2,
+            SubLedgerAccountId = Guid.NewGuid(),
+            JournalVoucherId = journalVoucherId,
+            ModifiedDate = oldModifiedDate
+        };
+
+        unitOfWork.JournalEntryRepository.GetByIdAsync(journalEntryId, CancellationToken.None)
+            .Returns(existingJournalEntryEntity);
+
+        var existingJournalVoucherEntity = new JournalVoucherEntity
+        {
+            Id = journalVoucherId,
+            JournalVoucherTitle = faker.Finance.AccountName(),
+            ReferenceNumber = faker.Finance.Locale,
+            TransactionTime = DateTime.UtcNow,
+            JournalVoucherState = JournalVoucherState.Draft,
+            CreatedByUserId = Guid.NewGuid(),
+            FinancialPeriodId = Guid.NewGuid(),
+            FinancialPeriod = new FinancialPeriodEntity
+            {
+                FinancialPeriodTitle = faker.Finance.AccountName(),
+                StartDate = DateTime.UtcNow,
+                EndDate = DateTime.UtcNow,
+                IsActive = true
+            }
+        };
+
+        unitOfWork.JournalVoucherRepository.GetByIdAsync(journalVoucherId, CancellationToken.None)
+            .Returns(existingJournalVoucherEntity);
+
+        unitOfWork.HasChanges(existingJournalEntryEntity)
+            .Returns(true);
+
+        var updateJournalEntryCommand = new UpdateJournalEntryCommand
+        {
+            JournalEntryId = journalEntryId,
+            Description = new Patch<string>(faker.Finance.AccountName())
+        };
+
+        var handler = new UpdateJournalEntryCommandHandler(unitOfWork);
+
+        // Act
+        var result = await handler.Handle(updateJournalEntryCommand, CancellationToken.None);
+
+        // Assert
+        result.IsSuccess.Should().BeTrue();
+        existingJournalEntryEntity.Description.Should().Be(updateJournalEntryCommand.Description);
+        existingJournalEntryEntity.ModifiedDate.Should().BeAfter(oldModifiedDate);
+
+        await unitOfWork.Received(1)
+            .CommitAsync(CancellationToken.None);
     }
 
     [Fact]
     public async Task UpdateJournalEntryCommandHandler_ShouldSuccess_WhenSubLedgerAccountIdNotEmpty()
     {
-        throw new NotImplementedException();
+        // Arrange
+        var unitOfWork = Substitute.For<IUnitOfWork>();
+        var faker = new Faker();
+        var journalEntryId = Guid.NewGuid();
+        var journalVoucherId = Guid.NewGuid();
+        var subLedgerAccountId = Guid.NewGuid();
+        var oldModifiedDate = DateTime.UtcNow.AddDays(-5);
+
+        var existingJournalEntryEntity = new JournalEntryEntity
+        {
+            Id = journalEntryId,
+            JournalEntryNumber = "1",
+            JournalEntryType = JournalEntryType.Credit,
+            Amount = 2,
+            SubLedgerAccountId = Guid.NewGuid(),
+            JournalVoucherId = journalVoucherId,
+            ModifiedDate = oldModifiedDate
+        };
+
+        unitOfWork.JournalEntryRepository.GetByIdAsync(journalEntryId, CancellationToken.None)
+            .Returns(existingJournalEntryEntity);
+
+        var existingJournalVoucherEntity = new JournalVoucherEntity
+        {
+            Id = journalVoucherId,
+            JournalVoucherTitle = faker.Finance.AccountName(),
+            ReferenceNumber = faker.Finance.Locale,
+            TransactionTime = DateTime.UtcNow,
+            JournalVoucherState = JournalVoucherState.Draft,
+            CreatedByUserId = Guid.NewGuid(),
+            FinancialPeriodId = Guid.NewGuid(),
+            FinancialPeriod = new FinancialPeriodEntity
+            {
+                FinancialPeriodTitle = faker.Finance.AccountName(),
+                StartDate = DateTime.UtcNow,
+                EndDate = DateTime.UtcNow,
+                IsActive = true
+            }
+        };
+
+        unitOfWork.JournalVoucherRepository.GetByIdAsync(journalVoucherId, CancellationToken.None)
+            .Returns(existingJournalVoucherEntity);
+
+        var existingSubLedgerAccountEntity = new SubLedgerAccountEntity
+        {
+            Id = subLedgerAccountId,
+            AccountTitle = faker.Finance.AccountName(),
+            AccountCode = faker.Finance.Account(),
+            JournalEntryType = JournalEntryType.Credit,
+            GeneralLedgerAccountId = Guid.NewGuid()
+        };
+
+        unitOfWork.SubLedgerAccountRepository.GetByIdAsync(subLedgerAccountId, CancellationToken.None)
+            .Returns(existingSubLedgerAccountEntity);
+
+        unitOfWork.HasChanges(existingJournalEntryEntity)
+            .Returns(true);
+
+        var updateJournalEntryCommand = new UpdateJournalEntryCommand
+        {
+            JournalEntryId = journalEntryId,
+            SubLedgerAccountId = new Patch<Guid>(subLedgerAccountId)
+        };
+
+        var handler = new UpdateJournalEntryCommandHandler(unitOfWork);
+
+        // Act
+        var result = await handler.Handle(updateJournalEntryCommand, CancellationToken.None);
+
+        // Assert
+        result.IsSuccess.Should().BeTrue();
+        existingJournalEntryEntity.SubLedgerAccountId.Should().Be(updateJournalEntryCommand.SubLedgerAccountId);
+        existingJournalEntryEntity.ModifiedDate.Should().BeAfter(oldModifiedDate);
+
+        await unitOfWork.Received(1)
+            .CommitAsync(CancellationToken.None);
     }
 
     [Fact]
     public async Task UpdateJournalEntryCommandHandler_ShouldSuccess_WhenDetailedAccountIdNotEmpty()
     {
-        throw new NotImplementedException();
+        // Arrange
+        var unitOfWork = Substitute.For<IUnitOfWork>();
+        var faker = new Faker();
+        var journalEntryId = Guid.NewGuid();
+        var journalVoucherId = Guid.NewGuid();
+        var detailedAccountId = Guid.NewGuid();
+        var oldModifiedDate = DateTime.UtcNow.AddDays(-5);
+
+        var existingJournalEntryEntity = new JournalEntryEntity
+        {
+            Id = journalEntryId,
+            JournalEntryNumber = "1",
+            JournalEntryType = JournalEntryType.Credit,
+            Amount = 2,
+            SubLedgerAccountId = Guid.NewGuid(),
+            JournalVoucherId = journalVoucherId,
+            ModifiedDate = oldModifiedDate
+        };
+
+        unitOfWork.JournalEntryRepository.GetByIdAsync(journalEntryId, CancellationToken.None)
+            .Returns(existingJournalEntryEntity);
+
+        var existingJournalVoucherEntity = new JournalVoucherEntity
+        {
+            Id = journalVoucherId,
+            JournalVoucherTitle = faker.Finance.AccountName(),
+            ReferenceNumber = faker.Finance.Locale,
+            TransactionTime = DateTime.UtcNow,
+            JournalVoucherState = JournalVoucherState.Draft,
+            CreatedByUserId = Guid.NewGuid(),
+            FinancialPeriodId = Guid.NewGuid(),
+            FinancialPeriod = new FinancialPeriodEntity
+            {
+                FinancialPeriodTitle = faker.Finance.AccountName(),
+                StartDate = DateTime.UtcNow,
+                EndDate = DateTime.UtcNow,
+                IsActive = true
+            }
+        };
+
+        unitOfWork.JournalVoucherRepository.GetByIdAsync(journalVoucherId, CancellationToken.None)
+            .Returns(existingJournalVoucherEntity);
+
+        var existingDetailedAccountEntity = new DetailedAccountEntity
+        {
+            Id = detailedAccountId,
+            AccountTitle = faker.Finance.AccountName(),
+            AccountCode = faker.Finance.Account(),
+            JournalEntryType = JournalEntryType.Credit,
+            SubLedgerAccountId = Guid.NewGuid()
+        };
+
+        unitOfWork.DetailedAccountRepository.GetByIdAsync(detailedAccountId, CancellationToken.None)
+            .Returns(existingDetailedAccountEntity);
+
+        unitOfWork.HasChanges(existingJournalEntryEntity)
+            .Returns(true);
+
+        var updateJournalEntryCommand = new UpdateJournalEntryCommand
+        {
+            JournalEntryId = journalEntryId,
+            DetailedAccountId = new Patch<Guid>(detailedAccountId)
+        };
+
+        var handler = new UpdateJournalEntryCommandHandler(unitOfWork);
+
+        // Act
+        var result = await handler.Handle(updateJournalEntryCommand, CancellationToken.None);
+
+        // Assert
+        result.IsSuccess.Should().BeTrue();
+        existingJournalEntryEntity.DetailedAccountId.Should().Be(updateJournalEntryCommand.DetailedAccountId);
+        existingJournalEntryEntity.ModifiedDate.Should().BeAfter(oldModifiedDate);
+
+        await unitOfWork.Received(1)
+            .CommitAsync(CancellationToken.None);
     }
 
     [Fact]
     public async Task UpdateJournalEntryCommandHandler_ShouldSucceed_WhenMultipleFieldsAreUpdated()
     {
-        throw new NotImplementedException();
+        // Arrange
+        var unitOfWork = Substitute.For<IUnitOfWork>();
+        var faker = new Faker();
+        var journalEntryId = Guid.NewGuid();
+        var journalVoucherId = Guid.NewGuid();
+        var detailedAccountId = Guid.NewGuid();
+        var oldModifiedDate = DateTime.UtcNow.AddDays(-5);
+
+        var existingJournalEntryEntity = new JournalEntryEntity
+        {
+            Id = journalEntryId,
+            JournalEntryNumber = "1",
+            JournalEntryType = JournalEntryType.Credit,
+            Amount = 2,
+            SubLedgerAccountId = Guid.NewGuid(),
+            JournalVoucherId = journalVoucherId,
+            ModifiedDate = oldModifiedDate
+        };
+
+        unitOfWork.JournalEntryRepository.GetByIdAsync(journalEntryId, CancellationToken.None)
+            .Returns(existingJournalEntryEntity);
+
+        var existingJournalVoucherEntity = new JournalVoucherEntity
+        {
+            Id = journalVoucherId,
+            JournalVoucherTitle = faker.Finance.AccountName(),
+            ReferenceNumber = faker.Finance.Locale,
+            TransactionTime = DateTime.UtcNow,
+            JournalVoucherState = JournalVoucherState.Draft,
+            CreatedByUserId = Guid.NewGuid(),
+            FinancialPeriodId = Guid.NewGuid(),
+            FinancialPeriod = new FinancialPeriodEntity
+            {
+                FinancialPeriodTitle = faker.Finance.AccountName(),
+                StartDate = DateTime.UtcNow,
+                EndDate = DateTime.UtcNow,
+                IsActive = true
+            }
+        };
+
+        unitOfWork.JournalVoucherRepository.GetByIdAsync(journalVoucherId, CancellationToken.None)
+            .Returns(existingJournalVoucherEntity);
+
+        var existingDetailedAccountEntity = new DetailedAccountEntity
+        {
+            Id = detailedAccountId,
+            AccountTitle = faker.Finance.AccountName(),
+            AccountCode = faker.Finance.Account(),
+            JournalEntryType = JournalEntryType.Credit,
+            SubLedgerAccountId = Guid.NewGuid()
+        };
+
+        unitOfWork.DetailedAccountRepository.GetByIdAsync(detailedAccountId, CancellationToken.None)
+            .Returns(existingDetailedAccountEntity);
+
+        unitOfWork.HasChanges(existingJournalEntryEntity)
+            .Returns(true);
+
+        var updateJournalEntryCommand = new UpdateJournalEntryCommand
+        {
+            JournalEntryId = journalEntryId,
+            DetailedAccountId = new Patch<Guid>(detailedAccountId),
+            Amount = new Patch<decimal>(5)
+        };
+
+        var handler = new UpdateJournalEntryCommandHandler(unitOfWork);
+
+        // Act
+        var result = await handler.Handle(updateJournalEntryCommand, CancellationToken.None);
+
+        // Assert
+        result.IsSuccess.Should().BeTrue();
+        existingJournalEntryEntity.SubLedgerAccount.Should().Be(updateJournalEntryCommand.SubLedgerAccountId);
+        existingJournalEntryEntity.Amount.Should().Be(updateJournalEntryCommand.Amount);
+        existingJournalEntryEntity.ModifiedDate.Should().BeAfter(oldModifiedDate);
+
+        await unitOfWork.Received(1)
+            .CommitAsync(CancellationToken.None);
     }
 
     [Fact]
     public async Task UpdateJournalEntryCommandHandler_ShouldUpdateModifiedDate_WhenJournalEntryIsUpdated()
     {
-        throw new NotImplementedException();
+        // Arrange
+        var unitOfWork = Substitute.For<IUnitOfWork>();
+        var faker = new Faker();
+        var journalEntryId = Guid.NewGuid();
+        var journalVoucherId = Guid.NewGuid();
+        var detailedAccountId = Guid.NewGuid();
+        var oldModifiedDate = DateTime.UtcNow.AddDays(-5);
+
+        var existingJournalEntryEntity = new JournalEntryEntity
+        {
+            Id = journalEntryId,
+            JournalEntryNumber = "1",
+            JournalEntryType = JournalEntryType.Credit,
+            Amount = 2,
+            SubLedgerAccountId = Guid.NewGuid(),
+            JournalVoucherId = journalVoucherId,
+            ModifiedDate = oldModifiedDate
+        };
+
+        unitOfWork.JournalEntryRepository.GetByIdAsync(journalEntryId, CancellationToken.None)
+            .Returns(existingJournalEntryEntity);
+
+        var existingJournalVoucherEntity = new JournalVoucherEntity
+        {
+            Id = journalVoucherId,
+            JournalVoucherTitle = faker.Finance.AccountName(),
+            ReferenceNumber = faker.Finance.Locale,
+            TransactionTime = DateTime.UtcNow,
+            JournalVoucherState = JournalVoucherState.Draft,
+            CreatedByUserId = Guid.NewGuid(),
+            FinancialPeriodId = Guid.NewGuid(),
+            FinancialPeriod = new FinancialPeriodEntity
+            {
+                FinancialPeriodTitle = faker.Finance.AccountName(),
+                StartDate = DateTime.UtcNow,
+                EndDate = DateTime.UtcNow,
+                IsActive = true
+            }
+        };
+
+        unitOfWork.JournalVoucherRepository.GetByIdAsync(journalVoucherId, CancellationToken.None)
+            .Returns(existingJournalVoucherEntity);
+
+        var existingDetailedAccountEntity = new DetailedAccountEntity
+        {
+            Id = detailedAccountId,
+            AccountTitle = faker.Finance.AccountName(),
+            AccountCode = faker.Finance.Account(),
+            JournalEntryType = JournalEntryType.Credit,
+            SubLedgerAccountId = Guid.NewGuid()
+        };
+
+        unitOfWork.DetailedAccountRepository.GetByIdAsync(detailedAccountId, CancellationToken.None)
+            .Returns(existingDetailedAccountEntity);
+
+        unitOfWork.HasChanges(existingJournalEntryEntity)
+            .Returns(true);
+
+        var updateJournalEntryCommand = new UpdateJournalEntryCommand
+        {
+            JournalEntryId = journalEntryId,
+            DetailedAccountId = new Patch<Guid>(detailedAccountId)
+        };
+
+        var handler = new UpdateJournalEntryCommandHandler(unitOfWork);
+
+        // Act
+        var result = await handler.Handle(updateJournalEntryCommand, CancellationToken.None);
+
+        // Assert
+        result.IsSuccess.Should().BeTrue();
+        existingJournalEntryEntity.DetailedAccountId.Should().Be(updateJournalEntryCommand.DetailedAccountId);
+        existingJournalEntryEntity.ModifiedDate.Should().BeAfter(oldModifiedDate);
+
+        await unitOfWork.Received(1)
+            .CommitAsync(CancellationToken.None);
     }
 
     [Fact]
     public async Task UpdateJournalEntryCommandHandler_ShouldSucceed_WhenNoFieldsAreChanged()
     {
-        throw new NotImplementedException();
+        // Arrange
+        var unitOfWork = Substitute.For<IUnitOfWork>();
+        var faker = new Faker();
+        var journalEntryId = Guid.NewGuid();
+        var journalVoucherId = Guid.NewGuid();
+
+        var existingJournalEntryEntity = new JournalEntryEntity
+        {
+            Id = journalEntryId,
+            JournalEntryNumber = "1",
+            JournalEntryType = JournalEntryType.Credit,
+            Amount = 2,
+            SubLedgerAccountId = Guid.NewGuid(),
+            JournalVoucherId = journalVoucherId
+        };
+
+        unitOfWork.JournalEntryRepository.GetByIdAsync(journalEntryId, CancellationToken.None)
+            .Returns(existingJournalEntryEntity);
+
+        var existingJournalVoucherEntity = new JournalVoucherEntity
+        {
+            Id = journalVoucherId,
+            JournalVoucherTitle = faker.Finance.AccountName(),
+            ReferenceNumber = faker.Finance.Locale,
+            TransactionTime = DateTime.UtcNow,
+            JournalVoucherState = JournalVoucherState.Draft,
+            CreatedByUserId = Guid.NewGuid(),
+            FinancialPeriodId = Guid.NewGuid(),
+            FinancialPeriod = new FinancialPeriodEntity
+            {
+                FinancialPeriodTitle = faker.Finance.AccountName(),
+                StartDate = DateTime.UtcNow,
+                EndDate = DateTime.UtcNow,
+                IsActive = true
+            }
+        };
+
+        unitOfWork.JournalVoucherRepository.GetByIdAsync(journalVoucherId, CancellationToken.None)
+            .Returns(existingJournalVoucherEntity);
+
+        var updateJournalEntryCommand = new UpdateJournalEntryCommand
+        {
+            JournalEntryId = journalEntryId
+        };
+
+        var handler = new UpdateJournalEntryCommandHandler(unitOfWork);
+
+        // Act
+        var result = await handler.Handle(updateJournalEntryCommand, CancellationToken.None);
+
+        // Assert
+        result.IsSuccess.Should().BeTrue();
     }
 
     [Fact]
     public async Task UpdateJournalEntryCommandHandler_ShouldNotCommit_WhenNoFieldsChanged()
     {
-        throw new NotImplementedException();
-    }
+        // Arrange
+        var unitOfWork = Substitute.For<IUnitOfWork>();
+        var faker = new Faker();
+        var journalEntryId = Guid.NewGuid();
+        var journalVoucherId = Guid.NewGuid();
 
-    [Fact]
-    public async Task UpdateJournalEntryCommandHandler_ShouldFail_WhenValidationFails()
-    {
-        throw new NotImplementedException();
+        var existingJournalEntryEntity = new JournalEntryEntity
+        {
+            Id = journalEntryId,
+            JournalEntryNumber = "1",
+            JournalEntryType = JournalEntryType.Credit,
+            Amount = 2,
+            SubLedgerAccountId = Guid.NewGuid(),
+            JournalVoucherId = journalVoucherId
+        };
+
+        unitOfWork.JournalEntryRepository.GetByIdAsync(journalEntryId, CancellationToken.None)
+            .Returns(existingJournalEntryEntity);
+
+        var existingJournalVoucherEntity = new JournalVoucherEntity
+        {
+            Id = journalVoucherId,
+            JournalVoucherTitle = faker.Finance.AccountName(),
+            ReferenceNumber = faker.Finance.Locale,
+            TransactionTime = DateTime.UtcNow,
+            JournalVoucherState = JournalVoucherState.Draft,
+            CreatedByUserId = Guid.NewGuid(),
+            FinancialPeriodId = Guid.NewGuid(),
+            FinancialPeriod = new FinancialPeriodEntity
+            {
+                FinancialPeriodTitle = faker.Finance.AccountName(),
+                StartDate = DateTime.UtcNow,
+                EndDate = DateTime.UtcNow,
+                IsActive = true
+            }
+        };
+
+        unitOfWork.JournalVoucherRepository.GetByIdAsync(journalVoucherId, CancellationToken.None)
+            .Returns(existingJournalVoucherEntity);
+
+        var updateJournalEntryCommand = new UpdateJournalEntryCommand
+        {
+            JournalEntryId = journalEntryId
+        };
+
+        var handler = new UpdateJournalEntryCommandHandler(unitOfWork);
+
+        // Act
+        var result = await handler.Handle(updateJournalEntryCommand, CancellationToken.None);
+
+        // Assert
+        result.IsSuccess.Should().BeTrue();
+
+        await unitOfWork.DidNotReceive()
+            .CommitAsync(CancellationToken.None);
     }
 }
