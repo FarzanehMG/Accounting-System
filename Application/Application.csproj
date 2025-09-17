@@ -7,8 +7,11 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Converters\JournalVoucher\**" />
     <Compile Remove="Features\Journal\Commands\NewFolder\**" />
+    <EmbeddedResource Remove="Converters\JournalVoucher\**" />
     <EmbeddedResource Remove="Features\Journal\Commands\NewFolder\**" />
+    <None Remove="Converters\JournalVoucher\**" />
     <None Remove="Features\Journal\Commands\NewFolder\**" />
   </ItemGroup>
 

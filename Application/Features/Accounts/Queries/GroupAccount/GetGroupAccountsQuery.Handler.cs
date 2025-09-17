@@ -1,4 +1,5 @@
 ﻿using Application.Common;
+using Application.Converters.Account;
 using Application.Extensions;
 using Application.Features.Accounts.Queries.GroupAccount.Dtos;
 using Application.Repositories.Common;
@@ -26,16 +27,6 @@ public class GetGroupAccountsQueryHandler(IUnitOfWork unitOfWork)
         if (!groupAccounts.Any())
             return OperationResult<IReadOnlyList<GetGroupAccountsQueryResult>>.NotFoundResult(nameof(GetGroupAccountsQueryResult), "Group account not found.");
 
-        return OperationResult<IReadOnlyList<GetGroupAccountsQueryResult>>
-            .SuccessResult(groupAccounts
-                .Select(x => new GetGroupAccountsQueryResult
-                {
-                    AccountTitle = x.AccountTitle,
-                    AccountCode = x.AccountCode,
-                    IsActive = x.IsActive,
-                    AccountDescription = x.AccountDescription,
-                    JournalEntryType = x.JournalEntryType
-                }).ToList()
-                .AsReadOnly());
+        return OperationResult<IReadOnlyList<GetGroupAccountsQueryResult>>.SuccessResult(groupAccounts.ToDto());
     }
 }

@@ -1,4 +1,5 @@
 ﻿using Application.Common;
+using Application.Converters.Account;
 using Application.Extensions;
 using Application.Features.Accounts.Queries.SubLedgerAccount.Dtos;
 using Application.Repositories.Common;
@@ -29,14 +30,6 @@ public class GetSubLedgerAccountsQueryHandler(IUnitOfWork unitOfWork)
             return OperationResult<IReadOnlyList<GetSubLedgerAccountsQueryResult>>.NotFoundResult(nameof(GetSubLedgerAccountsQueryResult), "SubLedger account not found.");
 
         return OperationResult<IReadOnlyList<GetSubLedgerAccountsQueryResult>>
-            .SuccessResult(subLedgerAccount.Select(x => new GetSubLedgerAccountsQueryResult
-            {
-                    AccountTitle = x.AccountTitle,
-                    AccountCode = x.AccountCode,
-                    IsActive = x.IsActive,
-                    JournalEntryType = x.JournalEntryType,
-                    GeneralLedgerAccountId = x.GeneralLedgerAccountId
-                }).ToList()
-                .AsReadOnly());
+            .SuccessResult(subLedgerAccount.ToDto());
     }
 }

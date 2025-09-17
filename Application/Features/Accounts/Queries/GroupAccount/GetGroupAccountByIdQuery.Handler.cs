@@ -1,4 +1,5 @@
 ﻿using Application.Common;
+using Application.Converters.Account;
 using Application.Extensions;
 using Application.Repositories.Common;
 
@@ -19,10 +20,6 @@ public class GetGroupAccountByIdQueryHandler(IUnitOfWork unitOfWork)
 		if (groupAccount is null)
 			return OperationResult<GetGroupAccountByIdQueryResult>.NotFoundResult(nameof(GetGroupAccountByIdQuery.Id), "Group account not found.");
 		
-		return OperationResult<GetGroupAccountByIdQueryResult>.SuccessResult(new GetGroupAccountByIdQueryResult
-        {
-            Id = groupAccount.Id,
-            AccountTitle = groupAccount.AccountTitle
-        });
+		return OperationResult<GetGroupAccountByIdQueryResult>.SuccessResult(groupAccount.ToDto());
 	}
 }

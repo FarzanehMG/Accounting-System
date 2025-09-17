@@ -1,4 +1,5 @@
 ﻿using Application.Common;
+using Application.Converters.Account;
 using Application.Extensions;
 using Application.Repositories.Common;
 
@@ -6,23 +7,19 @@ namespace Application.Features.Accounts.Queries.SubLedgerAccount;
 
 public class GetSubLedgerAccountByIdQueryHandler(IUnitOfWork unitOfWork)
 {
-    public async Task<OperationResult<GetSubLegerAccountByIdQueryResult>> Handle(GetSubLedgerAccountByIdQuery request, CancellationToken cancellationToken)
+    public async Task<OperationResult<GetSubLedgerAccountByIdQueryResult>> Handle(GetSubLedgerAccountByIdQuery request, CancellationToken cancellationToken)
     {
         var validator = new GetSubLedgerAccountByIdQueryValidator();
         var validateResult = await validator.ValidateAsync(request, cancellationToken);
 
         if (!validateResult.IsValid)
-            return OperationResult<GetSubLegerAccountByIdQueryResult>.FailureResult(validateResult.Errors.ConvertToKeyValuePair());
+            return OperationResult<GetSubLedgerAccountByIdQueryResult>.FailureResult(validateResult.Errors.ConvertToKeyValuePair());
 
         var subLedgerAccount = await unitOfWork.SubLedgerAccountRepository.GetByIdAsync(request.Id, cancellationToken);
 
         if (subLedgerAccount is null)
-            return OperationResult<GetSubLegerAccountByIdQueryResult>.NotFoundResult(nameof(GetSubLedgerAccountByIdQuery.Id), "SubLedger account not found");
+            return OperationResult<GetSubLedgerAccountByIdQueryResult>.NotFoundResult(nameof(GetSubLedgerAccountByIdQuery.Id), "SubLedger account not found");
 
-        return OperationResult<GetSubLegerAccountByIdQueryResult>.SuccessResult(new GetSubLegerAccountByIdQueryResult
-        {
-            Id = subLedgerAccount.Id,
-            AccountTitle = subLedgerAccount.AccountTitle
-        });
+        return OperationResult<GetSubLedgerAccountByIdQueryResult>.SuccessResult(subLedgerAccount.ToDto());
     }
 }

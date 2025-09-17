@@ -1,4 +1,5 @@
 ﻿using Application.Common;
+using Application.Converters.Journal;
 using Application.Extensions;
 using Application.Features.Journal.Queries.JournalVoucher;
 using Application.Repositories.Common;
@@ -20,16 +21,6 @@ public class GetJournalEntryByIdQueryHandler(IUnitOfWork unitOfWork)
         if (journalEntry is null)
             return OperationResult<GetJournalEntryByIdQueryResult>.NotFoundResult(nameof(GetJournalVoucherByIdQuery.Id), "Journal entry not found.");
 
-        return OperationResult<GetJournalEntryByIdQueryResult>.SuccessResult(new GetJournalEntryByIdQueryResult
-        {
-            Id = journalEntry.Id,
-            JournalEntryNumber = journalEntry.JournalEntryNumber,
-            JournalEntryType = journalEntry.JournalEntryType,
-            Amount = journalEntry.Amount,
-            SubLedgerAccountId = journalEntry.SubLedgerAccountId,
-            JournalVoucherId = journalEntry.JournalVoucherId,
-            DetailedAccountId = journalEntry.DetailedAccountId,
-            Description = journalEntry.Description
-        });
+        return OperationResult<GetJournalEntryByIdQueryResult>.SuccessResult(journalEntry.ToDto());
     }
 }

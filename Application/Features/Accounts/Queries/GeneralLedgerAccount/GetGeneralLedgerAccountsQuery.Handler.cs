@@ -1,4 +1,5 @@
 ﻿using Application.Common;
+using Application.Converters.Account;
 using Application.Extensions;
 using Application.Features.Accounts.Queries.GeneralLedgerAccount.Dtos;
 using Application.Repositories.Common;
@@ -29,14 +30,6 @@ public class GetGeneralLedgerAccountsQueryHandler(IUnitOfWork unitOfWork)
             return OperationResult<IReadOnlyList<GetGeneralLedgerAccountsQueryResult>>.NotFoundResult(nameof(GetGeneralLedgerAccountsQueryResult), "General account not found.");
 
         return OperationResult<IReadOnlyList<GetGeneralLedgerAccountsQueryResult>>
-            .SuccessResult(generalAccount.Select(x => new GetGeneralLedgerAccountsQueryResult
-            {
-                AccountTitle = x.AccountTitle,
-                AccountCode = x.AccountCode,
-                IsActive = x.IsActive,
-                JournalEntryType = x.JournalEntryType,
-                GroupAccountId = x.GroupAccountId
-            }).ToList()
-            .AsReadOnly());
+            .SuccessResult(generalAccount.ToDto());
     }
 }

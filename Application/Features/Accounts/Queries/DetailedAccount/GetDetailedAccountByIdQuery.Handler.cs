@@ -1,4 +1,5 @@
 ﻿using Application.Common;
+using Application.Converters.Account;
 using Application.Extensions;
 using Application.Repositories.Common;
 
@@ -19,11 +20,6 @@ public class GetDetailedAccountByIdQueryHandler(IUnitOfWork unitOfWork)
         if (detailedAccount is null)
             return OperationResult<GetDetailedAccountByIdQueryResult>.NotFoundResult(nameof(GetDetailedAccountByIdQuery.Id), "Detailed account not found.");
 
-        return OperationResult<GetDetailedAccountByIdQueryResult>.SuccessResult(new GetDetailedAccountByIdQueryResult
-        {
-            Id = detailedAccount.Id,
-            AccountTitle = detailedAccount.AccountTitle
-        });
-
+        return OperationResult<GetDetailedAccountByIdQueryResult>.SuccessResult(detailedAccount.ToDto());
     }
 }

@@ -1,0 +1,22 @@
+﻿using Application.Features.Journal.Queries.JournalEntry;
+using Domain.Entities;
+
+namespace Application.Converters.Journal;
+
+public static class JournalEntryConverter
+{
+    public static GetJournalEntryByIdQueryResult ToDto(this JournalEntryEntity entity)
+    {
+        return new GetJournalEntryByIdQueryResult
+        {
+            Id = entity.Id,
+            JournalEntryNumber = entity.JournalEntryNumber,
+            JournalEntryType = entity.JournalEntryType,
+            Amount = entity.Amount,
+            SubLedgerAccountId = entity.SubLedgerAccountId,
+            JournalVoucherId = entity.JournalVoucherId,
+            DetailedAccountId = entity.DetailedAccountId,
+            Description = entity.Description
+        };
+    }
+}

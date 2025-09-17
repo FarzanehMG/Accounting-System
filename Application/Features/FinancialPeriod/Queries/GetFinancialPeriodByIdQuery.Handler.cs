@@ -1,4 +1,5 @@
 ﻿using Application.Common;
+using Application.Converters.FinancialPeriod;
 using Application.Extensions;
 using Application.Repositories.Common;
 
@@ -19,13 +20,6 @@ public class GetFinancialPeriodByIdQueryHandler(IUnitOfWork unitOfWork)
         if (financialPeriod is null)
             return OperationResult<GetFinancialPeriodByIdQueryResult>.NotFoundResult(nameof(GetFinancialPeriodByIdQuery.Id), "Financial period not found.");
 
-        return OperationResult<GetFinancialPeriodByIdQueryResult>.SuccessResult(new GetFinancialPeriodByIdQueryResult
-        {
-            Id = financialPeriod.Id,
-            Title = financialPeriod.FinancialPeriodTitle,
-            StartDate = financialPeriod.StartDate,
-            EndDate = financialPeriod.EndDate,
-            IsActive = financialPeriod.IsActive
-        });
+        return OperationResult<GetFinancialPeriodByIdQueryResult>.SuccessResult(financialPeriod.ToDto());
     }
 }

@@ -1,4 +1,5 @@
 ﻿using Application.Common;
+using Application.Converters.Journal;
 using Application.Extensions;
 using Application.Repositories.Common;
 
@@ -19,19 +20,6 @@ public class GetJournalVoucherByIdQueryHandler(IUnitOfWork unitOfWork)
         if (journalVoucher is null)
             return OperationResult<GetJournalVoucherByIdQueryResult>.NotFoundResult(nameof(GetJournalVoucherByIdQuery.Id), "Journal voucher not found.");
 
-        return OperationResult<GetJournalVoucherByIdQueryResult>.SuccessResult(new GetJournalVoucherByIdQueryResult
-        {
-            Id = journalVoucher.Id,
-            JournalVoucherTitle = journalVoucher.JournalVoucherTitle,
-            JournalVoucherNumber = journalVoucher.JournalVoucherNumber,
-            ReferenceNumber = journalVoucher.ReferenceNumber,
-            TransactionTime = journalVoucher.TransactionTime,
-            JournalVoucherState = journalVoucher.JournalVoucherState,
-            CreatedByUserId = journalVoucher.CreatedByUserId,
-            FinancialPeriodId = journalVoucher.FinancialPeriodId,
-            ApprovedByUserId = journalVoucher.ApprovedByUserId,
-            ApprovedTime = journalVoucher.ApprovedTime,
-            Description = journalVoucher.Description
-        });
+        return OperationResult<GetJournalVoucherByIdQueryResult>.SuccessResult(journalVoucher.ToDto());
     }
 }

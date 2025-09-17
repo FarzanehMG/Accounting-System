@@ -1,4 +1,5 @@
 ﻿using Application.Common;
+using Application.Converters.Account;
 using Application.Extensions;
 using Application.Features.Accounts.Queries.DetailedAccount.Dtos;
 using Application.Repositories.Common;
@@ -29,14 +30,6 @@ public class GetDetailedAccountsQueryHandler(IUnitOfWork unitOfWork)
             return OperationResult<IReadOnlyList<GetDetailedAccountsQueryResult>>.NotFoundResult(nameof(GetDetailedAccountsQueryResult), "Detailed account not found.");
 
         return OperationResult<IReadOnlyList<GetDetailedAccountsQueryResult>>
-            .SuccessResult(detailedAccount.Select(x => new GetDetailedAccountsQueryResult
-                {
-                    AccountTitle = x.AccountTitle,
-                    AccountCode = x.AccountCode,
-                    IsActive = x.IsActive,
-                    JournalEntryType = x.JournalEntryType,
-                    SubLedgerAccountId = x.SubLedgerAccountId
-                }).ToList()
-                .AsReadOnly());
+            .SuccessResult(detailedAccount.ToDto());
     }
 }
