@@ -1,0 +1,62 @@
+﻿using Domain.Entities;
+using Domain.Enums;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+
+namespace Infrastructure.Configurations.Journal;
+
+public class JournalEntryEntityConfiguration : IEntityTypeConfiguration<JournalEntryEntity>
+{
+    public void Configure(EntityTypeBuilder<JournalEntryEntity> builder)
+    {
+        builder.ToTable("JournalEntries");
+
+        builder.HasKey(x => x.Id);
+
+        builder.Property(x => x.JournalEntryNumber)
+            .IsRequired()
+            .HasMaxLength(100);
+
+        builder.Property(x => x.JournalEntryType)
+            .IsRequired()
+            .HasConversion<EnumToStringConverter<JournalEntryType>>();
+
+        builder.Property(c => c.JournalEntryType)
+            .HasMaxLength(20);
+
+        builder.Property(x => x.Amount)
+            .IsRequired();
+
+        builder.Property(x => x.Description)
+            .HasMaxLength(2048);
+
+        builder.Property(x => x.SubLedgerAccountId)
+            .IsRequired();
+
+        builder.Property(x => x.JournalVoucherId)
+            .IsRequired();
+
+        // Index
+        builder.HasIndex(x => x.SubLedgerAccountId);
+        builder.HasIndex(x => x.JournalVoucherId);
+        builder.HasIndex(x => x.JournalEntryType);
+        builder.HasIndex(x => x.JournalEntryNumber).IsUnique();
+
+        // Navigation
+        builder.HasOne(x => x.JournalVoucher)
+            .WithMany(x => x.JournalEntries)
+            .HasForeignKey(x => x.JournalVoucherId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        builder.HasOne(x => x.SubLedgerAccount)
+            .WithMany(x => x.JournalEntries)
+            .HasForeignKey(x => x.SubLedgerAccountId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        builder.HasOne(x => x.DetailedAccount)
+            .WithMany(x => x.JournalEntries)
+            .HasForeignKey(x => x.DetailedAccountId)
+            .OnDelete(DeleteBehavior.Restrict);
+    }
+}

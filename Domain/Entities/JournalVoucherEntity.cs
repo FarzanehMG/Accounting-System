@@ -19,4 +19,4 @@ public sealed class JournalVoucherEntity : BaseEntity
     public FinancialPeriodEntity? FinancialPeriod{ get; init; }
 
     public ICollection<JournalEntryEntity> JournalEntries { get; init; } = new List<JournalEntryEntity>();
-}
+}   
