@@ -14,5 +14,5 @@ public sealed class DetailedAccountEntity : BaseEntity
     public required Guid SubLedgerAccountId { get; set; }
 	public SubLedgerAccountEntity? SubLedgerAccount { get; set; }
 
-    public ICollection<JournalVoucherEntity> JournalVouchers { get; set; } = new List<JournalVoucherEntity>();
+    public ICollection<JournalEntryEntity> JournalEntries { get; set; } = new List<JournalEntryEntity>();
 }

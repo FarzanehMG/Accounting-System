@@ -15,4 +15,5 @@ public sealed class SubLedgerAccountEntity : BaseEntity
 	public GeneralLedgerAccountEntity? GeneralLedgerAccount { get; set; }
 
 	public ICollection<DetailedAccountEntity> DetailedAccounts { get; set; } = new List<DetailedAccountEntity>();
+    public ICollection<JournalEntryEntity> JournalEntries { get; set; } = new List<JournalEntryEntity>();
 }

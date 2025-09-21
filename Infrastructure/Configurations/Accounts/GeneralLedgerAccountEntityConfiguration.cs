@@ -15,35 +15,44 @@ internal class GeneralLedgerAccountEntityConfiguration : IEntityTypeConfiguratio
         builder.HasKey(x => x.Id);
 
         builder.Property(x => x.AccountTitle)
+            .IsRequired()
             .HasMaxLength(100);
 
         builder.Property(x => x.AccountCode)
+            .IsRequired()
             .HasMaxLength(100);
 
         builder.Property(x => x.AccountDescription)
             .HasMaxLength(2048);
 
-
-        builder.Property(c => c.JournalEntryType)
+        builder.Property(x => x.JournalEntryType)
+            .IsRequired()
             .HasConversion<EnumToStringConverter<JournalEntryType>>();
 
-        builder.Property(c => c.JournalEntryType)
+        builder.Property(x => x.JournalEntryType)
             .HasMaxLength(20);
 
+        builder.Property(x => x.IsActive)
+            .IsRequired();
+
+        builder.Property(x => x.GroupAccountId)
+            .IsRequired();
+
         // Index
-        builder.HasIndex(c => c.AccountTitle);
-        builder.HasIndex(c => c.JournalEntryType);
-        builder.HasIndex(c => c.IsActive);
+        builder.HasIndex(x => x.AccountCode).IsUnique();
+        builder.HasIndex(x => x.AccountTitle);
+        builder.HasIndex(x => x.JournalEntryType);
+        builder.HasIndex(x => x.IsActive);
 
         // Navigation
         builder.HasMany(x => x.SubLedgerAccounts)
             .WithOne(x => x.GeneralLedgerAccount)
             .HasForeignKey(x => x.GeneralLedgerAccountId)
-            .OnDelete(DeleteBehavior.NoAction);
+            .OnDelete(DeleteBehavior.Restrict);
 
-        builder.HasOne(x=>x.GroupAccount)
-            .WithMany(x=>x.GeneralLedgerAccounts)
-            .HasForeignKey(x=>x.GroupAccountId)
-            .OnDelete(DeleteBehavior.NoAction);
+        builder.HasOne(x => x.GroupAccount)
+            .WithMany(x => x.GeneralLedgerAccounts)
+            .HasForeignKey(x => x.GroupAccountId)
+            .OnDelete(DeleteBehavior.Restrict);
     }
 }
