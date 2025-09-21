@@ -1,5 +1,5 @@
 ﻿using Bogus;
-using Domain.Entities;
+using Domain.Entities.Accounts;
 using Domain.Enums;
 
 namespace Application.Tests.Journal;

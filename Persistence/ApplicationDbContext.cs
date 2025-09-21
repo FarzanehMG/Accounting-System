@@ -1,4 +1,4 @@
-﻿using Domain.Entities;
+﻿using Domain.Entities.Accounts;
 using Microsoft.EntityFrameworkCore;
 
 namespace Persistence;

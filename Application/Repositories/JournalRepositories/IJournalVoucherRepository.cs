@@ -1,5 +1,5 @@
 ﻿using Application.Features.Journal.Queries.JournalVoucher.Dtos;
-using Domain.Entities;
+using Domain.Entities.Journal;
 
 namespace Application.Repositories.JournalRepositories;
 

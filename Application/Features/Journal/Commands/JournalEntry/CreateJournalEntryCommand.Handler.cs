@@ -1,7 +1,7 @@
 ﻿using Application.Common;
 using Application.Extensions;
 using Application.Repositories.Common;
-using Domain.Entities;
+using Domain.Entities.Journal;
 using Domain.Enums;
 
 namespace Application.Features.Journal.Commands.JournalEntry;

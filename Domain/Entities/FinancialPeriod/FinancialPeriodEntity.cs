@@ -1,6 +1,7 @@
 ﻿using Domain.Common;
+using Domain.Entities.Journal;
 
-namespace Domain.Entities;
+namespace Domain.Entities.FinancialPeriod;
 
 public sealed class FinancialPeriodEntity : BaseEntity
 {

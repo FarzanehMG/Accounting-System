@@ -5,7 +5,7 @@ using Application.Features.Accounts.Queries.GeneralLedgerAccount.Dtos;
 using Application.Repositories.Common;
 using Application.Tests.Extensions;
 using Bogus;
-using Domain.Entities;
+using Domain.Entities.Accounts;
 using Domain.Enums;
 using FluentAssertions;
 using NSubstitute;

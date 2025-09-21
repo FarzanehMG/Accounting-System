@@ -1,5 +1,5 @@
 ﻿using Application.Features.Accounts.Queries.GeneralLedgerAccount.Dtos;
-using Domain.Entities;
+using Domain.Entities.Accounts;
 using Domain.Enums;
 
 namespace Application.Repositories.AccountRepositories;

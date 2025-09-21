@@ -1,7 +1,7 @@
 ﻿using Domain.Common;
 using Domain.Enums;
 
-namespace Domain.Entities;
+namespace Domain.Entities.Accounts;
 
 public sealed class GeneralLedgerAccountEntity : BaseEntity
 {

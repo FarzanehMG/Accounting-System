@@ -1,5 +1,5 @@
 ﻿using Application.Features.Journal.Queries.JournalEntry;
-using Domain.Entities;
+using Domain.Entities.Journal;
 
 namespace Application.Converters.Journal;
 

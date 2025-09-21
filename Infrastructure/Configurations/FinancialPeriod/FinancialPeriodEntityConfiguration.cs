@@ -1,4 +1,4 @@
-﻿using Domain.Entities;
+﻿using Domain.Entities.FinancialPeriod;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 

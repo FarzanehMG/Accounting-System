@@ -1,5 +1,5 @@
 ﻿using Application.Features.FinancialPeriod.Queries.Dtos;
-using Domain.Entities;
+using Domain.Entities.FinancialPeriod;
 
 namespace Application.Repositories.FinancialPeriod;
 

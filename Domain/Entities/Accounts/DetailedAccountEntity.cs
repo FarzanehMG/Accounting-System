@@ -1,7 +1,8 @@
 ﻿using Domain.Common;
+using Domain.Entities.Journal;
 using Domain.Enums;
 
-namespace Domain.Entities;
+namespace Domain.Entities.Accounts;
 
 public sealed class DetailedAccountEntity : BaseEntity
 {

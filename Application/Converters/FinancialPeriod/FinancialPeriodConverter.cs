@@ -1,5 +1,5 @@
 ﻿using Application.Features.FinancialPeriod.Queries;
-using Domain.Entities;
+using Domain.Entities.FinancialPeriod;
 
 namespace Application.Converters.FinancialPeriod;
 

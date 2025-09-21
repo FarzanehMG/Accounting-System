@@ -2,7 +2,8 @@
 using Application.Repositories.Common;
 using Application.Tests.Extensions;
 using Bogus;
-using Domain.Entities;
+using Domain.Entities.Accounts;
+using Domain.Entities.Journal;
 using Domain.Enums;
 using FluentAssertions;
 using NSubstitute;

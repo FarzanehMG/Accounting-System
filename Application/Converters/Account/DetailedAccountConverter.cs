@@ -1,5 +1,5 @@
 ﻿using Application.Features.Accounts.Queries.DetailedAccount;
-using Domain.Entities;
+using Domain.Entities.Accounts;
 
 namespace Application.Converters.Account;
 

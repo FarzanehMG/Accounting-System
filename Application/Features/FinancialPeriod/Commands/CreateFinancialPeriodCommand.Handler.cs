@@ -1,7 +1,7 @@
 ﻿using Application.Common;
 using Application.Extensions;
 using Application.Repositories.Common;
-using Domain.Entities;
+using Domain.Entities.FinancialPeriod;
 
 namespace Application.Features.FinancialPeriod.Commands;
 
