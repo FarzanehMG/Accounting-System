@@ -1,7 +1,7 @@
 ﻿using Application.Common;
-using Application.Features.FinancialPeriod.Queries;
 using Application.Features.Journal.Commands.JournalVoucher;
 using Application.Features.Journal.Queries.JournalVoucher;
+using Application.Features.Journal.Queries.JournalVoucher.Dtos;
 using Application.Repositories.Common;
 using Application.Tests.Extensions;
 using Bogus;
@@ -1009,5 +1009,359 @@ public class JournalVoucherTests(ITestOutputHelper testOutputHelper)
         result.IsSuccess.Should().BeFalse();
         result.ErrorMessages.Should()
             .Contain(x => x.Key == nameof(GetJournalVoucherByIdQuery.Id) && x.Value.Contains("must not be empty"));
+    }
+
+    [Fact]
+    public async Task GetJournalVouchers_WhenJournalVoucherStateIsValid_ShouldReturnMatchingResults()
+    {
+        // Arrange
+        var unitOfWork = Substitute.For<IUnitOfWork>();
+        var faker = new Faker();
+        var journalVoucherState = JournalVoucherState.Approved;
+
+        var existingJournalVouchers = new List<JournalVoucherEntity>
+        {
+            new()
+            {
+                Id = Guid.NewGuid(),
+                JournalVoucherTitle = faker.Finance.AccountName(),
+                ReferenceNumber = faker.Finance.RoutingNumber(),
+                TransactionTime = DateTime.UtcNow,
+                JournalVoucherState = journalVoucherState,
+                CreatedByUserId = Guid.NewGuid(),
+                FinancialPeriodId = Guid.NewGuid()
+            },
+            new()
+            {
+                Id = Guid.NewGuid(),
+                JournalVoucherTitle = faker.Finance.AccountName(),
+                ReferenceNumber = faker.Finance.RoutingNumber(),
+                TransactionTime = DateTime.UtcNow,
+                JournalVoucherState = journalVoucherState,
+                CreatedByUserId = Guid.NewGuid(),
+                FinancialPeriodId = Guid.NewGuid()
+            }
+        };
+
+        unitOfWork.JournalVoucherRepository
+            .GetAllAsync(new JournalVoucherFilter
+            {
+                JournalVoucherState = journalVoucherState
+            }, CancellationToken.None)
+            .Returns(existingJournalVouchers);
+
+        var query = new GetJournalVouchersQuery
+        {
+            JournalVoucherState = journalVoucherState
+        };
+        var handler = new GetJournalVouchersQueryHandler(unitOfWork);
+
+        // Act
+        var result = await handler.Handle(query, CancellationToken.None);
+
+        // Assert
+        result.IsSuccess.Should().BeTrue();
+        result.Result.Should().HaveCount(2);
+        result.Result.Select(x => x.JournalVoucherState).Distinct().Should().ContainSingle().Which.Should().Be(journalVoucherState);
+    }
+
+    [Fact]
+    public async Task GetJournalVouchers_WhenApprovedTimeIsValid_ShouldReturnMatchingResults()
+    {
+        // Arrange
+        var unitOfWork = Substitute.For<IUnitOfWork>();
+        var faker = new Faker();
+        var approvedTime = DateTime.UtcNow;
+
+        var existingJournalVouchers = new List<JournalVoucherEntity>
+        {
+            new()
+            {
+                Id = Guid.NewGuid(),
+                JournalVoucherTitle = faker.Finance.AccountName(),
+                ReferenceNumber = faker.Finance.RoutingNumber(),
+                TransactionTime = DateTime.UtcNow,
+                JournalVoucherState = JournalVoucherState.Approved,
+                CreatedByUserId = Guid.NewGuid(),
+                FinancialPeriodId = Guid.NewGuid(),
+                ApprovedTime = approvedTime
+            },
+            new()
+            {
+                Id = Guid.NewGuid(),
+                JournalVoucherTitle = faker.Finance.AccountName(),
+                ReferenceNumber = faker.Finance.RoutingNumber(),
+                TransactionTime = DateTime.UtcNow,
+                JournalVoucherState = JournalVoucherState.Approved,
+                CreatedByUserId = Guid.NewGuid(),
+                FinancialPeriodId = Guid.NewGuid(),
+                ApprovedTime = approvedTime
+            }
+        };
+
+        unitOfWork.JournalVoucherRepository
+            .GetAllAsync(new JournalVoucherFilter
+            {
+                ApprovedTime = approvedTime
+            }, CancellationToken.None)
+            .Returns(existingJournalVouchers);
+
+        var query = new GetJournalVouchersQuery
+        {
+            ApprovedTime = approvedTime
+        };
+        var handler = new GetJournalVouchersQueryHandler(unitOfWork);
+
+        // Act
+        var result = await handler.Handle(query, CancellationToken.None);
+
+        // Assert
+        result.IsSuccess.Should().BeTrue();
+        result.Result.Should().HaveCount(2);
+        result.Result.Select(x => x.ApprovedTime).Distinct().Should().ContainSingle().Which.Should().Be(approvedTime);
+
+    }
+
+    [Fact]
+    public async Task GetJournalVouchers_WhenJournalVoucherTitleIsValid_ShouldReturnMatchingResults()
+    {
+        // Arrange
+        var unitOfWork = Substitute.For<IUnitOfWork>();
+        var faker = new Faker();
+        var journalVoucherTitle = faker.Finance.AccountName();
+
+        var existingJournalVouchers = new List<JournalVoucherEntity>
+        {
+            new()
+            {
+                Id = Guid.NewGuid(),
+                JournalVoucherTitle = faker.Finance.AccountName(),
+                ReferenceNumber = faker.Finance.RoutingNumber(),
+                TransactionTime = DateTime.UtcNow,
+                JournalVoucherState = JournalVoucherState.Draft,
+                CreatedByUserId = Guid.NewGuid(),
+                FinancialPeriodId = Guid.NewGuid()
+            },
+            new()
+            {
+                Id = Guid.NewGuid(),
+                JournalVoucherTitle = journalVoucherTitle,
+                ReferenceNumber = faker.Finance.RoutingNumber(),
+                TransactionTime = DateTime.UtcNow,
+                JournalVoucherState = JournalVoucherState.Draft,
+                CreatedByUserId = Guid.NewGuid(),
+                FinancialPeriodId = Guid.NewGuid()
+            }
+        };
+
+        unitOfWork.JournalVoucherRepository
+            .GetAllAsync(Arg.Any<JournalVoucherFilter>(), Arg.Any<CancellationToken>())
+            .Returns(callInfo =>
+            {
+                var filter = callInfo.Arg<JournalVoucherFilter>();
+                return existingJournalVouchers
+                    .Where(x => filter.JournalVoucherTitle == null || x.JournalVoucherTitle == filter.JournalVoucherTitle)
+                    .ToList()
+                    .AsReadOnly();
+            });
+
+        var query = new GetJournalVouchersQuery
+        {
+            JournalVoucherTitle = journalVoucherTitle
+        };
+        var handler = new GetJournalVouchersQueryHandler(unitOfWork);
+
+        // Act
+        var result = await handler.Handle(query, CancellationToken.None);
+
+        // Assert
+        result.IsSuccess.Should().BeTrue();
+        result.Result.Should().HaveCount(1);
+        result.Result.Select(x => x.JournalVoucherTitle).Distinct().Should().ContainSingle().Which.Should().Be(journalVoucherTitle);
+    }
+
+    [Fact]
+    public async Task GetJournalVouchers_WhenTransactionTimeIsValid_ShouldReturnMatchingResults()
+    {
+        // Arrange
+        var unitOfWork = Substitute.For<IUnitOfWork>();
+        var faker = new Faker();
+        var transactionTime = DateTime.UtcNow.AddDays(2);
+
+        var existingJournalVouchers = new List<JournalVoucherEntity>
+        {
+            new()
+            {
+                Id = Guid.NewGuid(),
+                JournalVoucherTitle = faker.Finance.AccountName(),
+                ReferenceNumber = faker.Finance.RoutingNumber(),
+                TransactionTime = transactionTime,
+                JournalVoucherState = JournalVoucherState.Draft,
+                CreatedByUserId = Guid.NewGuid(),
+                FinancialPeriodId = Guid.NewGuid()
+            },
+            new()
+            {
+                Id = Guid.NewGuid(),
+                JournalVoucherTitle = faker.Finance.AccountName(),
+                ReferenceNumber = faker.Finance.RoutingNumber(),
+                TransactionTime = DateTime.UtcNow,
+                JournalVoucherState = JournalVoucherState.Draft,
+                CreatedByUserId = Guid.NewGuid(),
+                FinancialPeriodId = Guid.NewGuid()
+            }
+        };
+
+        unitOfWork.JournalVoucherRepository
+            .GetAllAsync(Arg.Any<JournalVoucherFilter>(), Arg.Any<CancellationToken>())
+            .Returns(callInfo =>
+            {
+                var filter = callInfo.Arg<JournalVoucherFilter>();
+                return existingJournalVouchers
+                    .Where(x => filter.TransactionTime == null || x.TransactionTime == filter.TransactionTime)
+                    .ToList()
+                    .AsReadOnly();
+            });
+
+        var query = new GetJournalVouchersQuery
+        {
+            TransactionTime = transactionTime
+        };
+        var handler = new GetJournalVouchersQueryHandler(unitOfWork);
+
+        // Act
+        var result = await handler.Handle(query, CancellationToken.None);
+
+        // Assert
+        result.IsSuccess.Should().BeTrue();
+        result.Result.Should().HaveCount(1);
+        result.Result.Select(x => x.TransactionTime).Distinct().Should().ContainSingle().Which.Should().Be(transactionTime);
+    }
+
+    [Fact]
+    public async Task GetJournalVouchers_WhenNoRecordsFound_ShouldReturnNotFound()
+    {
+        // Arrange
+        var unitOfWork = Substitute.For<IUnitOfWork>();
+        var transactionTime = DateTime.UtcNow.AddDays(1);
+
+        unitOfWork.JournalVoucherRepository
+            .GetAllAsync(Arg.Any<JournalVoucherFilter>(), Arg.Any<CancellationToken>())
+            .Returns([]);
+
+        var query = new GetJournalVouchersQuery
+        {
+            TransactionTime = transactionTime
+        };
+        var handler = new GetJournalVouchersQueryHandler(unitOfWork);
+
+        // Act
+        var result = await handler.Handle(query, CancellationToken.None);
+
+        // Assert
+        result.IsSuccess.Should().BeFalse();
+        result.Result.Should().BeNull();
+        result.ErrorMessages.Should().Contain(new KeyValuePair<string, string>(nameof(GetJournalVouchersQueryResult), "Journal voucher not found."));
+    }
+
+    [Fact]
+    public async Task GetJournalVouchers_WhenMultipleFiltersAreApplied_ShouldReturnMatchingResults()
+    {
+        // Arrange
+        var unitOfWork = Substitute.For<IUnitOfWork>();
+        var faker = new Faker();
+        var journalVoucherTitle = faker.Finance.AccountName();
+        var transactionTime = DateTime.UtcNow;
+
+        var existingJournalVouchers = new List<JournalVoucherEntity>
+        {
+            new()
+            {
+                Id = Guid.NewGuid(),
+                JournalVoucherTitle = journalVoucherTitle,
+                ReferenceNumber = faker.Finance.RoutingNumber(),
+                TransactionTime = transactionTime,
+                JournalVoucherState = JournalVoucherState.Draft,
+                CreatedByUserId = Guid.NewGuid(),
+                FinancialPeriodId = Guid.NewGuid()
+            },
+            new()
+            {
+                Id = Guid.NewGuid(),
+                JournalVoucherTitle = journalVoucherTitle,
+                ReferenceNumber = faker.Finance.RoutingNumber(),
+                TransactionTime = DateTime.UtcNow,
+                JournalVoucherState = JournalVoucherState.Draft,
+                CreatedByUserId = Guid.NewGuid(),
+                FinancialPeriodId = Guid.NewGuid()
+            }
+        };
+
+        unitOfWork.JournalVoucherRepository
+            .GetAllAsync(Arg.Any<JournalVoucherFilter>(), Arg.Any<CancellationToken>())
+            .Returns(callInfo =>
+            {
+                var filter = callInfo.Arg<JournalVoucherFilter>();
+                return existingJournalVouchers
+                    .Where(x => filter.TransactionTime == null || x.TransactionTime == filter.TransactionTime)
+                    .Where(x => filter.JournalVoucherTitle == null || x.JournalVoucherTitle == filter.JournalVoucherTitle)
+                    .ToList()
+                    .AsReadOnly();
+            });
+
+        var query = new GetJournalVouchersQuery
+        {
+            TransactionTime = transactionTime,
+            JournalVoucherTitle = journalVoucherTitle
+        };
+        var handler = new GetJournalVouchersQueryHandler(unitOfWork);
+
+        // Act
+        var result = await handler.Handle(query, CancellationToken.None);
+
+        // Assert
+        result.IsSuccess.Should().BeTrue();
+        result.Result.Should().HaveCount(1);
+        result.Result.Select(x => x.JournalVoucherTitle).Distinct().Should().ContainSingle().Which.Should().Be(journalVoucherTitle);
+        result.Result.Select(x => x.TransactionTime).Distinct().Should().ContainSingle().Which.Should().Be(transactionTime);
+    }
+
+    [Fact]
+    public async Task GetJournalVouchers_WhenRecordsExist_ShouldMapPropertiesCorrectly()
+    {
+        // Arrange
+        var unitOfWork = Substitute.For<IUnitOfWork>();
+        var faker = new Faker();
+
+        var entity = new JournalVoucherEntity
+        {
+            Id = Guid.NewGuid(),
+            JournalVoucherTitle = faker.Finance.AccountName(),
+            ReferenceNumber = faker.Finance.RoutingNumber(),
+            TransactionTime = DateTime.UtcNow,
+            JournalVoucherState = JournalVoucherState.Draft,
+            CreatedByUserId = Guid.NewGuid(),
+            FinancialPeriodId = Guid.NewGuid()
+        };
+
+        unitOfWork.JournalVoucherRepository
+            .GetAllAsync(Arg.Any<JournalVoucherFilter>(), Arg.Any<CancellationToken>())
+            .Returns(new List<JournalVoucherEntity> { entity }.AsReadOnly());
+
+        var query = new GetJournalVouchersQuery { JournalVoucherNumber = entity.JournalVoucherNumber };
+        var handler = new GetJournalVouchersQueryHandler(unitOfWork);
+
+        // Act
+        var result = await handler.Handle(query, CancellationToken.None);
+
+        // Assert
+        result.IsSuccess.Should().BeTrue();
+        result.Result.Should().HaveCount(1);
+
+        var mapped = result.Result.First();
+        mapped.ApprovedByUserId.Should().Be(entity.ApprovedByUserId);
+        mapped.TransactionTime.Should().Be(entity.TransactionTime);
+        mapped.JournalVoucherState.Should().Be(entity.JournalVoucherState);
+        mapped.FinancialPeriodId.Should().Be(entity.FinancialPeriodId);
     }
 }

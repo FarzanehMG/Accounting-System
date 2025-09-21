@@ -1,6 +1,9 @@
 ﻿using Application.Common;
 using Application.Features.Journal.Commands.JournalEntry;
 using Application.Features.Journal.Queries.JournalEntry;
+using Application.Features.Journal.Queries.JournalEntry.Dtos;
+using Application.Features.Journal.Queries.JournalVoucher;
+using Application.Features.Journal.Queries.JournalVoucher.Dtos;
 using Application.Repositories.Common;
 using Application.Tests.Extensions;
 using Bogus;
@@ -2677,5 +2680,347 @@ public class JournalEntryTests(ITestOutputHelper testOutputHelper)
         result.IsSuccess.Should().BeFalse();
         result.ErrorMessages.Should()
             .Contain(x => x.Key == nameof(GetJournalEntryByIdQuery.Id) && x.Value.Contains("must not be empty"));
+    }
+
+    [Fact]
+    public async Task GetJournalEntries_WhenJournalVoucherIdIsValid_ShouldReturnMatchingResults()
+    {
+        // Arrange
+        var unitOfWork = Substitute.For<IUnitOfWork>();
+        var faker = new Faker();
+        var journalVoucherId = Guid.NewGuid();
+
+        var existingJournalEntries = new List<JournalEntryEntity>
+        {
+            new()
+            {
+                Id = Guid.NewGuid(),
+                JournalEntryNumber = faker.Finance.RoutingNumber(),
+                JournalEntryType = JournalEntryType.Credit,
+                Amount = 5,
+                SubLedgerAccountId = Guid.NewGuid(),
+                JournalVoucherId = journalVoucherId
+            },
+            new()
+            {
+                Id = Guid.NewGuid(),
+                JournalEntryNumber = faker.Finance.RoutingNumber(),
+                JournalEntryType = JournalEntryType.Credit,
+                Amount = 2,
+                SubLedgerAccountId = Guid.NewGuid(),
+                JournalVoucherId = journalVoucherId
+            }
+        };
+
+        unitOfWork.JournalEntryRepository
+            .GetAllAsync(new JournalEntryFilter
+            {
+                JournalVoucherId = journalVoucherId
+            }, CancellationToken.None)
+            .Returns(existingJournalEntries);
+
+        var query = new GetJournalEntriesQuery
+        {
+            JournalVoucherId = journalVoucherId
+        };
+        var handler = new GetJournalEntriesQueryHandler(unitOfWork);
+
+        // Act
+        var result = await handler.Handle(query, CancellationToken.None);
+
+        // Assert
+        result.IsSuccess.Should().BeTrue();
+        result.Result.Should().HaveCount(2);
+        result.Result.Select(x => x.JournalVoucherId).Distinct().Should().ContainSingle().Which.Should().Be(journalVoucherId);
+    }
+
+    [Fact]
+    public async Task GetJournalEntries_WhenJournalEntryTypeIsValid_ShouldReturnMatchingResults()
+    {
+        // Arrange
+        var unitOfWork = Substitute.For<IUnitOfWork>();
+        var faker = new Faker();
+        var journalEntryType = JournalEntryType.Credit;
+
+        var existingJournalEntries = new List<JournalEntryEntity>
+        {
+            new()
+            {
+                Id = Guid.NewGuid(),
+                JournalEntryNumber = faker.Finance.RoutingNumber(),
+                JournalEntryType = journalEntryType,
+                Amount = 5,
+                SubLedgerAccountId = Guid.NewGuid(),
+                JournalVoucherId = Guid.NewGuid()
+            },
+            new()
+            {
+                Id = Guid.NewGuid(),
+                JournalEntryNumber = faker.Finance.RoutingNumber(),
+                JournalEntryType = journalEntryType,
+                Amount = 2,
+                SubLedgerAccountId = Guid.NewGuid(),
+                JournalVoucherId = Guid.NewGuid()
+            }
+        };
+
+        unitOfWork.JournalEntryRepository
+            .GetAllAsync(new JournalEntryFilter
+            {
+                JournalEntryType = journalEntryType
+            }, CancellationToken.None)
+            .Returns(existingJournalEntries);
+
+        var query = new GetJournalEntriesQuery
+        {
+            JournalEntryType = journalEntryType
+        };
+        var handler = new GetJournalEntriesQueryHandler(unitOfWork);
+
+        // Act
+        var result = await handler.Handle(query, CancellationToken.None);
+
+        // Assert
+        result.IsSuccess.Should().BeTrue();
+        result.Result.Should().HaveCount(2);
+        result.Result.Select(x => x.JournalEntryType).Distinct().Should().ContainSingle().Which.Should().Be(journalEntryType);
+
+    }
+
+    [Fact]
+    public async Task GetJournalEntries_WhenSubLedgerAccountIdIsValid_ShouldReturnMatchingResults()
+    {
+        // Arrange
+        var unitOfWork = Substitute.For<IUnitOfWork>();
+        var faker = new Faker();
+        var subLedgerAccountId = Guid.NewGuid();
+
+        var existingJournalEntries = new List<JournalEntryEntity>
+        {
+            new()
+            {
+                Id = Guid.NewGuid(),
+                JournalEntryNumber = faker.Finance.RoutingNumber(),
+                JournalEntryType = JournalEntryType.Credit,
+                Amount = 5,
+                SubLedgerAccountId = subLedgerAccountId,
+                JournalVoucherId = Guid.NewGuid()
+            },
+            new()
+            {
+                Id = Guid.NewGuid(),
+                JournalEntryNumber = faker.Finance.RoutingNumber(),
+                JournalEntryType = JournalEntryType.Credit,
+                Amount = 2,
+                SubLedgerAccountId = Guid.NewGuid(),
+                JournalVoucherId = Guid.NewGuid()
+            }
+        };
+
+        unitOfWork.JournalEntryRepository
+            .GetAllAsync(Arg.Any<JournalEntryFilter>(), Arg.Any<CancellationToken>())
+            .Returns(callInfo =>
+            {
+                var filter = callInfo.Arg<JournalEntryFilter>();
+                return existingJournalEntries
+                    .Where(x => filter.SubLedgerAccountId == null || x.SubLedgerAccountId == filter.SubLedgerAccountId)
+                    .ToList()
+                    .AsReadOnly();
+            });
+
+        var query = new GetJournalEntriesQuery
+        {
+            SubLedgerAccountId = subLedgerAccountId
+        };
+        var handler = new GetJournalEntriesQueryHandler(unitOfWork);
+
+        // Act
+        var result = await handler.Handle(query, CancellationToken.None);
+
+        // Assert
+        result.IsSuccess.Should().BeTrue();
+        result.Result.Should().HaveCount(1);
+        result.Result.Select(x => x.SubLedgerAccountId).Distinct().Should().ContainSingle().Which.Should().Be(subLedgerAccountId);
+    }
+
+    [Fact]
+    public async Task GetJournalEntries_WhenAmountIsValid_ShouldReturnMatchingResults()
+    {
+        // Arrange
+        var unitOfWork = Substitute.For<IUnitOfWork>();
+        var faker = new Faker();
+        var amount = 5;
+
+        var existingJournalEntries = new List<JournalEntryEntity>
+        {
+            new()
+            {
+                Id = Guid.NewGuid(),
+                JournalEntryNumber = faker.Finance.RoutingNumber(),
+                JournalEntryType = JournalEntryType.Credit,
+                Amount = amount,
+                SubLedgerAccountId = Guid.NewGuid(),
+                JournalVoucherId = Guid.NewGuid()
+            },
+            new()
+            {
+                Id = Guid.NewGuid(),
+                JournalEntryNumber = faker.Finance.RoutingNumber(),
+                JournalEntryType = JournalEntryType.Credit,
+                Amount = 2,
+                SubLedgerAccountId = Guid.NewGuid(),
+                JournalVoucherId = Guid.NewGuid()
+            }
+        };
+
+        unitOfWork.JournalEntryRepository
+            .GetAllAsync(Arg.Any<JournalEntryFilter>(), Arg.Any<CancellationToken>())
+            .Returns(callInfo =>
+            {
+                var filter = callInfo.Arg<JournalEntryFilter>();
+                return existingJournalEntries
+                    .Where(x => filter.Amount == null || x.Amount == filter.Amount)
+                    .ToList()
+                    .AsReadOnly();
+            });
+
+        var query = new GetJournalEntriesQuery
+        {
+            Amount = amount
+        };
+        var handler = new GetJournalEntriesQueryHandler(unitOfWork);
+
+        // Act
+        var result = await handler.Handle(query, CancellationToken.None);
+
+        // Assert
+        result.IsSuccess.Should().BeTrue();
+        result.Result.Should().HaveCount(1);
+        result.Result.Select(x => x.Amount).Distinct().Should().ContainSingle().Which.Should().Be(amount);
+    }
+
+    [Fact]
+    public async Task GetJournalEntries_WhenNoRecordsFound_ShouldReturnNotFound()
+    {
+        // Arrange
+        var unitOfWork = Substitute.For<IUnitOfWork>();
+        var faker = new Faker();
+        var journalEntryNumber = faker.Finance.RoutingNumber();
+
+        unitOfWork.JournalEntryRepository
+            .GetAllAsync(Arg.Any<JournalEntryFilter>(), Arg.Any<CancellationToken>())
+            .Returns([]);
+
+        var query = new GetJournalEntriesQuery
+        {
+            JournalEntryNumber = journalEntryNumber
+        };
+        var handler = new GetJournalEntriesQueryHandler(unitOfWork);
+
+        // Act
+        var result = await handler.Handle(query, CancellationToken.None);
+
+        // Assert
+        result.IsSuccess.Should().BeFalse();
+        result.Result.Should().BeNull();
+        result.ErrorMessages.Should().Contain(new KeyValuePair<string, string>(nameof(GetJournalEntriesQueryResult), "Journal entry not found."));
+    }
+
+    [Fact]
+    public async Task GetJournalEntries_WhenMultipleFiltersAreApplied_ShouldReturnMatchingResults()
+    {
+        // Arrange
+        var unitOfWork = Substitute.For<IUnitOfWork>();
+        var faker = new Faker();
+        var journalEntryNumber = faker.Finance.AccountName();
+        const int amount = 5;
+
+        var existingJournalEntries = new List<JournalEntryEntity>
+        {
+            new()
+            {
+                Id = Guid.NewGuid(),
+                JournalEntryNumber = journalEntryNumber,
+                JournalEntryType = JournalEntryType.Credit,
+                Amount = amount,
+                SubLedgerAccountId = Guid.NewGuid(),
+                JournalVoucherId = Guid.NewGuid()
+            },
+            new()
+            {
+                Id = Guid.NewGuid(),
+                JournalEntryNumber = faker.Finance.RoutingNumber(),
+                JournalEntryType = JournalEntryType.Credit,
+                Amount = 2,
+                SubLedgerAccountId = Guid.NewGuid(),
+                JournalVoucherId = Guid.NewGuid()
+            }
+        };
+
+        unitOfWork.JournalEntryRepository
+            .GetAllAsync(Arg.Any<JournalEntryFilter>(), Arg.Any<CancellationToken>())
+            .Returns(callInfo =>
+            {
+                var filter = callInfo.Arg<JournalEntryFilter>();
+                return existingJournalEntries
+                    .Where(x => filter.JournalEntryNumber == null || x.JournalEntryNumber == filter.JournalEntryNumber)
+                    .Where(x => filter.Amount == null || x.Amount == filter.Amount)
+                    .ToList()
+                    .AsReadOnly();
+            });
+
+        var query = new GetJournalEntriesQuery
+        {
+            JournalEntryNumber = journalEntryNumber,
+            Amount = amount
+        };
+        var handler = new GetJournalEntriesQueryHandler(unitOfWork);
+
+        // Act
+        var result = await handler.Handle(query, CancellationToken.None);
+
+        // Assert
+        result.IsSuccess.Should().BeTrue();
+        result.Result.Should().HaveCount(1);
+        result.Result.Select(x => x.JournalEntryNumber).Distinct().Should().ContainSingle().Which.Should().Be(journalEntryNumber);
+        result.Result.Select(x => x.Amount).Distinct().Should().ContainSingle().Which.Should().Be(amount);
+    }
+
+    [Fact]
+    public async Task GetJournalEntries_WhenRecordsExist_ShouldMapPropertiesCorrectly()
+    {
+        // Arrange
+        var unitOfWork = Substitute.For<IUnitOfWork>();
+        var faker = new Faker();
+
+        var entity = new JournalEntryEntity
+        {
+            Id = Guid.NewGuid(),
+            JournalEntryNumber = faker.Finance.RoutingNumber(),
+            JournalEntryType = JournalEntryType.Credit,
+            Amount = 5,
+            SubLedgerAccountId = Guid.NewGuid(),
+            JournalVoucherId = Guid.NewGuid()
+        };
+
+        unitOfWork.JournalEntryRepository
+            .GetAllAsync(Arg.Any<JournalEntryFilter>(), Arg.Any<CancellationToken>())
+            .Returns(new List<JournalEntryEntity> { entity }.AsReadOnly());
+
+        var query = new GetJournalEntriesQuery { JournalEntryNumber = entity.JournalEntryNumber };
+        var handler = new GetJournalEntriesQueryHandler(unitOfWork);
+
+        // Act
+        var result = await handler.Handle(query, CancellationToken.None);
+
+        // Assert
+        result.IsSuccess.Should().BeTrue();
+        result.Result.Should().HaveCount(1);
+
+        var mapped = result.Result.First();
+        mapped.JournalEntryNumber.Should().Be(entity.JournalEntryNumber);
+        mapped.JournalEntryType.Should().Be(entity.JournalEntryType);
+        mapped.Amount.Should().Be(entity.Amount);
+        mapped.SubLedgerAccountId.Should().Be(entity.SubLedgerAccountId);
     }
 }
