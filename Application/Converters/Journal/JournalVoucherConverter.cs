@@ -22,4 +22,23 @@ public static class JournalVoucherConverter
             Description = entity.Description
         };
     }
+
+    public static IReadOnlyList<GetJournalVouchersQueryResult> ToDto(this IReadOnlyList<JournalVoucherEntity> entity)
+    {
+        return entity.Select(x => new GetJournalVouchersQueryResult
+            {
+                Id = x.Id,
+                JournalVoucherTitle = x.JournalVoucherTitle,
+                ReferenceNumber = x.ReferenceNumber,
+                TransactionTime = x.TransactionTime,
+                JournalVoucherState = x.JournalVoucherState,
+                CreatedByUserId = x.CreatedByUserId,
+                FinancialPeriodId = x.FinancialPeriodId,
+                Description = x.Description,
+                JournalVoucherNumber = x.JournalVoucherNumber,
+                ApprovedByUserId = x.ApprovedByUserId,
+                ApprovedTime = x.ApprovedTime
+            }).ToList()
+            .AsReadOnly();
+    }
 }

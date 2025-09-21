@@ -19,4 +19,20 @@ public static class JournalEntryConverter
             Description = entity.Description
         };
     }
+
+    public static IReadOnlyList<GetJournalEntriesQueryResult> ToDto(this IReadOnlyList<JournalEntryEntity> entity)
+    {
+        return entity.Select(x => new GetJournalEntriesQueryResult
+            {
+                Id = x.Id,
+                JournalEntryNumber = x.JournalEntryNumber,
+                JournalEntryType = x.JournalEntryType,
+                Amount = x.Amount,
+                SubLedgerAccountId = x.SubLedgerAccountId,
+                JournalVoucherId = x.JournalVoucherId,
+                DetailedAccountId = x.DetailedAccountId,
+                Description = x.Description
+            }).ToList()
+            .AsReadOnly();
+    }
 }
