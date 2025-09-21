@@ -1,5 +1,6 @@
 ﻿using Application.Common;
 using Application.Features.Journal.Commands.JournalEntry;
+using Application.Features.Journal.Queries.JournalEntry;
 using Application.Repositories.Common;
 using Application.Tests.Extensions;
 using Bogus;
@@ -2597,5 +2598,84 @@ public class JournalEntryTests(ITestOutputHelper testOutputHelper)
 
         await unitOfWork.DidNotReceive()
             .CommitAsync(CancellationToken.None);
+    }
+
+    [Fact]
+    public async Task GetJournalEntry_WithValidId_ShouldReturnJournalEntry()
+    {
+        // Arrange
+        var unitOfWork = Substitute.For<IUnitOfWork>();
+        var handler = new GetJournalEntryByIdQueryHandler(unitOfWork);
+        var journalEntryId = Guid.NewGuid();
+
+        var existingJournalEntryEntity = new JournalEntryEntity
+        {
+            Id = journalEntryId,
+            CreatedDate = DateTime.UtcNow,
+            ModifiedDate = DateTime.UtcNow,
+            JournalEntryNumber = "1",
+            JournalEntryType = JournalEntryType.Credit,
+            Amount = 2,
+            SubLedgerAccountId = Guid.NewGuid(),
+            JournalVoucherId = Guid.NewGuid()
+        };
+
+        unitOfWork.JournalEntryRepository.GetByIdAsync(journalEntryId, CancellationToken.None)
+            .Returns(existingJournalEntryEntity);
+
+        // Act
+        var request = new GetJournalEntryByIdQuery
+        {
+            Id = journalEntryId
+        };
+        var result = await handler.Handle(request, CancellationToken.None);
+
+        // Assert
+        result.IsSuccess.Should().BeTrue();
+        result.Result.Should().NotBeNull();
+        result.Result!.Id.Should().Be(journalEntryId);
+        result.Result.JournalEntryNumber.Should().Be(existingJournalEntryEntity.JournalEntryNumber);
+    }
+
+    [Fact]
+    public async Task GetJournalEntry_WithInvalidId_ShouldReturnNotFound()
+    {
+        // Arrange
+        var unitOfWork = Substitute.For<IUnitOfWork>();
+        var handler = new GetJournalEntryByIdQueryHandler(unitOfWork);
+
+        unitOfWork.JournalEntryRepository.GetByIdAsync(Arg.Any<Guid>(), CancellationToken.None)
+            .Returns((JournalEntryEntity?)null);
+
+        // Act
+        var request = new GetJournalEntryByIdQuery
+        {
+            Id = Guid.NewGuid()
+        };
+        var result = await handler.Handle(request, CancellationToken.None);
+
+        // Assert
+        result.IsSuccess.Should().BeFalse();
+        result.ErrorMessages.Should().ContainKey(nameof(request.Id))
+            .WhoseValue.Should().Contain("Journal entry not found");
+    }
+
+    [Fact]
+    public async Task GetJournalEntry_WhenValidationFails_ReturnsFailureResult()
+    {
+        // Arrange
+        var unitOfWork = Substitute.For<IUnitOfWork>();
+        var handler = new GetJournalEntryByIdQueryHandler(unitOfWork);
+
+        // Act
+        var result = await handler.Handle(new GetJournalEntryByIdQuery
+        {
+            Id = Guid.Empty
+        }, CancellationToken.None);
+
+        // Assert
+        result.IsSuccess.Should().BeFalse();
+        result.ErrorMessages.Should()
+            .Contain(x => x.Key == nameof(GetJournalEntryByIdQuery.Id) && x.Value.Contains("must not be empty"));
     }
 }

@@ -1,5 +1,7 @@
 ﻿using Application.Common;
+using Application.Features.FinancialPeriod.Queries;
 using Application.Features.Journal.Commands.JournalVoucher;
+using Application.Features.Journal.Queries.JournalVoucher;
 using Application.Repositories.Common;
 using Application.Tests.Extensions;
 using Bogus;
@@ -926,5 +928,86 @@ public class JournalVoucherTests(ITestOutputHelper testOutputHelper)
         // Assert
         result.IsSuccess.Should().BeFalse();
         testOutputHelper.WriteLineOperationResultErrors(result);
+    }
+
+    [Fact]
+    public async Task GetJournalVoucher_WithValidId_ShouldReturnJournalVoucher()
+    {
+        // Arrange
+        var unitOfWork = Substitute.For<IUnitOfWork>();
+        var handler = new GetJournalVoucherByIdQueryHandler(unitOfWork);
+        var faker = new Faker();
+        var journalVoucherId = Guid.NewGuid();
+
+        var existingJournalVoucherEntity = new JournalVoucherEntity
+        {
+            Id = journalVoucherId,
+            CreatedDate = DateTime.UtcNow,
+            ModifiedDate = DateTime.UtcNow,
+            JournalVoucherTitle = faker.Finance.AccountName(),
+            ReferenceNumber = faker.Finance.RoutingNumber(),
+            TransactionTime = DateTime.UtcNow,
+            JournalVoucherState = JournalVoucherState.Draft,
+            CreatedByUserId = Guid.NewGuid(),
+            FinancialPeriodId = Guid.NewGuid()
+        };
+
+        unitOfWork.JournalVoucherRepository.GetByIdAsync(journalVoucherId, CancellationToken.None)
+            .Returns(existingJournalVoucherEntity);
+
+        // Act
+        var request = new GetJournalVoucherByIdQuery
+        {
+            Id = journalVoucherId
+        };
+        var result = await handler.Handle(request, CancellationToken.None);
+
+        // Assert
+        result.IsSuccess.Should().BeTrue();
+        result.Result.Should().NotBeNull();
+        result.Result!.Id.Should().Be(journalVoucherId);
+        result.Result.JournalVoucherTitle.Should().Be(existingJournalVoucherEntity.JournalVoucherTitle);
+    }
+
+    [Fact]
+    public async Task GetJournalVoucher_WithInvalidId_ShouldReturnNotFound()
+    {
+        // Arrange
+        var unitOfWork = Substitute.For<IUnitOfWork>();
+        var handler = new GetJournalVoucherByIdQueryHandler(unitOfWork);
+
+        unitOfWork.JournalVoucherRepository.GetByIdAsync(Arg.Any<Guid>(), CancellationToken.None)
+            .Returns((JournalVoucherEntity?)null);
+
+        // Act
+        var request = new GetJournalVoucherByIdQuery
+        {
+            Id = Guid.NewGuid()
+        };
+        var result = await handler.Handle(request, CancellationToken.None);
+
+        // Assert
+        result.IsSuccess.Should().BeFalse();
+        result.ErrorMessages.Should().ContainKey(nameof(request.Id))
+            .WhoseValue.Should().Contain("Journal voucher not found");
+    }
+
+    [Fact]
+    public async Task GetJournalVoucher_WhenValidationFails_ReturnsFailureResult()
+    {
+        // Arrange
+        var unitOfWork = Substitute.For<IUnitOfWork>();
+        var handler = new GetJournalVoucherByIdQueryHandler(unitOfWork);
+
+        // Act
+        var result = await handler.Handle(new GetJournalVoucherByIdQuery
+        {
+            Id = Guid.Empty
+        }, CancellationToken.None);
+
+        // Assert
+        result.IsSuccess.Should().BeFalse();
+        result.ErrorMessages.Should()
+            .Contain(x => x.Key == nameof(GetJournalVoucherByIdQuery.Id) && x.Value.Contains("must not be empty"));
     }
 }
