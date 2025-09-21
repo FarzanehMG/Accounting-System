@@ -15,13 +15,13 @@ public class ApprovedJournalVoucherCommandHandler(IUnitOfWork unitOfWork)
         if (!validateResult.IsValid)
             return OperationResult<bool>.FailureResult(validateResult.Errors.ConvertToKeyValuePair());
 
-        // Get voucher with entries
+        // Get journal voucher with entries
         var journalVoucherEntity = await unitOfWork.JournalVoucherRepository.GetByIdWithEntriesAsync(command.JournalVoucherId, cancellationToken);
         if (journalVoucherEntity is null)
             return OperationResult<bool>.NotFoundResult(nameof(command.JournalVoucherId), "This journal voucher was not found.");
 
         if (journalVoucherEntity.JournalVoucherState != JournalVoucherState.Draft)
-            return OperationResult<bool>.FailureResult(nameof(command.JournalVoucherId), "Journal voucher must be in Draft state to approve.");
+            return OperationResult<bool>.FailureResult("JournalVoucherState", "Journal voucher must be in Draft state to approve.");
 
         if (!journalVoucherEntity.JournalEntries.Any() || journalVoucherEntity.JournalEntries.Count < 2)
             return OperationResult<bool>.FailureResult("Entries", "Cannot approve voucher without at least two journal entries.");
@@ -36,14 +36,20 @@ public class ApprovedJournalVoucherCommandHandler(IUnitOfWork unitOfWork)
             {
                 // If navigation not loaded, fetch:
                 var subLedgerAccount = journalEntry.SubLedgerAccount ?? await unitOfWork.SubLedgerAccountRepository.GetByIdAsync(journalEntry.SubLedgerAccountId, cancellationToken);
-                if (subLedgerAccount is null || !subLedgerAccount.IsActive)
+                if (subLedgerAccount is null)
+                    return OperationResult<bool>.FailureResult("SubLedgerAccount", "SubLedger account not found.");
+
+                if (!subLedgerAccount.IsActive)
                     return OperationResult<bool>.FailureResult("SubLedgerAccount", $"SubLedger account for entry {journalEntry.JournalEntryNumber} is not active.");
             }
 
-            if (journalEntry.DetailedAccountId != null)
+            if (journalEntry.DetailedAccountId != Guid.Empty && journalEntry.DetailedAccountId != null)
             {
                 var detailedAccount = journalEntry.DetailedAccount ?? await unitOfWork.DetailedAccountRepository.GetByIdAsync(journalEntry.DetailedAccountId.Value, cancellationToken);
-                if (detailedAccount is null || !detailedAccount.IsActive)
+                if (detailedAccount is null)
+                    return OperationResult<bool>.FailureResult("DetailedAccount", "Detailed account not found.");
+
+                if (!detailedAccount.IsActive)
                     return OperationResult<bool>.FailureResult("DetailedAccount", $"Detailed account for entry {journalEntry.JournalEntryNumber} is not active.");
             }
 
@@ -67,6 +73,7 @@ public class ApprovedJournalVoucherCommandHandler(IUnitOfWork unitOfWork)
         journalVoucherEntity.JournalVoucherState = JournalVoucherState.Approved;
         journalVoucherEntity.ApprovedByUserId = command.ApprovedByUserId;
         journalVoucherEntity.ApprovedTime = DateTime.UtcNow;
+        journalVoucherEntity.ModifiedDate = DateTime.UtcNow;
 
         await unitOfWork.CommitAsync(cancellationToken);
         return OperationResult<bool>.SuccessResult(true);

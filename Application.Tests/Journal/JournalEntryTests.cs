@@ -2,8 +2,6 @@
 using Application.Features.Journal.Commands.JournalEntry;
 using Application.Features.Journal.Queries.JournalEntry;
 using Application.Features.Journal.Queries.JournalEntry.Dtos;
-using Application.Features.Journal.Queries.JournalVoucher;
-using Application.Features.Journal.Queries.JournalVoucher.Dtos;
 using Application.Repositories.Common;
 using Application.Tests.Extensions;
 using Bogus;
