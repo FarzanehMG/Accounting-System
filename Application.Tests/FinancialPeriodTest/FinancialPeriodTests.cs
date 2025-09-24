@@ -133,7 +133,6 @@ public class FinancialPeriodTests(ITestOutputHelper testOutputHelper)
 
         var existingFinancialPeriodEntity = new FinancialPeriodEntity
         {
-            Id = Guid.NewGuid(),
             FinancialPeriodTitle = faker.Finance.AccountName(),
             StartDate = DateTime.UtcNow,
             EndDate = DateTime.UtcNow
@@ -172,7 +171,6 @@ public class FinancialPeriodTests(ITestOutputHelper testOutputHelper)
 
         var existingFinancialPeriodEntity = new FinancialPeriodEntity
         {
-            Id = Guid.NewGuid(),
             FinancialPeriodTitle = faker.Finance.AccountName(),
             StartDate = DateTime.UtcNow,
             EndDate = DateTime.UtcNow
@@ -272,7 +270,6 @@ public class FinancialPeriodTests(ITestOutputHelper testOutputHelper)
 
         var existingFinancialPeriodEntity = new FinancialPeriodEntity
         {
-            Id = financialPeriodId,
             FinancialPeriodTitle = faker.Finance.AccountName(),
             StartDate = DateTime.UtcNow,
             EndDate = DateTime.UtcNow,
@@ -323,7 +320,6 @@ public class FinancialPeriodTests(ITestOutputHelper testOutputHelper)
 
         var existingFinancialPeriodEntity = new FinancialPeriodEntity
         {
-            Id = financialPeriodId,
             FinancialPeriodTitle = faker.Finance.AccountName(),
             StartDate = DateTime.UtcNow,
             EndDate = DateTime.UtcNow,
@@ -348,8 +344,7 @@ public class FinancialPeriodTests(ITestOutputHelper testOutputHelper)
         unitOfWork.FinancialPeriodRepository.GetFinancialPeriodByIdAsync(financialPeriodId, CancellationToken.None)
             .Returns(existingFinancialPeriodEntity);
 
-        unitOfWork.HasChanges(existingFinancialPeriodEntity)
-            .Returns(true);
+        //unitOfWork.HasChanges(existingFinancialPeriodEntity).Returns(true);
 
         var updateFinancialPeriodCommand = new UpdateFinancialPeriodCommand
         {
@@ -379,7 +374,6 @@ public class FinancialPeriodTests(ITestOutputHelper testOutputHelper)
 
         var existingFinancialPeriodEntity = new FinancialPeriodEntity
         {
-            Id = financialPeriodId,
             FinancialPeriodTitle = faker.Finance.AccountName(),
             StartDate = DateTime.UtcNow,
             EndDate = DateTime.UtcNow,
@@ -431,7 +425,6 @@ public class FinancialPeriodTests(ITestOutputHelper testOutputHelper)
 
         var existingFinancialPeriodEntity = new FinancialPeriodEntity
         {
-            Id = financialPeriodId,
             FinancialPeriodTitle = faker.Finance.AccountName(),
             StartDate = startDate,
             EndDate = DateTime.UtcNow,
@@ -483,7 +476,6 @@ public class FinancialPeriodTests(ITestOutputHelper testOutputHelper)
 
         var existingFinancialPeriodEntity = new FinancialPeriodEntity
         {
-            Id = financialPeriodId,
             FinancialPeriodTitle = faker.Finance.AccountName(),
             StartDate = startDate,
             EndDate = DateTime.UtcNow,
@@ -538,7 +530,6 @@ public class FinancialPeriodTests(ITestOutputHelper testOutputHelper)
 
         var existingFinancialPeriodEntity = new FinancialPeriodEntity
         {
-            Id = financialPeriodId,
             FinancialPeriodTitle = faker.Finance.AccountName(),
             StartDate = startDate,
             EndDate = DateTime.UtcNow,
@@ -550,8 +541,7 @@ public class FinancialPeriodTests(ITestOutputHelper testOutputHelper)
         unitOfWork.FinancialPeriodRepository.GetFinancialPeriodByIdAsync(financialPeriodId, CancellationToken.None)
             .Returns(existingFinancialPeriodEntity);
 
-        unitOfWork.HasChanges(Arg.Any<FinancialPeriodEntity>())
-            .Returns(true);
+        //unitOfWork.HasChanges(Arg.Any<FinancialPeriodEntity>()).Returns(true);
 
         var updateFinancialPeriodCommand = new UpdateFinancialPeriodCommand
         {
@@ -570,98 +560,6 @@ public class FinancialPeriodTests(ITestOutputHelper testOutputHelper)
         existingFinancialPeriodEntity.EndDate.Should().Be(updateFinancialPeriodCommand.EndDate);
 
         await unitOfWork.Received(1)
-            .CommitAsync(CancellationToken.None);
-    }
-
-    [Fact]
-    public async Task UpdateFinancialPeriodHandler_ShouldUpdateModifiedDate_WhenFinancialPeriodIsUpdated()
-    {
-        // Arrange
-        var unitOfWork = Substitute.For<IUnitOfWork>();
-        var faker = new Faker();
-        var financialPeriodId = Guid.NewGuid();
-        var startDate = DateTime.UtcNow;
-        var oldModifiedDate = DateTime.UtcNow.AddDays(-5);
-
-        var existingFinancialPeriodEntity = new FinancialPeriodEntity
-        {
-            Id = financialPeriodId,
-            FinancialPeriodTitle = faker.Finance.AccountName(),
-            StartDate = startDate,
-            EndDate = DateTime.UtcNow,
-            IsActive = true,
-            JournalVouchers = [],
-            CreatedDate = DateTime.UtcNow,
-            ModifiedDate = oldModifiedDate
-        };
-        unitOfWork.FinancialPeriodRepository.GetFinancialPeriodByIdAsync(financialPeriodId, CancellationToken.None)
-            .Returns(existingFinancialPeriodEntity);
-
-        unitOfWork.HasChanges(Arg.Any<FinancialPeriodEntity>())
-            .Returns(true);
-
-        var updateFinancialPeriodCommand = new UpdateFinancialPeriodCommand
-        {
-            FinancialPeriodId = financialPeriodId,
-            StartDate = new Patch<DateTime>(DateTime.UtcNow.AddDays(8)),
-            EndDate = new Patch<DateTime>(startDate.AddDays(16))
-        };
-        var handler = new UpdateFinancialPeriodCommandHandler(unitOfWork);
-
-        // Act
-        var result = await handler.Handle(updateFinancialPeriodCommand, CancellationToken.None);
-
-        // Assert
-        result.IsSuccess.Should().BeTrue();
-        existingFinancialPeriodEntity.StartDate.Should().Be(updateFinancialPeriodCommand.StartDate);
-        existingFinancialPeriodEntity.EndDate.Should().Be(updateFinancialPeriodCommand.EndDate);
-        existingFinancialPeriodEntity.ModifiedDate.Should().BeCloseTo(DateTime.UtcNow, TimeSpan.FromSeconds(2));
-
-        await unitOfWork.Received(1)
-            .CommitAsync(CancellationToken.None);
-    }
-
-    [Fact]
-    public async Task UpdateFinancialPeriodHandler_ShouldSucceed_WhenNoFieldsAreChanged()
-    {
-        // Arrange
-        var unitOfWork = Substitute.For<IUnitOfWork>();
-        var faker = new Faker();
-        var financialPeriodId = Guid.NewGuid();
-        var startDate = DateTime.UtcNow;
-        var oldModifiedDate = DateTime.UtcNow.AddDays(-5);
-
-        var existingFinancialPeriodEntity = new FinancialPeriodEntity
-        {
-            Id = financialPeriodId,
-            FinancialPeriodTitle = faker.Finance.AccountName(),
-            StartDate = startDate,
-            EndDate = DateTime.UtcNow,
-            IsActive = true,
-            JournalVouchers = [],
-            CreatedDate = DateTime.UtcNow,
-            ModifiedDate = oldModifiedDate
-        };
-        unitOfWork.FinancialPeriodRepository.GetFinancialPeriodByIdAsync(financialPeriodId, CancellationToken.None)
-            .Returns(existingFinancialPeriodEntity);
-
-        unitOfWork.HasChanges(Arg.Any<FinancialPeriodEntity>())
-            .Returns(false);
-
-        var updateFinancialPeriodCommand = new UpdateFinancialPeriodCommand
-        {
-            FinancialPeriodId = financialPeriodId
-        };
-        var handler = new UpdateFinancialPeriodCommandHandler(unitOfWork);
-
-        // Act
-        var result = await handler.Handle(updateFinancialPeriodCommand, CancellationToken.None);
-
-        // Assert
-        result.IsSuccess.Should().BeTrue();
-        existingFinancialPeriodEntity.ModifiedDate.Should().Be(oldModifiedDate);
-
-        await unitOfWork.DidNotReceive()
             .CommitAsync(CancellationToken.None);
     }
 
@@ -676,7 +574,6 @@ public class FinancialPeriodTests(ITestOutputHelper testOutputHelper)
 
         var existingFinancialPeriodEntity = new FinancialPeriodEntity
         {
-            Id = financialPeriodId,
             FinancialPeriodTitle = faker.Finance.AccountName(),
             StartDate = DateTime.UtcNow,
             EndDate = DateTime.UtcNow,
@@ -699,7 +596,6 @@ public class FinancialPeriodTests(ITestOutputHelper testOutputHelper)
         // Assert
         result.IsSuccess.Should().BeTrue();
         result.Result.Should().NotBeNull();
-        result.Result!.Id.Should().Be(financialPeriodId);
         result.Result.Title.Should().Be(existingFinancialPeriodEntity.FinancialPeriodTitle);
     }
 
@@ -758,7 +654,6 @@ public class FinancialPeriodTests(ITestOutputHelper testOutputHelper)
         {
             new()
             {
-                Id = Guid.NewGuid(),
                 FinancialPeriodTitle = title,
                 IsActive = true,
                 StartDate = DateTime.UtcNow,
@@ -766,7 +661,6 @@ public class FinancialPeriodTests(ITestOutputHelper testOutputHelper)
             },
             new()
             {
-                Id = Guid.NewGuid(),
                 FinancialPeriodTitle = title,
                 IsActive = true,
                 StartDate = DateTime.UtcNow,
@@ -809,7 +703,6 @@ public class FinancialPeriodTests(ITestOutputHelper testOutputHelper)
         {
             new()
             {
-                Id = Guid.NewGuid(),
                 FinancialPeriodTitle = faker.Finance.AccountName(),
                 IsActive = isActive,
                 StartDate = DateTime.UtcNow,
@@ -817,7 +710,6 @@ public class FinancialPeriodTests(ITestOutputHelper testOutputHelper)
             },
             new()
             {
-                Id = Guid.NewGuid(),
                 FinancialPeriodTitle = faker.Finance.AccountName(),
                 IsActive = isActive,
                 StartDate = DateTime.UtcNow,
@@ -860,7 +752,6 @@ public class FinancialPeriodTests(ITestOutputHelper testOutputHelper)
         {
             new()
             {
-                Id = Guid.NewGuid(),
                 FinancialPeriodTitle = faker.Finance.AccountName(),
                 IsActive = true,
                 StartDate = DateTime.UtcNow,
@@ -868,7 +759,6 @@ public class FinancialPeriodTests(ITestOutputHelper testOutputHelper)
             },
             new()
             {
-                Id = Guid.NewGuid(),
                 FinancialPeriodTitle = faker.Finance.AccountName(),
                 IsActive = true,
                 StartDate = startDate,
@@ -914,7 +804,6 @@ public class FinancialPeriodTests(ITestOutputHelper testOutputHelper)
         {
             new()
             {
-                Id = Guid.NewGuid(),
                 FinancialPeriodTitle = faker.Finance.AccountName(),
                 IsActive = true,
                 StartDate = DateTime.UtcNow,
@@ -922,7 +811,6 @@ public class FinancialPeriodTests(ITestOutputHelper testOutputHelper)
             },
             new()
             {
-                Id = Guid.NewGuid(),
                 FinancialPeriodTitle = faker.Finance.AccountName(),
                 IsActive = true,
                 StartDate = DateTime.UtcNow,
@@ -996,7 +884,6 @@ public class FinancialPeriodTests(ITestOutputHelper testOutputHelper)
         {
             new()
             {
-                Id = Guid.NewGuid(),
                 FinancialPeriodTitle = title,
                 IsActive = true,
                 StartDate = startDate,
@@ -1004,7 +891,6 @@ public class FinancialPeriodTests(ITestOutputHelper testOutputHelper)
             },
             new()
             {
-                Id = Guid.NewGuid(),
                 FinancialPeriodTitle = title,
                 IsActive = true,
                 StartDate = DateTime.UtcNow,
@@ -1051,7 +937,6 @@ public class FinancialPeriodTests(ITestOutputHelper testOutputHelper)
 
         var entity = new FinancialPeriodEntity
         {
-            Id = Guid.NewGuid(),
             FinancialPeriodTitle = faker.Finance.AccountName(),
             IsActive = true,
             StartDate = DateTime.UtcNow,

@@ -47,12 +47,10 @@ internal class GeneralLedgerAccountEntityConfiguration : IEntityTypeConfiguratio
         // Navigation
         builder.HasMany(x => x.SubLedgerAccounts)
             .WithOne(x => x.GeneralLedgerAccount)
-            .HasForeignKey(x => x.GeneralLedgerAccountId)
-            .OnDelete(DeleteBehavior.Restrict);
+            .HasForeignKey(x => x.GeneralLedgerAccountId);
 
         builder.HasOne(x => x.GroupAccount)
             .WithMany(x => x.GeneralLedgerAccounts)
-            .HasForeignKey(x => x.GroupAccountId)
-            .OnDelete(DeleteBehavior.Restrict);
+            .HasForeignKey(x => x.GroupAccountId);
     }
 }

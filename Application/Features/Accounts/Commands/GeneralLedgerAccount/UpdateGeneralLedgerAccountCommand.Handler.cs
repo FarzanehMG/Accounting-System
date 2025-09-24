@@ -77,12 +77,7 @@ public class UpdateGeneralLedgerAccountCommandHandler(IUnitOfWork unitOfWork)
             generalAccount.AccountCode = request.Code.Value;
         }
 
-        if (unitOfWork.HasChanges(generalAccount))
-        {
-            generalAccount.ModifiedDate = DateTime.UtcNow;
-            await unitOfWork.CommitAsync(cancellationToken);
-        }
-
+        await unitOfWork.CommitAsync(cancellationToken);
         return OperationResult<bool>.SuccessResult(true);
     }
 }

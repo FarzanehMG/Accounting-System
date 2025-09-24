@@ -36,7 +36,6 @@ public class SubLedgerAccountTests(ITestOutputHelper testOutputHelper)
 
         var existingGeneralLedgerAccount = new GeneralLedgerAccountEntity
         {
-            Id = generalLedgerAccountId,
             AccountTitle = faker.Finance.AccountName(),
             AccountCode = faker.Finance.Account(),
             JournalEntryType = JournalEntryType.Credit,
@@ -188,7 +187,6 @@ public class SubLedgerAccountTests(ITestOutputHelper testOutputHelper)
 
         var existingGeneralLedgerAccount = new GeneralLedgerAccountEntity
         {
-            Id = generalLedgerAccountId,
             AccountTitle = faker.Finance.AccountName(),
             AccountCode = faker.Finance.Account(),
             JournalEntryType = JournalEntryType.Credit,
@@ -255,7 +253,6 @@ public class SubLedgerAccountTests(ITestOutputHelper testOutputHelper)
 
         var existingGeneralLedgerAccount = new GeneralLedgerAccountEntity
         {
-            Id = generalLedgerAccountId,
             AccountTitle = title,
             AccountCode = faker.Finance.Account(),
             JournalEntryType = journalEntryType,
@@ -267,7 +264,6 @@ public class SubLedgerAccountTests(ITestOutputHelper testOutputHelper)
 
         var existingSubLedgerAccount = new SubLedgerAccountEntity
         {
-            Id = Guid.NewGuid(),
             AccountTitle = title,
             AccountCode = faker.Finance.Account(),
             IsActive = true,
@@ -310,7 +306,6 @@ public class SubLedgerAccountTests(ITestOutputHelper testOutputHelper)
 
         var existingGeneralLedgerAccount = new GeneralLedgerAccountEntity
         {
-            Id = generalLedgerAccountId,
             AccountTitle = title,
             AccountCode = faker.Finance.Account(),
             JournalEntryType = journalEntryType,
@@ -358,7 +353,6 @@ public class SubLedgerAccountTests(ITestOutputHelper testOutputHelper)
 
         var existingGeneralLedgerAccount = new GeneralLedgerAccountEntity
         {
-            Id = generalLedgerAccountId,
             AccountTitle = title,
             AccountCode = faker.Finance.Account(),
             JournalEntryType = journalEntryType,
@@ -370,7 +364,6 @@ public class SubLedgerAccountTests(ITestOutputHelper testOutputHelper)
 
         var existingSubLedgerAccount = new SubLedgerAccountEntity
         {
-            Id = Guid.NewGuid(),
             AccountTitle = title,
             AccountCode = code,
             IsActive = false,
@@ -412,7 +405,6 @@ public class SubLedgerAccountTests(ITestOutputHelper testOutputHelper)
 
         var existingGeneralLedgerAccount = new GeneralLedgerAccountEntity
         {
-            Id = generalLedgerAccountId,
             AccountTitle = faker.Finance.AccountName(),
             AccountCode = faker.Finance.Account(),
             JournalEntryType = JournalEntryType.Credit,
@@ -424,7 +416,6 @@ public class SubLedgerAccountTests(ITestOutputHelper testOutputHelper)
 
         var existingSubLedgerAccount = new SubLedgerAccountEntity
         {
-            Id = Guid.NewGuid(),
             AccountTitle = faker.Finance.AccountName(),
             AccountCode = code,
             IsActive = true,
@@ -493,7 +484,6 @@ public class SubLedgerAccountTests(ITestOutputHelper testOutputHelper)
 
         var existingGeneralLedgerAccount = new GeneralLedgerAccountEntity
         {
-            Id = generalLedgerAccountId,
             AccountTitle = faker.Finance.AccountName(),
             AccountCode = faker.Finance.Account(),
             JournalEntryType = JournalEntryType.Credit,
@@ -573,7 +563,6 @@ public class SubLedgerAccountTests(ITestOutputHelper testOutputHelper)
 
         var existingSubLedgerAccount = new SubLedgerAccountEntity
         {
-            Id = subLedgerAccountId,
             AccountTitle = faker.Finance.AccountName(),
             AccountCode = faker.Finance.Account(),
             IsActive = true,
@@ -583,7 +572,7 @@ public class SubLedgerAccountTests(ITestOutputHelper testOutputHelper)
         unitOfWork.SubLedgerAccountRepository.GetByIdAsync(subLedgerAccountId, CancellationToken.None)
             .Returns(existingSubLedgerAccount);
 
-        unitOfWork.HasChanges(existingSubLedgerAccount).Returns(true);
+        //unitOfWork.HasChanges(existingSubLedgerAccount).Returns(true);
 
         // Act
         var result = await handler.Handle(updateSubLedgerAccountCommand, CancellationToken.None);
@@ -613,7 +602,6 @@ public class SubLedgerAccountTests(ITestOutputHelper testOutputHelper)
 
         var existingSubLedgerAccount = new SubLedgerAccountEntity
         {
-            Id = subLedgerAccountId,
             AccountTitle = faker.Finance.AccountName(),
             AccountCode = faker.Finance.Account(),
             IsActive = true,
@@ -623,7 +611,7 @@ public class SubLedgerAccountTests(ITestOutputHelper testOutputHelper)
         unitOfWork.SubLedgerAccountRepository.GetByIdAsync(subLedgerAccountId, CancellationToken.None)
             .Returns(existingSubLedgerAccount);
 
-        unitOfWork.HasChanges(existingSubLedgerAccount).Returns(true);
+        //unitOfWork.HasChanges(existingSubLedgerAccount).Returns(true);
 
         // Act
         var result = await handler.Handle(updateSubLedgerAccountCommand, CancellationToken.None);
@@ -654,7 +642,6 @@ public class SubLedgerAccountTests(ITestOutputHelper testOutputHelper)
 
         var existingSubLedgerAccount = new SubLedgerAccountEntity
         {
-            Id = subLedgerAccountId,
             AccountTitle = faker.Finance.AccountName(),
             AccountCode = faker.Finance.Account(),
             IsActive = true,
@@ -664,7 +651,7 @@ public class SubLedgerAccountTests(ITestOutputHelper testOutputHelper)
         unitOfWork.SubLedgerAccountRepository.GetByIdAsync(subLedgerAccountId, CancellationToken.None)
             .Returns(existingSubLedgerAccount);
 
-        unitOfWork.HasChanges(existingSubLedgerAccount).Returns(true);
+        //unitOfWork.HasChanges(existingSubLedgerAccount).Returns(true);
 
         unitOfWork.SubLedgerAccountRepository.FindByCodeAsync(code, CancellationToken.None)
             .Returns(null as SubLedgerAccountEntity);
@@ -698,7 +685,6 @@ public class SubLedgerAccountTests(ITestOutputHelper testOutputHelper)
 
         var existingSubLedgerAccount = new SubLedgerAccountEntity
         {
-            Id = subLedgerAccountId,
             AccountTitle = title,
             AccountCode = faker.Finance.Account(),
             IsActive = true,
@@ -708,7 +694,7 @@ public class SubLedgerAccountTests(ITestOutputHelper testOutputHelper)
         unitOfWork.SubLedgerAccountRepository.GetByIdAsync(subLedgerAccountId, CancellationToken.None)
             .Returns(existingSubLedgerAccount);
 
-        unitOfWork.HasChanges(existingSubLedgerAccount).Returns(true);
+        //unitOfWork.HasChanges(existingSubLedgerAccount).Returns(true);
 
         // Act
         var result = await handler.Handle(updateSubLedgerAccountCommand, CancellationToken.None);
@@ -740,7 +726,6 @@ public class SubLedgerAccountTests(ITestOutputHelper testOutputHelper)
 
         var existingSubLedgerAccount = new SubLedgerAccountEntity
         {
-            Id = subLedgerAccountId,
             AccountTitle = faker.Finance.AccountName(),
             AccountCode = faker.Finance.Account(),
             IsActive = true,
@@ -753,7 +738,7 @@ public class SubLedgerAccountTests(ITestOutputHelper testOutputHelper)
         unitOfWork.SubLedgerAccountRepository.FindByCodeAsync(code, CancellationToken.None)
             .Returns(existingSubLedgerAccount);
 
-        unitOfWork.HasChanges(existingSubLedgerAccount).Returns(true);
+        //unitOfWork.HasChanges(existingSubLedgerAccount).Returns(true);
 
         // Act
         var result = await handler.Handle(updateSubLedgerAccountCommand, CancellationToken.None);
@@ -785,7 +770,6 @@ public class SubLedgerAccountTests(ITestOutputHelper testOutputHelper)
 
         var existingSubLedgerAccount = new SubLedgerAccountEntity
         {
-            Id = subLedgerAccountId,
             AccountTitle = faker.Finance.AccountName(),
             AccountCode = faker.Finance.Account(),
             IsActive = true,
@@ -795,8 +779,6 @@ public class SubLedgerAccountTests(ITestOutputHelper testOutputHelper)
         unitOfWork.SubLedgerAccountRepository.GetByIdAsync(subLedgerAccountId, CancellationToken.None)
             .Returns(existingSubLedgerAccount);
 
-        unitOfWork.HasChanges(existingSubLedgerAccount).Returns(true);
-
         // Act
         var result = await handler.Handle(updateSubLedgerAccountCommand, CancellationToken.None);
 
@@ -806,95 +788,6 @@ public class SubLedgerAccountTests(ITestOutputHelper testOutputHelper)
         existingSubLedgerAccount.AccountCode.Should().Be(updateSubLedgerAccountCommand.Code);
 
         await unitOfWork.Received(1)
-            .CommitAsync(CancellationToken.None);
-    }
-
-    [Fact]
-    public async Task UpdateSubLedgerAccountHandler_ShouldUpdateModifiedDate_WhenAccountIsUpdated()
-    {
-        // Arrange
-        var unitOfWork = Substitute.For<IUnitOfWork>();
-        var faker = new Faker();
-        var subLedgerAccountId = Guid.NewGuid();
-        var oldModifiedDate = DateTime.UtcNow.AddDays(-5);
-
-        var updateSubLedgerAccountCommand = new UpdateSubLegerAccountCommand
-        {
-            SubLegerAccountId = subLedgerAccountId,
-            Code = new Patch<string>(faker.Finance.Account()),
-            Title = new Patch<string>(faker.Finance.AccountName())
-        };
-        var handler = new UpdateSubLegerAccountCommandHandler(unitOfWork);
-
-        var existingSubLedgerAccount = new SubLedgerAccountEntity
-        {
-            Id = subLedgerAccountId,
-            AccountTitle = faker.Finance.AccountName(),
-            AccountCode = faker.Finance.Account(),
-            IsActive = true,
-            JournalEntryType = JournalEntryType.Credit,
-            GeneralLedgerAccountId = Guid.NewGuid(),
-            ModifiedDate = oldModifiedDate
-        };
-        unitOfWork.SubLedgerAccountRepository.GetByIdAsync(subLedgerAccountId, CancellationToken.None)
-            .Returns(existingSubLedgerAccount);
-
-        unitOfWork.HasChanges(existingSubLedgerAccount).Returns(true);
-
-        // Act
-        var result = await handler.Handle(updateSubLedgerAccountCommand, CancellationToken.None);
-
-        // Assert
-        result.IsSuccess.Should().BeTrue();
-        existingSubLedgerAccount.AccountTitle.Should().Be(updateSubLedgerAccountCommand.Title);
-        existingSubLedgerAccount.AccountCode.Should().Be(updateSubLedgerAccountCommand.Code);
-        existingSubLedgerAccount.ModifiedDate.Should().BeCloseTo(DateTime.UtcNow, TimeSpan.FromSeconds(2));
-
-        await unitOfWork.Received(1)
-            .CommitAsync(CancellationToken.None);
-    }
-
-    [Fact]
-    public async Task UpdateSubLedgerAccountHandler_ShouldSucceed_WhenNoFieldsAreChanged()
-    {
-        // Arrange
-        var unitOfWork = Substitute.For<IUnitOfWork>();
-        var faker = new Faker();
-        var subLedgerAccountId = Guid.NewGuid();
-        var title = faker.Finance.AccountName();
-        var code = faker.Finance.Account();
-        var oldModifiedDate = DateTime.UtcNow.AddDays(-5);
-
-        var existingAccount = new SubLedgerAccountEntity
-        {
-            Id = subLedgerAccountId,
-            AccountTitle = title,
-            JournalEntryType = JournalEntryType.Credit,
-            GeneralLedgerAccountId = Guid.NewGuid(),
-            IsActive = true,
-            AccountCode = code,
-            ModifiedDate = oldModifiedDate
-        };
-        unitOfWork.SubLedgerAccountRepository.GetByIdAsync(subLedgerAccountId, CancellationToken.None)
-            .Returns(existingAccount);
-
-        unitOfWork.HasChanges(existingAccount).Returns(false);
-
-        var handler = new UpdateSubLegerAccountCommandHandler(unitOfWork);
-
-        var command = new UpdateSubLegerAccountCommand
-        {
-            SubLegerAccountId = subLedgerAccountId,
-        };
-
-        // Act
-        var result = await handler.Handle(command, CancellationToken.None);
-
-        // Assert
-        result.IsSuccess.Should().BeTrue();
-        existingAccount.ModifiedDate.Should().Be(oldModifiedDate);
-
-        await unitOfWork.DidNotReceive()
             .CommitAsync(CancellationToken.None);
     }
 
@@ -910,7 +803,6 @@ public class SubLedgerAccountTests(ITestOutputHelper testOutputHelper)
 
         var existingSubLedgerAccount = new SubLedgerAccountEntity
         {
-            Id = subLedgerAccountId,
             AccountTitle = title,
             AccountCode = faker.Finance.Account(),
             JournalEntryType = JournalEntryType.Debit,
@@ -931,7 +823,6 @@ public class SubLedgerAccountTests(ITestOutputHelper testOutputHelper)
         // Assert
         result.IsSuccess.Should().BeTrue();
         result.Result.Should().NotBeNull();
-        result.Result!.Id.Should().Be(subLedgerAccountId);
         result.Result.AccountTitle.Should().Be(title);
     }
 
@@ -990,7 +881,6 @@ public class SubLedgerAccountTests(ITestOutputHelper testOutputHelper)
         {
             new()
             {
-                Id = Guid.NewGuid(),
                 AccountTitle = title,
                 AccountCode = faker.Finance.AccountName(),
                 IsActive = true,
@@ -999,7 +889,6 @@ public class SubLedgerAccountTests(ITestOutputHelper testOutputHelper)
             },
             new()
             {
-                Id = Guid.NewGuid(),
                 AccountTitle = title,
                 AccountCode = faker.Finance.AccountName(),
                 IsActive = true,
@@ -1043,7 +932,6 @@ public class SubLedgerAccountTests(ITestOutputHelper testOutputHelper)
         {
             new()
             {
-                Id = Guid.NewGuid(),
                 AccountTitle = faker.Finance.AccountName(),
                 AccountCode = code,
                 IsActive = true,
@@ -1052,7 +940,6 @@ public class SubLedgerAccountTests(ITestOutputHelper testOutputHelper)
             },
             new()
             {
-                Id = Guid.NewGuid(),
                 AccountTitle = faker.Finance.AccountName(),
                 AccountCode = code,
                 IsActive = true,
@@ -1096,7 +983,6 @@ public class SubLedgerAccountTests(ITestOutputHelper testOutputHelper)
         {
             new()
             {
-                Id = Guid.NewGuid(),
                 AccountTitle = faker.Finance.AccountName(),
                 AccountCode = faker.Finance.AccountName(),
                 IsActive = true,
@@ -1105,7 +991,6 @@ public class SubLedgerAccountTests(ITestOutputHelper testOutputHelper)
             },
             new()
             {
-                Id = Guid.NewGuid(),
                 AccountTitle = faker.Finance.AccountName(),
                 AccountCode = faker.Finance.AccountName(),
                 IsActive = true,
@@ -1149,7 +1034,6 @@ public class SubLedgerAccountTests(ITestOutputHelper testOutputHelper)
         {
             new()
             {
-                Id = Guid.NewGuid(),
                 AccountTitle = faker.Finance.AccountName(),
                 AccountCode = faker.Finance.AccountName(),
                 IsActive = true,
@@ -1158,7 +1042,6 @@ public class SubLedgerAccountTests(ITestOutputHelper testOutputHelper)
             },
             new()
             {
-                Id = Guid.NewGuid(),
                 AccountTitle = faker.Finance.AccountName(),
                 AccountCode = faker.Finance.AccountName(),
                 IsActive = true,
@@ -1234,7 +1117,6 @@ public class SubLedgerAccountTests(ITestOutputHelper testOutputHelper)
         {
             new()
             {
-                Id = Guid.NewGuid(),
                 AccountTitle = accountTitle,
                 AccountCode = faker.Finance.AccountName(),
                 IsActive = true,
@@ -1243,7 +1125,6 @@ public class SubLedgerAccountTests(ITestOutputHelper testOutputHelper)
             },
             new()
             {
-                Id = Guid.NewGuid(),
                 AccountTitle = accountTitle,
                 AccountCode = faker.Finance.AccountName(),
                 IsActive = true,
@@ -1291,7 +1172,6 @@ public class SubLedgerAccountTests(ITestOutputHelper testOutputHelper)
 
         var entity = new SubLedgerAccountEntity
         {
-            Id = Guid.NewGuid(),
             AccountTitle = faker.Finance.AccountName(),
             AccountCode = faker.Finance.AccountName(),
             IsActive = true,

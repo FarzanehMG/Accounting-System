@@ -4,7 +4,7 @@ using Domain.Enums;
 
 namespace Domain.Entities.Journal;
 
-public sealed class JournalVoucherEntity : BaseEntity
+public sealed class JournalVoucherEntity : BaseEntity<Guid>
 {
     public required string JournalVoucherTitle { get; set; }
     public string JournalVoucherNumber { get; init; } = null!;

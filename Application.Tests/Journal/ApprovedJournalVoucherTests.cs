@@ -28,7 +28,6 @@ public class ApprovedJournalVoucherTests(ITestOutputHelper testOutputHelper)
         // Get journal voucher
         var existingJournalVoucherEntity = new JournalVoucherEntity
         {
-            Id = journalVoucherId,
             JournalVoucherTitle = faker.Finance.AccountName(),
             ReferenceNumber = faker.Finance.RoutingNumber(),
             TransactionTime = DateTime.UtcNow,
@@ -42,7 +41,6 @@ public class ApprovedJournalVoucherTests(ITestOutputHelper testOutputHelper)
             {
                 new()
                 {
-                    Id = Guid.NewGuid(),
                     JournalEntryNumber = "1",
                     JournalEntryType = JournalEntryType.Credit,
                     Amount = 5,
@@ -51,7 +49,6 @@ public class ApprovedJournalVoucherTests(ITestOutputHelper testOutputHelper)
                 },
                 new()
                 {
-                    Id = Guid.NewGuid(),
                     JournalEntryNumber = "2",
                     JournalEntryType = JournalEntryType.Debit,
                     Amount = 5,
@@ -158,7 +155,6 @@ public class ApprovedJournalVoucherTests(ITestOutputHelper testOutputHelper)
         // Get journal voucher
         var existingJournalVoucherEntity = new JournalVoucherEntity
         {
-            Id = journalVoucherId,
             JournalVoucherTitle = faker.Finance.AccountName(),
             ReferenceNumber = faker.Finance.RoutingNumber(),
             TransactionTime = DateTime.UtcNow,
@@ -172,7 +168,6 @@ public class ApprovedJournalVoucherTests(ITestOutputHelper testOutputHelper)
             {
                 new()
                 {
-                    Id = Guid.NewGuid(),
                     JournalEntryNumber = "1",
                     JournalEntryType = JournalEntryType.Credit,
                     Amount = 5,
@@ -181,7 +176,6 @@ public class ApprovedJournalVoucherTests(ITestOutputHelper testOutputHelper)
                 },
                 new()
                 {
-                    Id = Guid.NewGuid(),
                     JournalEntryNumber = "2",
                     JournalEntryType = JournalEntryType.Debit,
                     Amount = 5,
@@ -225,7 +219,6 @@ public class ApprovedJournalVoucherTests(ITestOutputHelper testOutputHelper)
         // Get journal voucher
         var existingJournalVoucherEntity = new JournalVoucherEntity
         {
-            Id = journalVoucherId,
             JournalVoucherTitle = faker.Finance.AccountName(),
             ReferenceNumber = faker.Finance.RoutingNumber(),
             TransactionTime = DateTime.UtcNow,
@@ -239,7 +232,6 @@ public class ApprovedJournalVoucherTests(ITestOutputHelper testOutputHelper)
             {
                 new()
                 {
-                    Id = Guid.NewGuid(),
                     JournalEntryNumber = "1",
                     JournalEntryType = JournalEntryType.Credit,
                     Amount = 2,
@@ -286,7 +278,6 @@ public class ApprovedJournalVoucherTests(ITestOutputHelper testOutputHelper)
         // Get journal voucher
         var existingJournalVoucherEntity = new JournalVoucherEntity
         {
-            Id = journalVoucherId,
             JournalVoucherTitle = faker.Finance.AccountName(),
             ReferenceNumber = faker.Finance.RoutingNumber(),
             TransactionTime = DateTime.UtcNow,
@@ -300,7 +291,6 @@ public class ApprovedJournalVoucherTests(ITestOutputHelper testOutputHelper)
             {
                 new()
                 {
-                    Id = Guid.NewGuid(),
                     JournalEntryNumber = "1",
                     JournalEntryType = JournalEntryType.Credit,
                     Amount = 5,
@@ -309,7 +299,6 @@ public class ApprovedJournalVoucherTests(ITestOutputHelper testOutputHelper)
                 },
                 new()
                 {
-                    Id = Guid.NewGuid(),
                     JournalEntryNumber = "2",
                     JournalEntryType = JournalEntryType.Debit,
                     Amount = 5,
@@ -363,7 +352,6 @@ public class ApprovedJournalVoucherTests(ITestOutputHelper testOutputHelper)
         // Get journal voucher
         var existingJournalVoucherEntity = new JournalVoucherEntity
         {
-            Id = journalVoucherId,
             JournalVoucherTitle = faker.Finance.AccountName(),
             ReferenceNumber = faker.Finance.RoutingNumber(),
             TransactionTime = DateTime.UtcNow,
@@ -377,7 +365,6 @@ public class ApprovedJournalVoucherTests(ITestOutputHelper testOutputHelper)
             {
                 new()
                 {
-                    Id = Guid.NewGuid(),
                     JournalEntryNumber = "1",
                     JournalEntryType = JournalEntryType.Credit,
                     Amount = 5,
@@ -387,7 +374,6 @@ public class ApprovedJournalVoucherTests(ITestOutputHelper testOutputHelper)
                 },
                 new()
                 {
-                    Id = Guid.NewGuid(),
                     JournalEntryNumber = "2",
                     JournalEntryType = JournalEntryType.Debit,
                     Amount = 5,
@@ -445,7 +431,6 @@ public class ApprovedJournalVoucherTests(ITestOutputHelper testOutputHelper)
         // Get journal voucher
         var existingJournalVoucherEntity = new JournalVoucherEntity
         {
-            Id = journalVoucherId,
             JournalVoucherTitle = faker.Finance.AccountName(),
             ReferenceNumber = faker.Finance.RoutingNumber(),
             TransactionTime = DateTime.UtcNow,
@@ -459,7 +444,6 @@ public class ApprovedJournalVoucherTests(ITestOutputHelper testOutputHelper)
             {
                 new()
                 {
-                    Id = Guid.NewGuid(),
                     JournalEntryNumber = "1",
                     JournalEntryType = 0,
                     Amount = 5,
@@ -468,7 +452,6 @@ public class ApprovedJournalVoucherTests(ITestOutputHelper testOutputHelper)
                 },
                 new()
                 {
-                    Id = Guid.NewGuid(),
                     JournalEntryNumber = "2",
                     JournalEntryType = JournalEntryType.Debit,
                     Amount = 5,
@@ -522,7 +505,6 @@ public class ApprovedJournalVoucherTests(ITestOutputHelper testOutputHelper)
         // Get journal voucher
         var existingJournalVoucherEntity = new JournalVoucherEntity
         {
-            Id = journalVoucherId,
             JournalVoucherTitle = faker.Finance.AccountName(),
             ReferenceNumber = faker.Finance.RoutingNumber(),
             TransactionTime = DateTime.UtcNow,
@@ -536,7 +518,6 @@ public class ApprovedJournalVoucherTests(ITestOutputHelper testOutputHelper)
             {
                 new()
                 {
-                    Id = Guid.NewGuid(),
                     JournalEntryNumber = "1",
                     JournalEntryType = JournalEntryType.Credit,
                     Amount = 2,
@@ -545,7 +526,6 @@ public class ApprovedJournalVoucherTests(ITestOutputHelper testOutputHelper)
                 },
                 new()
                 {
-                    Id = Guid.NewGuid(),
                     JournalEntryNumber = "2",
                     JournalEntryType = JournalEntryType.Debit,
                     Amount = 5,
@@ -600,7 +580,6 @@ public class ApprovedJournalVoucherTests(ITestOutputHelper testOutputHelper)
         // Get journal voucher
         var existingJournalVoucherEntity = new JournalVoucherEntity
         {
-            Id = journalVoucherId,
             JournalVoucherTitle = faker.Finance.AccountName(),
             ReferenceNumber = faker.Finance.RoutingNumber(),
             TransactionTime = DateTime.UtcNow,
@@ -614,7 +593,6 @@ public class ApprovedJournalVoucherTests(ITestOutputHelper testOutputHelper)
             {
                 new()
                 {
-                    Id = Guid.NewGuid(),
                     JournalEntryNumber = "1",
                     JournalEntryType = JournalEntryType.Credit,
                     Amount = 5,
@@ -623,7 +601,6 @@ public class ApprovedJournalVoucherTests(ITestOutputHelper testOutputHelper)
                 },
                 new()
                 {
-                    Id = Guid.NewGuid(),
                     JournalEntryNumber = "2",
                     JournalEntryType = JournalEntryType.Debit,
                     Amount = 5,
@@ -678,7 +655,6 @@ public class ApprovedJournalVoucherTests(ITestOutputHelper testOutputHelper)
         // Get journal voucher
         var existingJournalVoucherEntity = new JournalVoucherEntity
         {
-            Id = journalVoucherId,
             JournalVoucherTitle = faker.Finance.AccountName(),
             ReferenceNumber = faker.Finance.RoutingNumber(),
             TransactionTime = DateTime.UtcNow,
@@ -692,7 +668,6 @@ public class ApprovedJournalVoucherTests(ITestOutputHelper testOutputHelper)
             {
                 new()
                 {
-                    Id = Guid.NewGuid(),
                     JournalEntryNumber = "1",
                     JournalEntryType = JournalEntryType.Credit,
                     Amount = 5,
@@ -702,7 +677,6 @@ public class ApprovedJournalVoucherTests(ITestOutputHelper testOutputHelper)
                 },
                 new()
                 {
-                    Id = Guid.NewGuid(),
                     JournalEntryNumber = "2",
                     JournalEntryType = JournalEntryType.Debit,
                     Amount = 5,
@@ -760,7 +734,6 @@ public class ApprovedJournalVoucherTests(ITestOutputHelper testOutputHelper)
         // Get journal voucher
         var existingJournalVoucherEntity = new JournalVoucherEntity
         {
-            Id = journalVoucherId,
             JournalVoucherTitle = faker.Finance.AccountName(),
             ReferenceNumber = faker.Finance.RoutingNumber(),
             TransactionTime = DateTime.UtcNow,
@@ -774,7 +747,6 @@ public class ApprovedJournalVoucherTests(ITestOutputHelper testOutputHelper)
             {
                 new()
                 {
-                    Id = Guid.NewGuid(),
                     JournalEntryNumber = "1",
                     JournalEntryType = JournalEntryType.Credit,
                     Amount = 10,
@@ -783,7 +755,6 @@ public class ApprovedJournalVoucherTests(ITestOutputHelper testOutputHelper)
                 },
                 new()
                 {
-                    Id = Guid.NewGuid(),
                     JournalEntryNumber = "2",
                     JournalEntryType = JournalEntryType.Debit,
                     Amount = 5,
@@ -792,7 +763,6 @@ public class ApprovedJournalVoucherTests(ITestOutputHelper testOutputHelper)
                 },
                 new()
                 {
-                    Id = Guid.NewGuid(),
                     JournalEntryNumber = "3",
                     JournalEntryType = JournalEntryType.Debit,
                     Amount = 5,

@@ -4,7 +4,7 @@ using Domain.Enums;
 
 namespace Domain.Entities.Journal;
 
-public sealed class JournalEntryEntity : BaseEntity
+public sealed class JournalEntryEntity : BaseEntity<Guid>
 {
     public required string JournalEntryNumber { get; init; }
     public required JournalEntryType JournalEntryType { get; init; }

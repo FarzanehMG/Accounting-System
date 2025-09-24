@@ -3,7 +3,7 @@ using Domain.Enums;
 
 namespace Domain.Entities.Accounts;
 
-public sealed class GroupAccountEntity : BaseEntity
+public sealed class GroupAccountEntity : BaseEntity<Guid>
 {
 	public required string AccountTitle { get; set; }
 	public required string AccountCode { get; set; }

@@ -15,5 +15,4 @@ public interface IUnitOfWork : IAsyncDisposable, IDisposable
     IJournalEntryRepository JournalEntryRepository { get; }
 
     Task CommitAsync(CancellationToken cancellationToken = default);
-    bool HasChanges<TEntity>(TEntity entity) where TEntity : class;
 }

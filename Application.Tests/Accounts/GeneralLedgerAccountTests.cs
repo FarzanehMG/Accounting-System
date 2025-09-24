@@ -157,7 +157,6 @@ public class GeneralLedgerAccountTests(ITestOutputHelper testOutputHelper)
 
         var existingGeneralLedgerAccount = new GeneralLedgerAccountEntity
         {
-            Id = Guid.NewGuid(),
             AccountTitle = title,
             AccountCode = faker.Finance.AccountName(),
             IsActive = true,
@@ -202,7 +201,6 @@ public class GeneralLedgerAccountTests(ITestOutputHelper testOutputHelper)
 
         var existingGeneralLedgerAccount = new GeneralLedgerAccountEntity
         {
-            Id = Guid.NewGuid(),
             AccountTitle = title,
             AccountCode = faker.Finance.AccountName(),
             IsActive = true,
@@ -248,7 +246,6 @@ public class GeneralLedgerAccountTests(ITestOutputHelper testOutputHelper)
 
         var existingGeneralLedgerAccount = new GeneralLedgerAccountEntity
         {
-            Id = Guid.NewGuid(),
             AccountTitle = title,
             AccountCode = faker.Finance.AccountName(),
             IsActive = false,
@@ -294,7 +291,6 @@ public class GeneralLedgerAccountTests(ITestOutputHelper testOutputHelper)
 
         var existingGeneralLedgerAccount = new GeneralLedgerAccountEntity
         {
-            Id = Guid.NewGuid(),
             AccountTitle = title,
             AccountCode = accountCode,
             IsActive = true,
@@ -392,7 +388,6 @@ public class GeneralLedgerAccountTests(ITestOutputHelper testOutputHelper)
 
         var existingGeneralLedgerAccountEntity = new GeneralLedgerAccountEntity
         {
-            Id = Guid.NewGuid(),
             AccountTitle = faker.Finance.AccountName(),
             AccountCode = faker.Finance.Account(),
             JournalEntryType = JournalEntryType.Credit,
@@ -426,7 +421,6 @@ public class GeneralLedgerAccountTests(ITestOutputHelper testOutputHelper)
 
         var existingGeneralLedgerAccountEntity = new GeneralLedgerAccountEntity
         {
-            Id = generalLegerAccountId,
             AccountTitle = faker.Finance.AccountName(),
             AccountCode = faker.Finance.Account(),
             JournalEntryType = JournalEntryType.Credit,
@@ -435,7 +429,7 @@ public class GeneralLedgerAccountTests(ITestOutputHelper testOutputHelper)
         };
         unitOfWork.GeneralLedgerAccountRepository.GetByIdAsync(generalLegerAccountId, CancellationToken.None).Returns(existingGeneralLedgerAccountEntity);
 
-        unitOfWork.HasChanges(existingGeneralLedgerAccountEntity).Returns(true);
+        //unitOfWork.HasChanges(existingGeneralLedgerAccountEntity).Returns(true);
 
         var updateGeneralLedgerAccountCommand = new UpdateGeneralLedgerAccountCommand
         {
@@ -465,7 +459,6 @@ public class GeneralLedgerAccountTests(ITestOutputHelper testOutputHelper)
 
         var existingGeneralLedgerAccountEntity = new GeneralLedgerAccountEntity
         {
-            Id = generalLegerAccountId,
             AccountTitle = faker.Finance.AccountName(),
             AccountCode = faker.Finance.Account(),
             JournalEntryType = JournalEntryType.Credit,
@@ -474,7 +467,7 @@ public class GeneralLedgerAccountTests(ITestOutputHelper testOutputHelper)
         };
         unitOfWork.GeneralLedgerAccountRepository.GetByIdAsync(generalLegerAccountId, CancellationToken.None).Returns(existingGeneralLedgerAccountEntity);
 
-        unitOfWork.HasChanges(existingGeneralLedgerAccountEntity).Returns(true);
+        //unitOfWork.HasChanges(existingGeneralLedgerAccountEntity).Returns(true);
 
         var updateGeneralLedgerAccountCommand = new UpdateGeneralLedgerAccountCommand
         {
@@ -504,7 +497,6 @@ public class GeneralLedgerAccountTests(ITestOutputHelper testOutputHelper)
 
         var existingGeneralLedgerAccountEntity = new GeneralLedgerAccountEntity
         {
-            Id = generalLegerAccountId,
             AccountTitle = faker.Finance.AccountName(),
             AccountCode = faker.Finance.Account(),
             JournalEntryType = JournalEntryType.Credit,
@@ -513,7 +505,7 @@ public class GeneralLedgerAccountTests(ITestOutputHelper testOutputHelper)
         };
         unitOfWork.GeneralLedgerAccountRepository.GetByIdAsync(generalLegerAccountId, CancellationToken.None).Returns(existingGeneralLedgerAccountEntity);
 
-        unitOfWork.HasChanges(existingGeneralLedgerAccountEntity).Returns(true);
+        //unitOfWork.HasChanges(existingGeneralLedgerAccountEntity).Returns(true);
 
         var updateGeneralLedgerAccountCommand = new UpdateGeneralLedgerAccountCommand
         {
@@ -543,7 +535,6 @@ public class GeneralLedgerAccountTests(ITestOutputHelper testOutputHelper)
 
         var existingGeneralLedgerAccountEntity = new GeneralLedgerAccountEntity
         {
-            Id = generalLegerAccountId,
             AccountTitle = faker.Finance.AccountName(),
             AccountCode = faker.Finance.Account(),
             JournalEntryType = JournalEntryType.Credit,
@@ -581,7 +572,6 @@ public class GeneralLedgerAccountTests(ITestOutputHelper testOutputHelper)
 
         var existingGeneralLedgerAccountEntity = new GeneralLedgerAccountEntity
         {
-            Id = generalLegerAccountId,
             AccountTitle = faker.Finance.AccountName(),
             AccountCode = faker.Finance.Account(),
             JournalEntryType = JournalEntryType.Credit,
@@ -590,7 +580,7 @@ public class GeneralLedgerAccountTests(ITestOutputHelper testOutputHelper)
         };
         unitOfWork.GeneralLedgerAccountRepository.GetByIdAsync(generalLegerAccountId, CancellationToken.None).Returns(existingGeneralLedgerAccountEntity);
 
-        unitOfWork.HasChanges(existingGeneralLedgerAccountEntity).Returns(true);
+        //unitOfWork.HasChanges(existingGeneralLedgerAccountEntity).Returns(true);
 
         var updateGeneralLedgerAccountCommand = new UpdateGeneralLedgerAccountCommand
         {
@@ -620,7 +610,6 @@ public class GeneralLedgerAccountTests(ITestOutputHelper testOutputHelper)
 
         var existingGeneralLedgerAccountEntity = new GeneralLedgerAccountEntity
         {
-            Id = generalLegerAccountId,
             AccountTitle = faker.Finance.AccountName(),
             AccountCode = faker.Finance.Account(),
             JournalEntryType = JournalEntryType.Credit,
@@ -629,7 +618,7 @@ public class GeneralLedgerAccountTests(ITestOutputHelper testOutputHelper)
         };
         unitOfWork.GeneralLedgerAccountRepository.GetByIdAsync(generalLegerAccountId, CancellationToken.None).Returns(existingGeneralLedgerAccountEntity);
 
-        unitOfWork.HasChanges(existingGeneralLedgerAccountEntity).Returns(true);
+        //unitOfWork.HasChanges(existingGeneralLedgerAccountEntity).Returns(true);
 
         var updateGeneralLedgerAccountCommand = new UpdateGeneralLedgerAccountCommand
         {
@@ -661,7 +650,6 @@ public class GeneralLedgerAccountTests(ITestOutputHelper testOutputHelper)
 
         var existingGeneralLedgerAccountEntity = new GeneralLedgerAccountEntity
         {
-            Id = generalLegerAccountId,
             AccountTitle = title,
             AccountCode = faker.Finance.Account(),
             JournalEntryType = JournalEntryType.Credit,
@@ -676,7 +664,6 @@ public class GeneralLedgerAccountTests(ITestOutputHelper testOutputHelper)
 
         var duplicateGeneralLedgerAccountEntity = new GeneralLedgerAccountEntity
         {
-            Id = Guid.NewGuid(), // different from generalLegerAccountId
             AccountTitle = title,
             AccountCode = faker.Finance.Account(),
             JournalEntryType = JournalEntryType.Credit,
@@ -717,7 +704,6 @@ public class GeneralLedgerAccountTests(ITestOutputHelper testOutputHelper)
 
         var existingGeneralLedgerAccountEntity = new GeneralLedgerAccountEntity
         {
-            Id = generalLegerAccountId,
             AccountTitle = faker.Finance.AccountName(),
             AccountCode = code,
             JournalEntryType = JournalEntryType.Credit,
@@ -758,7 +744,6 @@ public class GeneralLedgerAccountTests(ITestOutputHelper testOutputHelper)
 
         var existingGeneralLedgerAccountEntity = new GeneralLedgerAccountEntity
         {
-            Id = generalLegerAccountId,
             AccountTitle = faker.Finance.AccountName(),
             AccountCode = faker.Finance.Account(),
             JournalEntryType = JournalEntryType.Credit,
@@ -767,7 +752,7 @@ public class GeneralLedgerAccountTests(ITestOutputHelper testOutputHelper)
         };
         unitOfWork.GeneralLedgerAccountRepository.GetByIdAsync(generalLegerAccountId, CancellationToken.None).Returns(existingGeneralLedgerAccountEntity);
 
-        unitOfWork.HasChanges(existingGeneralLedgerAccountEntity).Returns(true);
+        //unitOfWork.HasChanges(existingGeneralLedgerAccountEntity).Returns(true);
 
         var updateGeneralLedgerAccountCommand = new UpdateGeneralLedgerAccountCommand
         {
@@ -790,106 +775,6 @@ public class GeneralLedgerAccountTests(ITestOutputHelper testOutputHelper)
     }
 
     [Fact]
-    public async Task UpdateGeneralLedgerAccountHandler_ShouldUpdateModifiedDate_WhenAccountIsUpdated()
-    {
-        // Arrange
-        var unitOfWork = Substitute.For<IUnitOfWork>();
-        var faker = new Faker();
-        var generalLedgerAccountId = Guid.NewGuid();
-        var title = faker.Finance.AccountName();
-        var oldModifiedDate = DateTime.UtcNow.AddDays(-5);
-
-        var existingGeneralLedgerAccountEntity = new GeneralLedgerAccountEntity
-        {
-            Id = generalLedgerAccountId,
-            AccountTitle = title,
-            AccountCode = faker.Finance.Account(),
-            JournalEntryType = JournalEntryType.Credit,
-            GroupAccountId = Guid.NewGuid(),
-            IsActive = true,
-            ModifiedDate = oldModifiedDate
-        };
-
-        unitOfWork.GeneralLedgerAccountRepository
-            .GetByIdAsync(generalLedgerAccountId, CancellationToken.None)
-            .Returns(existingGeneralLedgerAccountEntity);
-
-        unitOfWork.GeneralLedgerAccountRepository
-            .FindActiveAccountByTitleAndGroupAsync(title, generalLedgerAccountId, CancellationToken.None)
-            .Returns(new List<GeneralLedgerAccountEntity>());
-
-        unitOfWork.HasChanges(existingGeneralLedgerAccountEntity).Returns(true);
-
-        var updateGeneralLedgerAccountCommand = new UpdateGeneralLedgerAccountCommand
-        {
-            GeneralLedgerAccountId = generalLedgerAccountId,
-            Title = new Patch<string>(faker.Finance.AccountName())
-        };
-        var updateGeneralLedgerAccountHandler = new UpdateGeneralLedgerAccountCommandHandler(unitOfWork);
-
-        // Act
-        var result = await updateGeneralLedgerAccountHandler.Handle(updateGeneralLedgerAccountCommand, CancellationToken.None);
-
-        // Assert
-        result.IsSuccess.Should().BeTrue();
-        existingGeneralLedgerAccountEntity.ModifiedDate.Should().BeCloseTo(DateTime.UtcNow, TimeSpan.FromSeconds(2));
-
-
-        await unitOfWork.Received(1)
-            .CommitAsync(CancellationToken.None);
-    }
-
-    [Fact]
-    public async Task UpdateGeneralLedgerAccountHandler_ShouldSucceed_WhenNoFieldsAreChanged()
-    {
-        // Arrange
-        var unitOfWork = Substitute.For<IUnitOfWork>();
-        var faker = new Faker();
-        var generalLedgerAccountId = Guid.NewGuid();
-        var title = faker.Finance.AccountName();
-        var code = faker.Finance.Account();
-        var groupAccountId = Guid.NewGuid();
-        var oldModifiedDate = DateTime.UtcNow.AddDays(-5);
-
-        var existingAccount = new GeneralLedgerAccountEntity
-        {
-            Id = generalLedgerAccountId,
-            AccountTitle = title,
-            JournalEntryType = JournalEntryType.Credit,
-            GroupAccountId = groupAccountId,
-            IsActive = true,
-            AccountCode = code,
-            ModifiedDate = oldModifiedDate
-        };
-        unitOfWork.GeneralLedgerAccountRepository.GetByIdAsync(generalLedgerAccountId, CancellationToken.None)
-            .Returns(existingAccount);
-
-        unitOfWork.HasChanges(existingAccount).Returns(false);
-
-        var handler = new UpdateGeneralLedgerAccountCommandHandler(unitOfWork);
-
-        var command = new UpdateGeneralLedgerAccountCommand
-        {
-            GeneralLedgerAccountId = generalLedgerAccountId,
-            Title = new Patch<string>(title),
-            JournalEntryType = new Patch<JournalEntryType>(JournalEntryType.Credit),
-            GroupAccountId = new Patch<Guid>(groupAccountId),
-            IsActive = new Patch<bool>(true),
-            Code = new Patch<string>(code)
-        };
-
-        // Act
-        var result = await handler.Handle(command, CancellationToken.None);
-
-        // Assert
-        result.IsSuccess.Should().BeTrue();
-        existingAccount.ModifiedDate.Should().Be(oldModifiedDate);
-
-        await unitOfWork.DidNotReceive()
-            .CommitAsync(CancellationToken.None);
-    }
-
-    [Fact]
     public async Task GetGeneralLedgerAccount_WithValidId_ShouldReturnAccount()
     {
         // Arrange
@@ -901,7 +786,6 @@ public class GeneralLedgerAccountTests(ITestOutputHelper testOutputHelper)
 
         var existingGeneralLedgerAccount = new GeneralLedgerAccountEntity
         {
-            Id = generalLedgerAccountId,
             AccountTitle = title,
             AccountCode = faker.Finance.Account(),
             JournalEntryType = JournalEntryType.Debit,
@@ -922,7 +806,6 @@ public class GeneralLedgerAccountTests(ITestOutputHelper testOutputHelper)
         // Assert
         result.IsSuccess.Should().BeTrue();
         result.Result.Should().NotBeNull();
-        result.Result!.Id.Should().Be(generalLedgerAccountId);
         result.Result.AccountTitle.Should().Be(title);
     }
 
@@ -981,7 +864,6 @@ public class GeneralLedgerAccountTests(ITestOutputHelper testOutputHelper)
         { 
             new()
             {
-                Id = Guid.NewGuid(),
                 AccountTitle = title,
                 AccountCode = faker.Finance.AccountName(),
                 IsActive = true,
@@ -990,7 +872,6 @@ public class GeneralLedgerAccountTests(ITestOutputHelper testOutputHelper)
             },
             new()
             {
-                Id = Guid.NewGuid(),
                 AccountTitle = title,
                 AccountCode = faker.Finance.AccountName(),
                 IsActive = true,
@@ -1034,7 +915,6 @@ public class GeneralLedgerAccountTests(ITestOutputHelper testOutputHelper)
         {
             new()
             {
-                Id = Guid.NewGuid(),
                 AccountTitle = faker.Finance.AccountName(),
                 AccountCode = code,
                 IsActive = true,
@@ -1043,7 +923,6 @@ public class GeneralLedgerAccountTests(ITestOutputHelper testOutputHelper)
             },
             new()
             {
-                Id = Guid.NewGuid(),
                 AccountTitle = faker.Finance.AccountName(),
                 AccountCode = code,
                 IsActive = true,
@@ -1087,7 +966,6 @@ public class GeneralLedgerAccountTests(ITestOutputHelper testOutputHelper)
         {
             new()
             {
-                Id = Guid.NewGuid(),
                 AccountTitle = faker.Finance.AccountName(),
                 AccountCode = faker.Finance.AccountName(),
                 IsActive = true,
@@ -1096,7 +974,6 @@ public class GeneralLedgerAccountTests(ITestOutputHelper testOutputHelper)
             },
             new()
             {
-                Id = Guid.NewGuid(),
                 AccountTitle = faker.Finance.AccountName(),
                 AccountCode = faker.Finance.AccountName(),
                 IsActive = true,
@@ -1140,7 +1017,6 @@ public class GeneralLedgerAccountTests(ITestOutputHelper testOutputHelper)
         {
             new()
             {
-                Id = Guid.NewGuid(),
                 AccountTitle = faker.Finance.AccountName(),
                 AccountCode = faker.Finance.AccountName(),
                 IsActive = true,
@@ -1149,7 +1025,6 @@ public class GeneralLedgerAccountTests(ITestOutputHelper testOutputHelper)
             },
             new()
             {
-                Id = Guid.NewGuid(),
                 AccountTitle = faker.Finance.AccountName(),
                 AccountCode = faker.Finance.AccountName(),
                 IsActive = true,
@@ -1225,7 +1100,6 @@ public class GeneralLedgerAccountTests(ITestOutputHelper testOutputHelper)
         {
             new()
             {
-                Id = Guid.NewGuid(),
                 AccountTitle = accountTitle,
                 AccountCode = faker.Finance.AccountName(),
                 IsActive = true,
@@ -1234,7 +1108,6 @@ public class GeneralLedgerAccountTests(ITestOutputHelper testOutputHelper)
             },
             new()
             {
-                Id = Guid.NewGuid(),
                 AccountTitle = accountTitle,
                 AccountCode = faker.Finance.AccountName(),
                 IsActive = true,
@@ -1282,7 +1155,6 @@ public class GeneralLedgerAccountTests(ITestOutputHelper testOutputHelper)
 
         var entity = new GeneralLedgerAccountEntity
         {
-            Id = Guid.NewGuid(),
             AccountTitle = faker.Finance.AccountName(),
             AccountCode = faker.Finance.AccountName(),
             IsActive = true,

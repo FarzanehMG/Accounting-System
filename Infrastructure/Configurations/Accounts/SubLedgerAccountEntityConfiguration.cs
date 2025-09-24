@@ -47,17 +47,14 @@ internal class SubLedgerAccountEntityConfiguration : IEntityTypeConfiguration<Su
         // Navigation
         builder.HasMany(x => x.DetailedAccounts)
             .WithOne(x => x.SubLedgerAccount)
-            .HasForeignKey(x => x.SubLedgerAccountId)
-            .OnDelete(DeleteBehavior.Restrict);
+            .HasForeignKey(x => x.SubLedgerAccountId);
 
         builder.HasOne(x => x.GeneralLedgerAccount)
             .WithMany(x => x.SubLedgerAccounts)
-            .HasForeignKey(x => x.GeneralLedgerAccountId)
-            .OnDelete(DeleteBehavior.Restrict);
+            .HasForeignKey(x => x.GeneralLedgerAccountId);
 
         builder.HasMany(x => x.JournalEntries)
             .WithOne(x => x.SubLedgerAccount)
-            .HasForeignKey(x => x.SubLedgerAccountId)
-            .OnDelete(DeleteBehavior.Restrict);
+            .HasForeignKey(x => x.SubLedgerAccountId);
     }
 }

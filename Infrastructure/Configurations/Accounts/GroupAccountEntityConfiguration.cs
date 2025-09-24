@@ -44,7 +44,6 @@ internal class GroupAccountEntityConfiguration : IEntityTypeConfiguration<GroupA
         // Navigation
         builder.HasMany(x => x.GeneralLedgerAccounts)
             .WithOne(x => x.GroupAccount)
-            .HasForeignKey(x => x.GroupAccountId)
-            .OnDelete(DeleteBehavior.Restrict);
+            .HasForeignKey(x => x.GroupAccountId);
     }
 }

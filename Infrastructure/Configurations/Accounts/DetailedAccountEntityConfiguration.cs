@@ -47,12 +47,10 @@ internal class DetailedAccountEntityConfiguration : IEntityTypeConfiguration<Det
         // Navigation
         builder.HasOne(x => x.SubLedgerAccount)
             .WithMany(x => x.DetailedAccounts)
-            .HasForeignKey(x => x.SubLedgerAccountId)
-            .OnDelete(DeleteBehavior.Restrict);
+            .HasForeignKey(x => x.SubLedgerAccountId);
 
         builder.HasMany(x => x.JournalEntries)
             .WithOne(x => x.DetailedAccount)
-            .HasForeignKey(x => x.DetailedAccountId)
-            .OnDelete(DeleteBehavior.Restrict);
+            .HasForeignKey(x => x.DetailedAccountId);
     }
 }

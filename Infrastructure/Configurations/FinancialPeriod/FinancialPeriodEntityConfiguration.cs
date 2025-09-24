@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Infrastructure.Configurations.FinancialPeriod;
 
-public class FinancialPeriodEntityConfiguration : IEntityTypeConfiguration<FinancialPeriodEntity>
+internal class FinancialPeriodEntityConfiguration : IEntityTypeConfiguration<FinancialPeriodEntity>
 {
     public void Configure(EntityTypeBuilder<FinancialPeriodEntity> builder)
     {
@@ -33,7 +33,6 @@ public class FinancialPeriodEntityConfiguration : IEntityTypeConfiguration<Finan
         // Navigation
         builder.HasMany(x => x.JournalVouchers)
             .WithOne(x => x.FinancialPeriod)
-            .HasForeignKey(x => x.FinancialPeriodId)
-            .OnDelete(DeleteBehavior.Restrict);
+            .HasForeignKey(x => x.FinancialPeriodId);
     }
 }

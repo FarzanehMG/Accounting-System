@@ -43,12 +43,7 @@ public class UpdateFinancialPeriodCommandHandler(IUnitOfWork unitOfWork)
         financialPeriod.StartDate = newStartDate;
         financialPeriod.EndDate = newEndDate;
 
-        if (unitOfWork.HasChanges(financialPeriod))
-        {
-            financialPeriod.ModifiedDate = DateTime.UtcNow;
-            await unitOfWork.CommitAsync(cancellationToken);
-        }
-
+        await unitOfWork.CommitAsync(cancellationToken);
         return OperationResult<bool>.SuccessResult(true);
     }
 }

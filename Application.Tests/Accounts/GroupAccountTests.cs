@@ -149,7 +149,6 @@ public class GroupAccountTests(ITestOutputHelper testOutputHelper)
 
         var existingGroupAccount = new GroupAccountEntity
         {
-            Id = Guid.NewGuid(),
             AccountTitle = title,
             AccountCode = faker.Finance.AccountName(),
             IsActive = true,
@@ -190,7 +189,6 @@ public class GroupAccountTests(ITestOutputHelper testOutputHelper)
 
         var existingGroupAccount = new GroupAccountEntity
         {
-            Id = Guid.NewGuid(),
             AccountTitle = title,
             AccountCode = faker.Finance.AccountName(),
             IsActive = true,
@@ -228,22 +226,22 @@ public class GroupAccountTests(ITestOutputHelper testOutputHelper)
         // Arrange
         var unitOfWork = Substitute.For<IUnitOfWork>();
         var faker = new Faker();
+        var groupAccountId = Guid.NewGuid();
 
         var existingGroupAccount = new GroupAccountEntity
         {
-            Id = Guid.NewGuid(),
             AccountTitle = faker.Finance.AccountName(),
             AccountCode = faker.Finance.AccountName(),
             IsActive = true,
             JournalEntryType = JournalEntryType.Debit
         };
         unitOfWork.GroupAccountRepository
-            .GetByIdAsync(existingGroupAccount.Id, CancellationToken.None)
+            .GetByIdAsync(groupAccountId, CancellationToken.None)
             .Returns(existingGroupAccount);
 
         var updateGroupAccountTitle = new UpdateGroupAccountCommand
         {
-            GroupAccountId = existingGroupAccount.Id,
+            GroupAccountId = groupAccountId,
             Title = new Patch<string>(faker.Finance.AccountName())
         };
         var handler = new UpdateGroupAccountCommandHandler(unitOfWork);
@@ -265,10 +263,10 @@ public class GroupAccountTests(ITestOutputHelper testOutputHelper)
         // Arrange
         var unitOfWork = Substitute.For<IUnitOfWork>();
         var faker = new Faker();
+        var groupAccountId = Guid.NewGuid();
 
         var existingGroupAccount = new GroupAccountEntity
         {
-            Id = Guid.NewGuid(),
             AccountTitle = faker.Finance.AccountName(),
             AccountDescription = faker.Finance.AccountName(),
             AccountCode = faker.Finance.AccountName(),
@@ -276,12 +274,12 @@ public class GroupAccountTests(ITestOutputHelper testOutputHelper)
             JournalEntryType = JournalEntryType.Debit
         };
         unitOfWork.GroupAccountRepository
-            .GetByIdAsync(existingGroupAccount.Id, CancellationToken.None)
+            .GetByIdAsync(groupAccountId, CancellationToken.None)
             .Returns(existingGroupAccount);
 
         var updateGroupAccountIsActive = new UpdateGroupAccountCommand
         {
-            GroupAccountId = existingGroupAccount.Id,
+            GroupAccountId = groupAccountId,
             IsActive = new Patch<bool>(false)
         };
 
@@ -304,10 +302,10 @@ public class GroupAccountTests(ITestOutputHelper testOutputHelper)
         // Arrange
         var unitOfWork = Substitute.For<IUnitOfWork>();
         var faker = new Faker();
+        var groupAccountId = Guid.NewGuid();
 
         var existingGroupAccount = new GroupAccountEntity
         {
-            Id = Guid.NewGuid(),
             AccountTitle = faker.Finance.AccountName(),
             AccountDescription = faker.Finance.AccountName(),
             AccountCode = faker.Finance.AccountName(),
@@ -315,12 +313,12 @@ public class GroupAccountTests(ITestOutputHelper testOutputHelper)
             JournalEntryType = JournalEntryType.Debit
         };
         unitOfWork.GroupAccountRepository
-            .GetByIdAsync(existingGroupAccount.Id, CancellationToken.None)
+            .GetByIdAsync(groupAccountId, CancellationToken.None)
             .Returns(existingGroupAccount);
 
         var updateGroupAccountDescription = new UpdateGroupAccountCommand
         {
-            GroupAccountId = existingGroupAccount.Id,
+            GroupAccountId = groupAccountId,
             Description = new Patch<string>(faker.Finance.AccountName())
         };
 
@@ -343,10 +341,10 @@ public class GroupAccountTests(ITestOutputHelper testOutputHelper)
         // Arrange
         var unitOfWork = Substitute.For<IUnitOfWork>();
         var faker = new Faker();
+        var groupAccountId = Guid.NewGuid();
 
         var existingGroupAccount = new GroupAccountEntity
         {
-            Id = Guid.NewGuid(),
             AccountTitle = faker.Finance.AccountName(),
             AccountDescription = faker.Finance.AccountName(),
             AccountCode = faker.Finance.AccountName(),
@@ -354,12 +352,12 @@ public class GroupAccountTests(ITestOutputHelper testOutputHelper)
             JournalEntryType = JournalEntryType.Debit
         };
         unitOfWork.GroupAccountRepository
-            .GetByIdAsync(existingGroupAccount.Id, CancellationToken.None)
+            .GetByIdAsync(groupAccountId, CancellationToken.None)
             .Returns(existingGroupAccount);
 
         var updateGroupAccountJournalEntryType = new UpdateGroupAccountCommand
         {
-            GroupAccountId = existingGroupAccount.Id,
+            GroupAccountId = groupAccountId,
             JournalEntryType = new Patch<JournalEntryType>(JournalEntryType.Credit)
         };
 
@@ -382,10 +380,10 @@ public class GroupAccountTests(ITestOutputHelper testOutputHelper)
         // Arrange
         var unitOfWork = Substitute.For<IUnitOfWork>();
         var faker = new Faker();
+        var groupAccountId = Guid.NewGuid();
 
         var existingGroupAccount = new GroupAccountEntity
         {
-            Id = Guid.NewGuid(),
             AccountTitle = faker.Finance.AccountName(),
             AccountDescription = faker.Finance.AccountName(),
             AccountCode = faker.Finance.AccountName(),
@@ -393,12 +391,12 @@ public class GroupAccountTests(ITestOutputHelper testOutputHelper)
             JournalEntryType = JournalEntryType.Debit
         };
         unitOfWork.GroupAccountRepository
-            .GetByIdAsync(existingGroupAccount.Id, CancellationToken.None)
+            .GetByIdAsync(groupAccountId, CancellationToken.None)
             .Returns(existingGroupAccount);
 
         var updateGroupAccountCode = new UpdateGroupAccountCommand
         {
-            GroupAccountId = existingGroupAccount.Id,
+            GroupAccountId = groupAccountId,
             Code = new Patch<string>(faker.Finance.AccountName())
         };
 
@@ -450,10 +448,10 @@ public class GroupAccountTests(ITestOutputHelper testOutputHelper)
         // Arrange
         var unitOfWork = Substitute.For<IUnitOfWork>();
         var faker = new Faker();
+        var groupAccountId = Guid.NewGuid();
 
         var existingGroupAccount = new GroupAccountEntity
         {
-            Id = Guid.NewGuid(),
             AccountTitle = faker.Finance.AccountName(),
             AccountCode = faker.Finance.AccountName(),
             IsActive = true,
@@ -461,7 +459,7 @@ public class GroupAccountTests(ITestOutputHelper testOutputHelper)
         };
 
         unitOfWork.GroupAccountRepository
-            .GetByIdAsync(existingGroupAccount.Id, CancellationToken.None)
+            .GetByIdAsync(groupAccountId, CancellationToken.None)
             .Returns(existingGroupAccount);
 
         var handler = new GetGroupAccountByIdQueryHandler(unitOfWork);
@@ -469,13 +467,12 @@ public class GroupAccountTests(ITestOutputHelper testOutputHelper)
         // Act
         var result = await handler.Handle(new GetGroupAccountByIdQuery
         {
-            Id = existingGroupAccount.Id
+            Id = groupAccountId
         }, CancellationToken.None);
 
         // Assert
         result.IsSuccess.Should().BeTrue();
         result.Result.Should().NotBeNull();
-        result.Result!.Id.Should().Be(existingGroupAccount.Id);
         result.Result.AccountTitle.Should().Be(existingGroupAccount.AccountTitle);
     }
 
@@ -534,7 +531,6 @@ public class GroupAccountTests(ITestOutputHelper testOutputHelper)
         {
             new()
             {
-                Id = Guid.NewGuid(),
                 AccountTitle = title,
                 AccountCode = faker.Finance.AccountName(),
                 IsActive = true,
@@ -542,7 +538,6 @@ public class GroupAccountTests(ITestOutputHelper testOutputHelper)
             },
             new()
             {
-                Id = Guid.NewGuid(),
                 AccountTitle = title,
                 AccountCode = faker.Finance.AccountName(),
                 IsActive = true,
@@ -584,7 +579,6 @@ public class GroupAccountTests(ITestOutputHelper testOutputHelper)
         {
             new()
             {
-                Id = Guid.NewGuid(),
                 AccountTitle = faker.Finance.AccountName(),
                 AccountCode = code,
                 IsActive = true,
@@ -592,7 +586,6 @@ public class GroupAccountTests(ITestOutputHelper testOutputHelper)
             },
             new()
             {
-                Id = Guid.NewGuid(),
                 AccountTitle = faker.Finance.AccountName(),
                 AccountCode = code,
                 IsActive = true,
@@ -634,7 +627,6 @@ public class GroupAccountTests(ITestOutputHelper testOutputHelper)
         {
             new()
             {
-                Id = Guid.NewGuid(),
                 AccountTitle = faker.Finance.AccountName(),
                 AccountCode = faker.Finance.AccountName(),
                 IsActive = isActive,
@@ -642,7 +634,6 @@ public class GroupAccountTests(ITestOutputHelper testOutputHelper)
             },
             new()
             {
-                Id = Guid.NewGuid(),
                 AccountTitle = faker.Finance.AccountName(),
                 AccountCode = faker.Finance.AccountName(),
                 IsActive = isActive,
@@ -684,7 +675,6 @@ public class GroupAccountTests(ITestOutputHelper testOutputHelper)
         {
             new()
             {
-                Id = Guid.NewGuid(),
                 AccountTitle = faker.Finance.AccountName(),
                 AccountCode = faker.Finance.AccountName(),
                 IsActive = true,
@@ -692,7 +682,6 @@ public class GroupAccountTests(ITestOutputHelper testOutputHelper)
             },
             new()
             {
-                Id = Guid.NewGuid(),
                 AccountTitle = faker.Finance.AccountName(),
                 AccountCode = faker.Finance.AccountName(),
                 IsActive = true,
@@ -765,7 +754,6 @@ public class GroupAccountTests(ITestOutputHelper testOutputHelper)
     {
         new()
         {
-            Id = Guid.NewGuid(),
             AccountTitle = accountTitle,
             AccountCode = faker.Finance.AccountName(),
             IsActive = true,
@@ -773,7 +761,6 @@ public class GroupAccountTests(ITestOutputHelper testOutputHelper)
         },
         new()
         {
-            Id = Guid.NewGuid(),
             AccountTitle = accountTitle,
             AccountCode = faker.Finance.AccountName(),
             IsActive = true,
@@ -819,7 +806,6 @@ public class GroupAccountTests(ITestOutputHelper testOutputHelper)
 
         var entity = new GroupAccountEntity
         {
-            Id = Guid.NewGuid(),
             AccountTitle = faker.Finance.AccountName(),
             AccountCode = faker.Finance.AccountName(),
             IsActive = true,

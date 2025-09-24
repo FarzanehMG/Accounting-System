@@ -48,11 +48,7 @@ public class UpdateJournalVoucherCommandHandler(IUnitOfWork unitOfWork)
         if (command.Description?.Value != null)
             journalVoucherEntity.Description = command.Description.Value;
 
-        if (unitOfWork.HasChanges(journalVoucherEntity))
-        {
-            journalVoucherEntity.ModifiedDate = DateTime.UtcNow;
-            await unitOfWork.CommitAsync(cancellationToken);
-        }
+        await unitOfWork.CommitAsync(cancellationToken);
         return OperationResult<bool>.SuccessResult(true);
     }
 }

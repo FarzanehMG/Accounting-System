@@ -73,11 +73,7 @@ public class UpdateJournalEntryCommandHandler(IUnitOfWork unitOfWork)
             journalEntryEntity.DetailedAccountId = command.DetailedAccountId.Value;
         }
 
-        if (unitOfWork.HasChanges(journalEntryEntity))
-        {
-            journalEntryEntity.ModifiedDate = DateTime.UtcNow;
-            await unitOfWork.CommitAsync(cancellationToken);
-        }
+        await unitOfWork.CommitAsync(cancellationToken);
         return OperationResult<bool>.SuccessResult(true);
     }
 }

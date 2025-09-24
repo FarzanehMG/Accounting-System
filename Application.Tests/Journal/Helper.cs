@@ -10,7 +10,6 @@ public static class Helper
     {
         return new SubLedgerAccountEntity
         {
-            Id = id,
             AccountTitle = faker.Finance.AccountName(),
             AccountCode = faker.Finance.Account(),
             JournalEntryType = type,
@@ -23,7 +22,6 @@ public static class Helper
     {
         return new DetailedAccountEntity
         {
-            Id = id,
             SubLedgerAccountId = subLedgerId,
             JournalEntryType = type,
             AccountTitle = faker.Finance.AccountName(),

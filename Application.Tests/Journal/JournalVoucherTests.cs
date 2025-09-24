@@ -26,7 +26,6 @@ public class JournalVoucherTests(ITestOutputHelper testOutputHelper)
 
         var existingFinancialPeriod = new FinancialPeriodEntity
         {
-            Id = Guid.NewGuid(),
             FinancialPeriodTitle = faker.Finance.AccountName(),
             StartDate = DateTime.UtcNow,
             EndDate = DateTime.UtcNow.AddYears(1),
@@ -35,7 +34,6 @@ public class JournalVoucherTests(ITestOutputHelper testOutputHelper)
 
         var existingJournalVoucher = new JournalVoucherEntity
         {
-            Id = Guid.NewGuid(),
             JournalVoucherTitle = faker.Finance.AccountName(),
             ReferenceNumber = faker.Finance.RoutingNumber(),
             TransactionTime = DateTime.UtcNow,
@@ -85,7 +83,6 @@ public class JournalVoucherTests(ITestOutputHelper testOutputHelper)
 
         var existingFinancialPeriod = new FinancialPeriodEntity
         {
-            Id = Guid.NewGuid(),
             FinancialPeriodTitle = faker.Finance.AccountName(),
             StartDate = DateTime.UtcNow,
             EndDate = DateTime.UtcNow.AddYears(1),
@@ -126,7 +123,6 @@ public class JournalVoucherTests(ITestOutputHelper testOutputHelper)
 
         var existingFinancialPeriod = new FinancialPeriodEntity
         {
-            Id = Guid.NewGuid(),
             FinancialPeriodTitle = faker.Finance.AccountName(),
             StartDate = DateTime.UtcNow,
             EndDate = DateTime.UtcNow.AddYears(1),
@@ -167,7 +163,6 @@ public class JournalVoucherTests(ITestOutputHelper testOutputHelper)
 
         var existingFinancialPeriod = new FinancialPeriodEntity
         {
-            Id = Guid.NewGuid(),
             FinancialPeriodTitle = faker.Finance.AccountName(),
             StartDate = DateTime.UtcNow,
             EndDate = DateTime.UtcNow.AddYears(1),
@@ -208,7 +203,6 @@ public class JournalVoucherTests(ITestOutputHelper testOutputHelper)
 
         var existingFinancialPeriod = new FinancialPeriodEntity
         {
-            Id = Guid.NewGuid(),
             FinancialPeriodTitle = faker.Finance.AccountName(),
             StartDate = DateTime.UtcNow,
             EndDate = DateTime.UtcNow.AddYears(1),
@@ -252,7 +246,6 @@ public class JournalVoucherTests(ITestOutputHelper testOutputHelper)
 
         var existingFinancialPeriod = new FinancialPeriodEntity
         {
-            Id = Guid.NewGuid(),
             FinancialPeriodTitle = faker.Finance.AccountName(),
             StartDate = DateTime.UtcNow,
             EndDate = DateTime.UtcNow.AddYears(1),
@@ -261,7 +254,6 @@ public class JournalVoucherTests(ITestOutputHelper testOutputHelper)
 
         var existingJournalVoucher = new JournalVoucherEntity
         {
-            Id = Guid.NewGuid(),
             JournalVoucherTitle = faker.Finance.AccountName(),
             ReferenceNumber = faker.Finance.RoutingNumber(),
             TransactionTime = DateTime.UtcNow,
@@ -340,7 +332,6 @@ public class JournalVoucherTests(ITestOutputHelper testOutputHelper)
         var unitOfWork = Substitute.For<IUnitOfWork>();
         var faker = new Faker();
         var journalVoucherId = Guid.NewGuid();
-        var oldModifiedDate = DateTime.UtcNow.AddDays(-5);
 
         var existingJournalVoucherEntity = new JournalVoucherEntity
         {
@@ -350,14 +341,10 @@ public class JournalVoucherTests(ITestOutputHelper testOutputHelper)
             JournalVoucherState = JournalVoucherState.Draft,
             CreatedByUserId = Guid.NewGuid(),
             FinancialPeriodId = Guid.NewGuid(),
-            ModifiedDate = oldModifiedDate
         };
 
         unitOfWork.JournalVoucherRepository.GetByIdAsync(journalVoucherId, CancellationToken.None)
             .Returns(existingJournalVoucherEntity);
-
-        unitOfWork.HasChanges(existingJournalVoucherEntity)
-            .Returns(true);
 
         var updateJournalVoucherCommand = new UpdateJournalVoucherCommand
         {
@@ -373,7 +360,6 @@ public class JournalVoucherTests(ITestOutputHelper testOutputHelper)
         // Assert
         result.IsSuccess.Should().BeTrue();
         existingJournalVoucherEntity.JournalVoucherTitle.Should().Be(updateJournalVoucherCommand.JournalVoucherTitle);
-        existingJournalVoucherEntity.ModifiedDate.Should().BeAfter(oldModifiedDate);
 
         await unitOfWork.Received(1)
             .CommitAsync(CancellationToken.None);
@@ -463,7 +449,6 @@ public class JournalVoucherTests(ITestOutputHelper testOutputHelper)
             FinancialPeriodId = Guid.NewGuid(),
             FinancialPeriod = new FinancialPeriodEntity
             {
-                Id = Guid.NewGuid(),
                 FinancialPeriodTitle = faker.Finance.AccountName(),
                 StartDate = DateTime.UtcNow,
                 EndDate = DateTime.UtcNow.AddYears(1),
@@ -509,7 +494,6 @@ public class JournalVoucherTests(ITestOutputHelper testOutputHelper)
             FinancialPeriodId = Guid.NewGuid(),
             FinancialPeriod = new FinancialPeriodEntity
             {
-                Id = Guid.NewGuid(),
                 FinancialPeriodTitle = faker.Finance.AccountName(),
                 StartDate = DateTime.UtcNow,
                 EndDate = DateTime.UtcNow.AddYears(1),
@@ -546,7 +530,6 @@ public class JournalVoucherTests(ITestOutputHelper testOutputHelper)
         var unitOfWork = Substitute.For<IUnitOfWork>();
         var faker = new Faker();
         var journalVoucherId = Guid.NewGuid();
-        var oldModifiedDate = DateTime.UtcNow.AddDays(-5);
 
         var existingJournalVoucherEntity = new JournalVoucherEntity
         {
@@ -556,14 +539,11 @@ public class JournalVoucherTests(ITestOutputHelper testOutputHelper)
             JournalVoucherState = JournalVoucherState.Draft,
             CreatedByUserId = Guid.NewGuid(),
             FinancialPeriodId = Guid.NewGuid(),
-            ModifiedDate = oldModifiedDate
         };
 
         unitOfWork.JournalVoucherRepository.GetByIdAsync(journalVoucherId, CancellationToken.None)
             .Returns(existingJournalVoucherEntity);
 
-        unitOfWork.HasChanges(existingJournalVoucherEntity)
-            .Returns(true);
 
         var updateJournalVoucherCommand = new UpdateJournalVoucherCommand
         {
@@ -579,7 +559,6 @@ public class JournalVoucherTests(ITestOutputHelper testOutputHelper)
         // Assert
         result.IsSuccess.Should().BeTrue();
         existingJournalVoucherEntity.JournalVoucherTitle.Should().Be(updateJournalVoucherCommand.JournalVoucherTitle);
-        existingJournalVoucherEntity.ModifiedDate.Should().BeAfter(oldModifiedDate);
 
         await unitOfWork.Received(1)
             .CommitAsync(CancellationToken.None);
@@ -592,7 +571,6 @@ public class JournalVoucherTests(ITestOutputHelper testOutputHelper)
         var unitOfWork = Substitute.For<IUnitOfWork>();
         var faker = new Faker();
         var journalVoucherId = Guid.NewGuid();
-        var oldModifiedDate = DateTime.UtcNow.AddDays(-5);
 
         var existingJournalVoucherEntity = new JournalVoucherEntity
         {
@@ -602,14 +580,11 @@ public class JournalVoucherTests(ITestOutputHelper testOutputHelper)
             JournalVoucherState = JournalVoucherState.Draft,
             CreatedByUserId = Guid.NewGuid(),
             FinancialPeriodId = Guid.NewGuid(),
-            ModifiedDate = oldModifiedDate
         };
 
         unitOfWork.JournalVoucherRepository.GetByIdAsync(journalVoucherId, CancellationToken.None)
             .Returns(existingJournalVoucherEntity);
 
-        unitOfWork.HasChanges(existingJournalVoucherEntity)
-            .Returns(true);
 
         var updateJournalVoucherCommand = new UpdateJournalVoucherCommand
         {
@@ -625,7 +600,6 @@ public class JournalVoucherTests(ITestOutputHelper testOutputHelper)
         // Assert
         result.IsSuccess.Should().BeTrue();
         existingJournalVoucherEntity.TransactionTime.Should().Be(updateJournalVoucherCommand.TransactionTime);
-        existingJournalVoucherEntity.ModifiedDate.Should().BeAfter(oldModifiedDate);
 
         await unitOfWork.Received(1)
             .CommitAsync(CancellationToken.None);
@@ -638,7 +612,6 @@ public class JournalVoucherTests(ITestOutputHelper testOutputHelper)
         var unitOfWork = Substitute.For<IUnitOfWork>();
         var faker = new Faker();
         var journalVoucherId = Guid.NewGuid();
-        var oldModifiedDate = DateTime.UtcNow.AddDays(-5);
 
         var existingJournalVoucherEntity = new JournalVoucherEntity
         {
@@ -648,14 +621,10 @@ public class JournalVoucherTests(ITestOutputHelper testOutputHelper)
             JournalVoucherState = JournalVoucherState.Draft,
             CreatedByUserId = Guid.NewGuid(),
             FinancialPeriodId = Guid.NewGuid(),
-            ModifiedDate = oldModifiedDate
         };
 
         unitOfWork.JournalVoucherRepository.GetByIdAsync(journalVoucherId, CancellationToken.None)
             .Returns(existingJournalVoucherEntity);
-
-        unitOfWork.HasChanges(existingJournalVoucherEntity)
-            .Returns(true);
 
         var updateJournalVoucherCommand = new UpdateJournalVoucherCommand
         {
@@ -671,7 +640,6 @@ public class JournalVoucherTests(ITestOutputHelper testOutputHelper)
         // Assert
         result.IsSuccess.Should().BeTrue();
         existingJournalVoucherEntity.ReferenceNumber.Should().Be(updateJournalVoucherCommand.ReferenceNumber);
-        existingJournalVoucherEntity.ModifiedDate.Should().BeAfter(oldModifiedDate);
 
         await unitOfWork.Received(1)
             .CommitAsync(CancellationToken.None);
@@ -684,7 +652,6 @@ public class JournalVoucherTests(ITestOutputHelper testOutputHelper)
         var unitOfWork = Substitute.For<IUnitOfWork>();
         var faker = new Faker();
         var journalVoucherId = Guid.NewGuid();
-        var oldModifiedDate = DateTime.UtcNow.AddDays(-5);
 
         var existingJournalVoucherEntity = new JournalVoucherEntity
         {
@@ -694,14 +661,11 @@ public class JournalVoucherTests(ITestOutputHelper testOutputHelper)
             JournalVoucherState = JournalVoucherState.Draft,
             CreatedByUserId = Guid.NewGuid(),
             FinancialPeriodId = Guid.NewGuid(),
-            ModifiedDate = oldModifiedDate
         };
 
         unitOfWork.JournalVoucherRepository.GetByIdAsync(journalVoucherId, CancellationToken.None)
             .Returns(existingJournalVoucherEntity);
 
-        unitOfWork.HasChanges(existingJournalVoucherEntity)
-            .Returns(true);
 
         var updateJournalVoucherCommand = new UpdateJournalVoucherCommand
         {
@@ -717,7 +681,6 @@ public class JournalVoucherTests(ITestOutputHelper testOutputHelper)
         // Assert
         result.IsSuccess.Should().BeTrue();
         existingJournalVoucherEntity.Description.Should().Be(updateJournalVoucherCommand.Description);
-        existingJournalVoucherEntity.ModifiedDate.Should().BeAfter(oldModifiedDate);
 
         await unitOfWork.Received(1)
             .CommitAsync(CancellationToken.None);
@@ -730,7 +693,6 @@ public class JournalVoucherTests(ITestOutputHelper testOutputHelper)
         var unitOfWork = Substitute.For<IUnitOfWork>();
         var faker = new Faker();
         var journalVoucherId = Guid.NewGuid();
-        var oldModifiedDate = DateTime.UtcNow.AddDays(-5);
 
         var existingJournalVoucherEntity = new JournalVoucherEntity
         {
@@ -740,14 +702,10 @@ public class JournalVoucherTests(ITestOutputHelper testOutputHelper)
             JournalVoucherState = JournalVoucherState.Draft,
             CreatedByUserId = Guid.NewGuid(),
             FinancialPeriodId = Guid.NewGuid(),
-            ModifiedDate = oldModifiedDate
         };
 
         unitOfWork.JournalVoucherRepository.GetByIdAsync(journalVoucherId, CancellationToken.None)
             .Returns(existingJournalVoucherEntity);
-
-        unitOfWork.HasChanges(existingJournalVoucherEntity)
-            .Returns(true);
 
         var updateJournalVoucherCommand = new UpdateJournalVoucherCommand
         {
@@ -767,7 +725,6 @@ public class JournalVoucherTests(ITestOutputHelper testOutputHelper)
         existingJournalVoucherEntity.Description.Should().Be(updateJournalVoucherCommand.Description);
         existingJournalVoucherEntity.JournalVoucherTitle.Should().Be(updateJournalVoucherCommand.JournalVoucherTitle);
         existingJournalVoucherEntity.TransactionTime.Should().Be(updateJournalVoucherCommand.TransactionTime);
-        existingJournalVoucherEntity.ModifiedDate.Should().BeAfter(oldModifiedDate);
 
         await unitOfWork.Received(1)
             .CommitAsync(CancellationToken.None);
@@ -780,7 +737,6 @@ public class JournalVoucherTests(ITestOutputHelper testOutputHelper)
         var unitOfWork = Substitute.For<IUnitOfWork>();
         var faker = new Faker();
         var journalVoucherId = Guid.NewGuid();
-        var oldModifiedDate = DateTime.UtcNow.AddDays(-5);
 
         var existingJournalVoucherEntity = new JournalVoucherEntity
         {
@@ -790,14 +746,10 @@ public class JournalVoucherTests(ITestOutputHelper testOutputHelper)
             JournalVoucherState = JournalVoucherState.Draft,
             CreatedByUserId = Guid.NewGuid(),
             FinancialPeriodId = Guid.NewGuid(),
-            ModifiedDate = oldModifiedDate
         };
 
         unitOfWork.JournalVoucherRepository.GetByIdAsync(journalVoucherId, CancellationToken.None)
             .Returns(existingJournalVoucherEntity);
-
-        unitOfWork.HasChanges(existingJournalVoucherEntity)
-            .Returns(true);
 
         var updateJournalVoucherCommand = new UpdateJournalVoucherCommand
         {
@@ -813,7 +765,6 @@ public class JournalVoucherTests(ITestOutputHelper testOutputHelper)
         // Assert
         result.IsSuccess.Should().BeTrue();
         existingJournalVoucherEntity.Description.Should().Be(updateJournalVoucherCommand.Description);
-        existingJournalVoucherEntity.ModifiedDate.Should().BeAfter(oldModifiedDate);
 
         await unitOfWork.Received(1)
             .CommitAsync(CancellationToken.None);
@@ -855,44 +806,6 @@ public class JournalVoucherTests(ITestOutputHelper testOutputHelper)
         // Assert
         result.IsSuccess.Should().BeTrue();
         existingJournalVoucherEntity.ModifiedDate.Should().Be(oldModifiedDate);
-    }
-
-    [Fact]
-    public async Task UpdateJournalVoucherCommandHandler_ShouldNotCommit_WhenNoFieldsChanged()
-    {
-        // Arrange
-        var unitOfWork = Substitute.For<IUnitOfWork>();
-        var faker = new Faker();
-        var journalVoucherId = Guid.NewGuid();
-
-        var existingJournalVoucherEntity = new JournalVoucherEntity
-        {
-            JournalVoucherTitle = faker.Finance.AccountName(),
-            ReferenceNumber = faker.Finance.RoutingNumber(),
-            TransactionTime = DateTime.UtcNow,
-            JournalVoucherState = JournalVoucherState.Draft,
-            CreatedByUserId = Guid.NewGuid(),
-            FinancialPeriodId = Guid.NewGuid()
-        };
-
-        unitOfWork.JournalVoucherRepository.GetByIdAsync(journalVoucherId, CancellationToken.None)
-            .Returns(existingJournalVoucherEntity);
-
-        var updateJournalVoucherCommand = new UpdateJournalVoucherCommand
-        {
-            JournalVoucherId = journalVoucherId,
-        };
-
-        var handle = new UpdateJournalVoucherCommandHandler(unitOfWork);
-
-        // Act
-        var result = await handle.Handle(updateJournalVoucherCommand, CancellationToken.None);
-
-        // Assert
-        result.IsSuccess.Should().BeTrue();
-
-        await unitOfWork.DidNotReceive()
-            .CommitAsync(CancellationToken.None);
     }
 
     [Fact]
@@ -942,7 +855,6 @@ public class JournalVoucherTests(ITestOutputHelper testOutputHelper)
 
         var existingJournalVoucherEntity = new JournalVoucherEntity
         {
-            Id = journalVoucherId,
             CreatedDate = DateTime.UtcNow,
             ModifiedDate = DateTime.UtcNow,
             JournalVoucherTitle = faker.Finance.AccountName(),
@@ -966,7 +878,6 @@ public class JournalVoucherTests(ITestOutputHelper testOutputHelper)
         // Assert
         result.IsSuccess.Should().BeTrue();
         result.Result.Should().NotBeNull();
-        result.Result!.Id.Should().Be(journalVoucherId);
         result.Result.JournalVoucherTitle.Should().Be(existingJournalVoucherEntity.JournalVoucherTitle);
     }
 
@@ -1024,7 +935,6 @@ public class JournalVoucherTests(ITestOutputHelper testOutputHelper)
         {
             new()
             {
-                Id = Guid.NewGuid(),
                 JournalVoucherTitle = faker.Finance.AccountName(),
                 ReferenceNumber = faker.Finance.RoutingNumber(),
                 TransactionTime = DateTime.UtcNow,
@@ -1034,7 +944,6 @@ public class JournalVoucherTests(ITestOutputHelper testOutputHelper)
             },
             new()
             {
-                Id = Guid.NewGuid(),
                 JournalVoucherTitle = faker.Finance.AccountName(),
                 ReferenceNumber = faker.Finance.RoutingNumber(),
                 TransactionTime = DateTime.UtcNow,
@@ -1078,7 +987,6 @@ public class JournalVoucherTests(ITestOutputHelper testOutputHelper)
         {
             new()
             {
-                Id = Guid.NewGuid(),
                 JournalVoucherTitle = faker.Finance.AccountName(),
                 ReferenceNumber = faker.Finance.RoutingNumber(),
                 TransactionTime = DateTime.UtcNow,
@@ -1089,7 +997,6 @@ public class JournalVoucherTests(ITestOutputHelper testOutputHelper)
             },
             new()
             {
-                Id = Guid.NewGuid(),
                 JournalVoucherTitle = faker.Finance.AccountName(),
                 ReferenceNumber = faker.Finance.RoutingNumber(),
                 TransactionTime = DateTime.UtcNow,
@@ -1135,7 +1042,6 @@ public class JournalVoucherTests(ITestOutputHelper testOutputHelper)
         {
             new()
             {
-                Id = Guid.NewGuid(),
                 JournalVoucherTitle = faker.Finance.AccountName(),
                 ReferenceNumber = faker.Finance.RoutingNumber(),
                 TransactionTime = DateTime.UtcNow,
@@ -1145,7 +1051,6 @@ public class JournalVoucherTests(ITestOutputHelper testOutputHelper)
             },
             new()
             {
-                Id = Guid.NewGuid(),
                 JournalVoucherTitle = journalVoucherTitle,
                 ReferenceNumber = faker.Finance.RoutingNumber(),
                 TransactionTime = DateTime.UtcNow,
@@ -1193,7 +1098,6 @@ public class JournalVoucherTests(ITestOutputHelper testOutputHelper)
         {
             new()
             {
-                Id = Guid.NewGuid(),
                 JournalVoucherTitle = faker.Finance.AccountName(),
                 ReferenceNumber = faker.Finance.RoutingNumber(),
                 TransactionTime = transactionTime,
@@ -1203,7 +1107,6 @@ public class JournalVoucherTests(ITestOutputHelper testOutputHelper)
             },
             new()
             {
-                Id = Guid.NewGuid(),
                 JournalVoucherTitle = faker.Finance.AccountName(),
                 ReferenceNumber = faker.Finance.RoutingNumber(),
                 TransactionTime = DateTime.UtcNow,
@@ -1278,7 +1181,6 @@ public class JournalVoucherTests(ITestOutputHelper testOutputHelper)
         {
             new()
             {
-                Id = Guid.NewGuid(),
                 JournalVoucherTitle = journalVoucherTitle,
                 ReferenceNumber = faker.Finance.RoutingNumber(),
                 TransactionTime = transactionTime,
@@ -1288,7 +1190,6 @@ public class JournalVoucherTests(ITestOutputHelper testOutputHelper)
             },
             new()
             {
-                Id = Guid.NewGuid(),
                 JournalVoucherTitle = journalVoucherTitle,
                 ReferenceNumber = faker.Finance.RoutingNumber(),
                 TransactionTime = DateTime.UtcNow,
@@ -1336,7 +1237,6 @@ public class JournalVoucherTests(ITestOutputHelper testOutputHelper)
 
         var entity = new JournalVoucherEntity
         {
-            Id = Guid.NewGuid(),
             JournalVoucherTitle = faker.Finance.AccountName(),
             ReferenceNumber = faker.Finance.RoutingNumber(),
             TransactionTime = DateTime.UtcNow,

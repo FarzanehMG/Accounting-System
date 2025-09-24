@@ -4,7 +4,7 @@ using Domain.Enums;
 
 namespace Domain.Entities.Accounts;
 
-public sealed class DetailedAccountEntity : BaseEntity
+public sealed class DetailedAccountEntity : BaseEntity<Guid>
 {
 	public required string AccountTitle { get; set; }
 	public required string AccountCode { get; set; }

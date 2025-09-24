@@ -36,7 +36,6 @@ public class DetailedAccountTests(ITestOutputHelper testOutputHelper)
 
         var existingSubLedgerAccount = new SubLedgerAccountEntity
         {
-            Id = subLedgerAccountId,
             AccountTitle = faker.Finance.AccountName(),
             AccountCode = faker.Finance.Account(),
             JournalEntryType = JournalEntryType.Credit,
@@ -187,7 +186,6 @@ public class DetailedAccountTests(ITestOutputHelper testOutputHelper)
 
         var existingSubLedgerAccount = new SubLedgerAccountEntity
         {
-            Id = subLedgerAccountId,
             AccountTitle = faker.Finance.AccountName(),
             AccountCode = faker.Finance.Account(),
             JournalEntryType = JournalEntryType.Credit,
@@ -254,7 +252,6 @@ public class DetailedAccountTests(ITestOutputHelper testOutputHelper)
 
         var existingSubLedgerAccount = new SubLedgerAccountEntity
         {
-            Id = subLedgerAccountId,
             AccountTitle = title,
             AccountCode = faker.Finance.Account(),
             JournalEntryType = journalEntryType,
@@ -266,7 +263,6 @@ public class DetailedAccountTests(ITestOutputHelper testOutputHelper)
 
         var existingDetailedAccount = new DetailedAccountEntity
         {
-            Id = Guid.NewGuid(),
             AccountTitle = title,
             AccountCode = faker.Finance.Account(),
             IsActive = true,
@@ -309,7 +305,6 @@ public class DetailedAccountTests(ITestOutputHelper testOutputHelper)
 
         var existingSubLedgerAccount = new SubLedgerAccountEntity
         {
-            Id = subLedgerAccountId,
             AccountTitle = title,
             AccountCode = faker.Finance.Account(),
             JournalEntryType = journalEntryType,
@@ -357,7 +352,6 @@ public class DetailedAccountTests(ITestOutputHelper testOutputHelper)
 
         var existingSubLedgerAccount = new SubLedgerAccountEntity
         {
-            Id = subLedgerAccountId,
             AccountTitle = title,
             AccountCode = faker.Finance.Account(),
             JournalEntryType = journalEntryType,
@@ -369,7 +363,6 @@ public class DetailedAccountTests(ITestOutputHelper testOutputHelper)
 
         var existingDetailedAccount = new DetailedAccountEntity
         {
-            Id = Guid.NewGuid(),
             AccountTitle = title,
             AccountCode = code,
             IsActive = false,
@@ -411,7 +404,6 @@ public class DetailedAccountTests(ITestOutputHelper testOutputHelper)
 
         var existingSubLedgerAccount = new SubLedgerAccountEntity
         {
-            Id = subLedgerAccountId,
             AccountTitle = faker.Finance.AccountName(),
             AccountCode = faker.Finance.Account(),
             JournalEntryType = JournalEntryType.Credit,
@@ -423,7 +415,6 @@ public class DetailedAccountTests(ITestOutputHelper testOutputHelper)
 
         var existingDetailedAccount = new DetailedAccountEntity
         {
-            Id = Guid.NewGuid(),
             AccountTitle = faker.Finance.AccountName(),
             AccountCode = code,
             IsActive = true,
@@ -491,7 +482,6 @@ public class DetailedAccountTests(ITestOutputHelper testOutputHelper)
 
         var existingSubLedgerAccount = new SubLedgerAccountEntity
         {
-            Id = subLedgerAccountId,
             AccountTitle = faker.Finance.AccountName(),
             AccountCode = faker.Finance.Account(),
             JournalEntryType = JournalEntryType.Credit,
@@ -571,7 +561,6 @@ public class DetailedAccountTests(ITestOutputHelper testOutputHelper)
 
         var existingDetailedAccount = new DetailedAccountEntity
         {
-            Id = detailedAccountId,
             AccountTitle = faker.Finance.AccountName(),
             AccountCode = faker.Finance.Account(),
             IsActive = true,
@@ -581,7 +570,7 @@ public class DetailedAccountTests(ITestOutputHelper testOutputHelper)
         unitOfWork.DetailedAccountRepository.GetByIdAsync(detailedAccountId, CancellationToken.None)
             .Returns(existingDetailedAccount);
 
-        unitOfWork.HasChanges(existingDetailedAccount).Returns(true);
+        //unitOfWork.HasChanges(existingDetailedAccount).Returns(true);
 
         // Act
         var result = await handler.Handle(updateDetailedAccountCommand, CancellationToken.None);
@@ -611,7 +600,6 @@ public class DetailedAccountTests(ITestOutputHelper testOutputHelper)
 
         var existingDetailedAccount = new DetailedAccountEntity
         {
-            Id = detailedAccountId,
             AccountTitle = faker.Finance.AccountName(),
             AccountCode = faker.Finance.Account(),
             IsActive = true,
@@ -621,7 +609,7 @@ public class DetailedAccountTests(ITestOutputHelper testOutputHelper)
         unitOfWork.DetailedAccountRepository.GetByIdAsync(detailedAccountId, CancellationToken.None)
             .Returns(existingDetailedAccount);
 
-        unitOfWork.HasChanges(existingDetailedAccount).Returns(true);
+        //unitOfWork.HasChanges(existingDetailedAccount).Returns(true);
 
         // Act
         var result = await handler.Handle(updateDetailedAccountCommand, CancellationToken.None);
@@ -652,7 +640,6 @@ public class DetailedAccountTests(ITestOutputHelper testOutputHelper)
 
         var existingDetailedAccount = new DetailedAccountEntity
         {
-            Id = detailedAccountId,
             AccountTitle = faker.Finance.AccountName(),
             AccountCode = faker.Finance.Account(),
             IsActive = true,
@@ -662,7 +649,7 @@ public class DetailedAccountTests(ITestOutputHelper testOutputHelper)
         unitOfWork.DetailedAccountRepository.GetByIdAsync(detailedAccountId, CancellationToken.None)
             .Returns(existingDetailedAccount);
 
-        unitOfWork.HasChanges(existingDetailedAccount).Returns(true);
+        //unitOfWork.HasChanges(existingDetailedAccount).Returns(true);
 
         unitOfWork.DetailedAccountRepository.FindByCodeAsync(code, CancellationToken.None)
             .Returns(null as DetailedAccountEntity);
@@ -696,7 +683,6 @@ public class DetailedAccountTests(ITestOutputHelper testOutputHelper)
 
         var existingDetailedAccount = new DetailedAccountEntity
         {
-            Id = detailedAccountId,
             AccountTitle = title,
             AccountCode = faker.Finance.Account(),
             IsActive = true,
@@ -706,7 +692,7 @@ public class DetailedAccountTests(ITestOutputHelper testOutputHelper)
         unitOfWork.DetailedAccountRepository.GetByIdAsync(detailedAccountId, CancellationToken.None)
             .Returns(existingDetailedAccount);
 
-        unitOfWork.HasChanges(existingDetailedAccount).Returns(true);
+        //unitOfWork.HasChanges(existingDetailedAccount).Returns(true);
 
         // Act
         var result = await handler.Handle(updateDetailedAccountCommand, CancellationToken.None);
@@ -738,7 +724,6 @@ public class DetailedAccountTests(ITestOutputHelper testOutputHelper)
 
         var existingDetailedAccount = new DetailedAccountEntity
         {
-            Id = detailedAccountId,
             AccountTitle = faker.Finance.AccountName(),
             AccountCode = faker.Finance.Account(),
             IsActive = true,
@@ -751,7 +736,7 @@ public class DetailedAccountTests(ITestOutputHelper testOutputHelper)
         unitOfWork.DetailedAccountRepository.FindByCodeAsync(code, CancellationToken.None)
             .Returns(existingDetailedAccount);
 
-        unitOfWork.HasChanges(existingDetailedAccount).Returns(true);
+        //unitOfWork.HasChanges(existingDetailedAccount).Returns(true);
 
         // Act
         var result = await handler.Handle(updateDetailedAccountCommand, CancellationToken.None);
@@ -783,7 +768,6 @@ public class DetailedAccountTests(ITestOutputHelper testOutputHelper)
 
         var existingDetailedAccount = new DetailedAccountEntity
         {
-            Id = detailedAccountId,
             AccountTitle = faker.Finance.AccountName(),
             AccountCode = faker.Finance.Account(),
             IsActive = true,
@@ -793,7 +777,7 @@ public class DetailedAccountTests(ITestOutputHelper testOutputHelper)
         unitOfWork.DetailedAccountRepository.GetByIdAsync(detailedAccountId, CancellationToken.None)
             .Returns(existingDetailedAccount);
 
-        unitOfWork.HasChanges(existingDetailedAccount).Returns(true);
+        //unitOfWork.HasChanges(existingDetailedAccount).Returns(true);
 
         // Act
         var result = await handler.Handle(updateDetailedAccountCommand, CancellationToken.None);
@@ -804,95 +788,6 @@ public class DetailedAccountTests(ITestOutputHelper testOutputHelper)
         existingDetailedAccount.AccountCode.Should().Be(updateDetailedAccountCommand.Code);
 
         await unitOfWork.Received(1)
-            .CommitAsync(CancellationToken.None);
-    }
-
-    [Fact]
-    public async Task UpdateDetailedAccountHandler_ShouldUpdateModifiedDate_WhenAccountIsUpdated()
-    {
-        // Arrange
-        var unitOfWork = Substitute.For<IUnitOfWork>();
-        var faker = new Faker();
-        var detailedAccountId = Guid.NewGuid();
-        var oldModifiedDate = DateTime.UtcNow.AddDays(-5);
-
-        var updateDetailedAccountCommand = new UpdateDetailedAccountCommand
-        {
-            DetailedAccountId = detailedAccountId,
-            Code = new Patch<string>(faker.Finance.Account()),
-            Title = new Patch<string>(faker.Finance.AccountName())
-        };
-        var handler = new UpdateDetailedAccountCommandHandler(unitOfWork);
-
-        var existingDetailedAccount = new DetailedAccountEntity
-        {
-            Id = detailedAccountId,
-            AccountTitle = faker.Finance.AccountName(),
-            AccountCode = faker.Finance.Account(),
-            IsActive = true,
-            JournalEntryType = JournalEntryType.Credit,
-            SubLedgerAccountId = Guid.NewGuid(),
-            ModifiedDate = oldModifiedDate
-        };
-        unitOfWork.DetailedAccountRepository.GetByIdAsync(detailedAccountId, CancellationToken.None)
-            .Returns(existingDetailedAccount);
-
-        unitOfWork.HasChanges(existingDetailedAccount).Returns(true);
-
-        // Act
-        var result = await handler.Handle(updateDetailedAccountCommand, CancellationToken.None);
-
-        // Assert
-        result.IsSuccess.Should().BeTrue();
-        existingDetailedAccount.AccountTitle.Should().Be(updateDetailedAccountCommand.Title);
-        existingDetailedAccount.AccountCode.Should().Be(updateDetailedAccountCommand.Code);
-        existingDetailedAccount.ModifiedDate.Should().BeCloseTo(DateTime.UtcNow, TimeSpan.FromSeconds(2));
-
-        await unitOfWork.Received(1)
-            .CommitAsync(CancellationToken.None);
-    }
-
-    [Fact]
-    public async Task UpdateDetailedAccountHandler_ShouldSucceed_WhenNoFieldsAreChanged()
-    {
-        // Arrange
-        var unitOfWork = Substitute.For<IUnitOfWork>();
-        var faker = new Faker();
-        var detailedAccountId = Guid.NewGuid();
-        var title = faker.Finance.AccountName();
-        var code = faker.Finance.Account();
-        var oldModifiedDate = DateTime.UtcNow.AddDays(-5);
-
-        var existingAccount = new DetailedAccountEntity
-        {
-            Id = detailedAccountId,
-            AccountTitle = title,
-            JournalEntryType = JournalEntryType.Credit,
-            SubLedgerAccountId = Guid.NewGuid(),
-            IsActive = true,
-            AccountCode = code,
-            ModifiedDate = oldModifiedDate
-        };
-        unitOfWork.DetailedAccountRepository.GetByIdAsync(detailedAccountId, CancellationToken.None)
-            .Returns(existingAccount);
-
-        unitOfWork.HasChanges(existingAccount).Returns(false);
-
-        var handler = new UpdateDetailedAccountCommandHandler(unitOfWork);
-
-        var command = new UpdateDetailedAccountCommand
-        {
-            DetailedAccountId = detailedAccountId,
-        };
-
-        // Act
-        var result = await handler.Handle(command, CancellationToken.None);
-
-        // Assert
-        result.IsSuccess.Should().BeTrue();
-        existingAccount.ModifiedDate.Should().Be(oldModifiedDate);
-
-        await unitOfWork.DidNotReceive()
             .CommitAsync(CancellationToken.None);
     }
 
@@ -908,7 +803,6 @@ public class DetailedAccountTests(ITestOutputHelper testOutputHelper)
 
         var existingDetailedAccount = new DetailedAccountEntity
         {
-            Id = detailedAccountId,
             AccountTitle = title,
             AccountCode = faker.Finance.Account(),
             JournalEntryType = JournalEntryType.Debit,
@@ -929,7 +823,6 @@ public class DetailedAccountTests(ITestOutputHelper testOutputHelper)
         // Assert
         result.IsSuccess.Should().BeTrue();
         result.Result.Should().NotBeNull();
-        result.Result!.Id.Should().Be(detailedAccountId);
         result.Result.AccountTitle.Should().Be(title);
     }
 
@@ -988,7 +881,6 @@ public class DetailedAccountTests(ITestOutputHelper testOutputHelper)
         {
             new()
             {
-                Id = Guid.NewGuid(),
                 AccountTitle = title,
                 AccountCode = faker.Finance.AccountName(),
                 IsActive = true,
@@ -997,7 +889,6 @@ public class DetailedAccountTests(ITestOutputHelper testOutputHelper)
             },
             new()
             {
-                Id = Guid.NewGuid(),
                 AccountTitle = title,
                 AccountCode = faker.Finance.AccountName(),
                 IsActive = true,
@@ -1041,7 +932,6 @@ public class DetailedAccountTests(ITestOutputHelper testOutputHelper)
         {
             new()
             {
-                Id = Guid.NewGuid(),
                 AccountTitle = faker.Finance.AccountName(),
                 AccountCode = code,
                 IsActive = true,
@@ -1050,7 +940,6 @@ public class DetailedAccountTests(ITestOutputHelper testOutputHelper)
             },
             new()
             {
-                Id = Guid.NewGuid(),
                 AccountTitle = faker.Finance.AccountName(),
                 AccountCode = code,
                 IsActive = true,
@@ -1094,7 +983,6 @@ public class DetailedAccountTests(ITestOutputHelper testOutputHelper)
         {
             new()
             {
-                Id = Guid.NewGuid(),
                 AccountTitle = faker.Finance.AccountName(),
                 AccountCode = faker.Finance.AccountName(),
                 IsActive = true,
@@ -1103,7 +991,6 @@ public class DetailedAccountTests(ITestOutputHelper testOutputHelper)
             },
             new()
             {
-                Id = Guid.NewGuid(),
                 AccountTitle = faker.Finance.AccountName(),
                 AccountCode = faker.Finance.AccountName(),
                 IsActive = true,
@@ -1147,7 +1034,6 @@ public class DetailedAccountTests(ITestOutputHelper testOutputHelper)
         {
             new()
             {
-                Id = Guid.NewGuid(),
                 AccountTitle = faker.Finance.AccountName(),
                 AccountCode = faker.Finance.AccountName(),
                 IsActive = true,
@@ -1156,7 +1042,6 @@ public class DetailedAccountTests(ITestOutputHelper testOutputHelper)
             },
             new()
             {
-                Id = Guid.NewGuid(),
                 AccountTitle = faker.Finance.AccountName(),
                 AccountCode = faker.Finance.AccountName(),
                 IsActive = true,
@@ -1232,7 +1117,6 @@ public class DetailedAccountTests(ITestOutputHelper testOutputHelper)
         {
             new()
             {
-                Id = Guid.NewGuid(),
                 AccountTitle = accountTitle,
                 AccountCode = faker.Finance.AccountName(),
                 IsActive = true,
@@ -1241,7 +1125,6 @@ public class DetailedAccountTests(ITestOutputHelper testOutputHelper)
             },
             new()
             {
-                Id = Guid.NewGuid(),
                 AccountTitle = accountTitle,
                 AccountCode = faker.Finance.AccountName(),
                 IsActive = true,
@@ -1289,7 +1172,6 @@ public class DetailedAccountTests(ITestOutputHelper testOutputHelper)
 
         var entity = new DetailedAccountEntity
         {
-            Id = Guid.NewGuid(),
             AccountTitle = faker.Finance.AccountName(),
             AccountCode = faker.Finance.AccountName(),
             IsActive = true,

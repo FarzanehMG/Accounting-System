@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Infrastructure.Configurations.Journal;
 
-public class JournalEntryEntityConfiguration : IEntityTypeConfiguration<JournalEntryEntity>
+internal class JournalEntryEntityConfiguration : IEntityTypeConfiguration<JournalEntryEntity>
 {
     public void Configure(EntityTypeBuilder<JournalEntryEntity> builder)
     {
@@ -46,17 +46,14 @@ public class JournalEntryEntityConfiguration : IEntityTypeConfiguration<JournalE
         // Navigation
         builder.HasOne(x => x.JournalVoucher)
             .WithMany(x => x.JournalEntries)
-            .HasForeignKey(x => x.JournalVoucherId)
-            .OnDelete(DeleteBehavior.Cascade);
+            .HasForeignKey(x => x.JournalVoucherId);
 
         builder.HasOne(x => x.SubLedgerAccount)
             .WithMany(x => x.JournalEntries)
-            .HasForeignKey(x => x.SubLedgerAccountId)
-            .OnDelete(DeleteBehavior.Restrict);
+            .HasForeignKey(x => x.SubLedgerAccountId);
 
         builder.HasOne(x => x.DetailedAccount)
             .WithMany(x => x.JournalEntries)
-            .HasForeignKey(x => x.DetailedAccountId)
-            .OnDelete(DeleteBehavior.Restrict);
+            .HasForeignKey(x => x.DetailedAccountId);
     }
 }

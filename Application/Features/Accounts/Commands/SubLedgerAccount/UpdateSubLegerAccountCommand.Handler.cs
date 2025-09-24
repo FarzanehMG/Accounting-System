@@ -55,12 +55,7 @@ public class UpdateSubLegerAccountCommandHandler(IUnitOfWork unitOfWork)
             subLegerAccount.AccountCode = request.Code.Value;
         }
 
-        if (unitOfWork.HasChanges(subLegerAccount))
-        {
-            subLegerAccount.ModifiedDate = DateTime.UtcNow;
-            await unitOfWork.CommitAsync(cancellationToken);
-        }
-
+        await unitOfWork.CommitAsync(cancellationToken);
         return OperationResult<bool>.SuccessResult(true);
     }
 }

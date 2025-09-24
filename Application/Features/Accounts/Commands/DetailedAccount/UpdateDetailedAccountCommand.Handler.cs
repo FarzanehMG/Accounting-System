@@ -55,12 +55,7 @@ public class UpdateDetailedAccountCommandHandler(IUnitOfWork unitOfWork)
             detailedAccount.AccountCode = request.Code.Value;
         }
 
-        if (unitOfWork.HasChanges(detailedAccount))
-        {
-            detailedAccount.ModifiedDate = DateTime.UtcNow;
-            await unitOfWork.CommitAsync(cancellationToken);
-        }
-
+        await unitOfWork.CommitAsync(cancellationToken);
         return OperationResult<bool>.SuccessResult(true);
     }
 }

@@ -3,7 +3,7 @@ using Domain.Entities.Journal;
 
 namespace Domain.Entities.FinancialPeriod;
 
-public sealed class FinancialPeriodEntity : BaseEntity
+public sealed class FinancialPeriodEntity : BaseEntity<Guid>
 {
     public required string FinancialPeriodTitle { get; set; }
     public bool IsActive { get; set; } = true;
