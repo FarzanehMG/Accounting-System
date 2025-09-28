@@ -3,34 +3,56 @@ using Application.Repositories.AccountRepositories;
 using Domain.Entities.Accounts;
 using Domain.Enums;
 using Infrastructure.Repositories.Common;
+using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Repositories.Accounts;
 
 internal class DetailedAccountRepository(AccountingDbContext dbContext) : BaseRepository<DetailedAccountEntity>(dbContext), IDetailedAccountRepository
 {
-    public Task CreateAsync(DetailedAccountEntity detailedAccountEntity, CancellationToken cancellationToken = default)
+    public async Task CreateAsync(DetailedAccountEntity entity, CancellationToken cancellationToken = default)
     {
-        throw new NotImplementedException();
+        await base.AddAsync(entity, cancellationToken);
     }
 
-    public Task<DetailedAccountEntity?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
+    public async Task<DetailedAccountEntity?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
     {
-        throw new NotImplementedException();
+        return await Table.FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
     }
 
-    public Task<IReadOnlyList<DetailedAccountEntity>> FindAccountByTitleAndSubLedgerAndTypeAsync(string title, Guid subLedgerAccountId,
-        JournalEntryType journalEntryType, CancellationToken cancellationToken = default)
+    public async Task<IReadOnlyList<DetailedAccountEntity>> FindAccountByTitleAndSubLedgerAndTypeAsync(string title, Guid subLedgerAccountId, JournalEntryType journalEntryType, CancellationToken cancellationToken = default)
     {
-        throw new NotImplementedException();
+        return await TableNoTracking.Where(x =>
+                x.AccountTitle.Equals(title) &&
+                x.SubLedgerAccountId == subLedgerAccountId &&
+                x.JournalEntryType == journalEntryType)
+            .ToListAsync(cancellationToken);
     }
 
-    public Task<DetailedAccountEntity?> FindByCodeAsync(string code, CancellationToken cancellationToken = default)
+    public async Task<DetailedAccountEntity?> FindByCodeAsync(string code, CancellationToken cancellationToken = default)
     {
-        throw new NotImplementedException();
+        return await TableNoTracking.FirstOrDefaultAsync(x => x.AccountCode.Equals(code), cancellationToken);
     }
 
-    public Task<IReadOnlyList<DetailedAccountEntity>> GetAllAsync(DetailedAccountFilter detailedAccountFilter, CancellationToken cancellationToken = default)
+    public async Task<IReadOnlyList<DetailedAccountEntity>> GetAllAsync(DetailedAccountFilter filter, CancellationToken cancellationToken = default)
     {
-        throw new NotImplementedException();
+        var query = TableNoTracking;
+
+        if (!string.IsNullOrEmpty(filter.Title))
+            query = query.Where(x => x.AccountTitle.Equals(filter.Title));
+
+        if (!string.IsNullOrEmpty(filter.Code))
+            query = query.Where(x => x.AccountCode.Equals(filter.Code));
+
+        if (filter.JournalEntryType.HasValue)
+            query = query.Where(x => x.JournalEntryType == filter.JournalEntryType.Value);
+
+        if (filter.IsActive.HasValue)
+            query = query.Where(x => x.IsActive == filter.IsActive.Value);
+
+        if (filter.SubLedgerAccountId.HasValue)
+            query = query.Where(x => x.SubLedgerAccountId == filter.SubLedgerAccountId.Value);
+
+        // TODO: Apply pagination
+        return await query.ToListAsync(cancellationToken);
     }
 }

@@ -6,10 +6,10 @@ namespace Application.Repositories.AccountRepositories;
 
 public interface IGeneralLedgerAccountRepository
 {
-    Task CreateAsync(GeneralLedgerAccountEntity generalLedgerAccountEntity, CancellationToken cancellationToken = default);
+    Task CreateAsync(GeneralLedgerAccountEntity entity, CancellationToken cancellationToken = default);
     Task<GeneralLedgerAccountEntity?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default);
     Task<IReadOnlyList<GeneralLedgerAccountEntity>> FindAccountByTitleAndGroupAndTypeAsync(string title, Guid groupAccountId, JournalEntryType journalEntryType, CancellationToken cancellationToken = default);
     Task<GeneralLedgerAccountEntity?> FindByCodeAsync(string code, CancellationToken cancellationToken = default);
     Task<IReadOnlyList<GeneralLedgerAccountEntity>> FindActiveAccountByTitleAndGroupAsync(string title, Guid groupAccountId, CancellationToken cancellationToken = default);
-    Task<IReadOnlyList<GeneralLedgerAccountEntity>> GetAllAsync(GeneralLedgerAccountFilter generalLedgerAccountFilter, CancellationToken cancellationToken = default);
+    Task<IReadOnlyList<GeneralLedgerAccountEntity>> GetAllAsync(GeneralLedgerAccountFilter filter, CancellationToken cancellationToken = default);
 }

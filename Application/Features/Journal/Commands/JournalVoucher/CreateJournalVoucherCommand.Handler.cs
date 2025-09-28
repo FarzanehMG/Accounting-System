@@ -17,7 +17,7 @@ public class CreateJournalVoucherCommandHandler(IUnitOfWork unitOfWork)
             return OperationResult<bool>.FailureResult(validateResult.Errors.ConvertToKeyValuePair());
 
         // Check financial period
-        var financialPeriod = await unitOfWork.FinancialPeriodRepository.GetFinancialPeriodByIdAsync(command.FinancialPeriodId, cancellationToken);
+        var financialPeriod = await unitOfWork.FinancialPeriodRepository.GetByIdAsync(command.FinancialPeriodId, cancellationToken);
         if (financialPeriod is null)
             return OperationResult<bool>.NotFoundResult(nameof(command.FinancialPeriodId), "Financial period not found.");
 

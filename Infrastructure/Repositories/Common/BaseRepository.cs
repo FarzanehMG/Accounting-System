@@ -12,7 +12,7 @@ internal abstract class BaseRepository<TEntity>(AccountingDbContext db) where TE
 
     private protected IQueryable<TEntity> TableNoTracking => _entities.AsNoTracking();
 
-    protected virtual async ValueTask AddAsync(TEntity entity, CancellationToken cancellationToken = default)
+    protected virtual async Task AddAsync(TEntity entity, CancellationToken cancellationToken = default)
     {
         await _entities.AddAsync(entity, cancellationToken);
     }

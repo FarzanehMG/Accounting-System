@@ -3,40 +3,65 @@ using Application.Repositories.AccountRepositories;
 using Domain.Entities.Accounts;
 using Domain.Enums;
 using Infrastructure.Repositories.Common;
+using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Repositories.Accounts;
 
 internal class GeneralLedgerAccountRepository(AccountingDbContext dbContext) : BaseRepository<GeneralLedgerAccountEntity>(dbContext), IGeneralLedgerAccountRepository
 {
-    public Task CreateAsync(GeneralLedgerAccountEntity generalLedgerAccountEntity, CancellationToken cancellationToken = default)
+    public async Task CreateAsync(GeneralLedgerAccountEntity entity, CancellationToken cancellationToken = default)
     {
-        throw new NotImplementedException();
+        await base.AddAsync(entity, cancellationToken);
     }
 
-    public Task<GeneralLedgerAccountEntity?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
+    public async Task<GeneralLedgerAccountEntity?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
     {
-        throw new NotImplementedException();
+        return await Table.FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
     }
 
-    public Task<IReadOnlyList<GeneralLedgerAccountEntity>> FindAccountByTitleAndGroupAndTypeAsync(string title, Guid groupAccountId, JournalEntryType journalEntryType,
-        CancellationToken cancellationToken = default)
+    public async Task<IReadOnlyList<GeneralLedgerAccountEntity>> FindAccountByTitleAndGroupAndTypeAsync(string title, Guid groupAccountId, JournalEntryType journalEntryType, CancellationToken cancellationToken = default)
     {
-        throw new NotImplementedException();
+        return await TableNoTracking.Where(x =>
+                x.AccountTitle.Equals(title) &&
+                x.JournalEntryType == journalEntryType &&
+                x.GroupAccountId == groupAccountId &&
+                x.IsActive)
+            .ToListAsync(cancellationToken);
     }
 
-    public Task<GeneralLedgerAccountEntity?> FindByCodeAsync(string code, CancellationToken cancellationToken = default)
+    public async Task<GeneralLedgerAccountEntity?> FindByCodeAsync(string code, CancellationToken cancellationToken = default)
     {
-        throw new NotImplementedException();
+        return await TableNoTracking.FirstOrDefaultAsync(x => x.AccountCode.Equals(code), cancellationToken);
     }
 
-    public Task<IReadOnlyList<GeneralLedgerAccountEntity>> FindActiveAccountByTitleAndGroupAsync(string title, Guid groupAccountId,
-        CancellationToken cancellationToken = default)
+    public async Task<IReadOnlyList<GeneralLedgerAccountEntity>> FindActiveAccountByTitleAndGroupAsync(string title, Guid groupAccountId, CancellationToken cancellationToken = default)
     {
-        throw new NotImplementedException();
+        return await TableNoTracking.Where(x =>
+                x.AccountTitle.Equals(title) &&
+                x.GroupAccountId == groupAccountId)
+            .ToListAsync(cancellationToken);
     }
 
-    public Task<IReadOnlyList<GeneralLedgerAccountEntity>> GetAllAsync(GeneralLedgerAccountFilter generalLedgerAccountFilter, CancellationToken cancellationToken = default)
+    public async Task<IReadOnlyList<GeneralLedgerAccountEntity>> GetAllAsync(GeneralLedgerAccountFilter filter, CancellationToken cancellationToken = default)
     {
-        throw new NotImplementedException();
+        var query = TableNoTracking;
+
+        if (!string.IsNullOrEmpty(filter.Title))
+            query = query.Where(x => x.AccountTitle.Equals(filter.Title));
+
+        if (!string.IsNullOrEmpty(filter.Code))
+            query = query.Where(x => x.AccountCode.Equals(filter.Code));
+
+        if (filter.JournalEntryType.HasValue)
+            query = query.Where(x => x.JournalEntryType == filter.JournalEntryType.Value);
+
+        if (filter.IsActive.HasValue)
+            query = query.Where(x => x.IsActive == filter.IsActive.Value);
+
+        if (filter.GroupAccountId.HasValue)
+            query = query.Where(x => x.GroupAccountId == filter.GroupAccountId.Value);
+
+        // TODO: Apply pagination
+        return await query.ToListAsync(cancellationToken);
     }
 }

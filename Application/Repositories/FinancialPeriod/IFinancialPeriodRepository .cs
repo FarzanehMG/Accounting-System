@@ -5,9 +5,9 @@ namespace Application.Repositories.FinancialPeriod;
 
 public interface IFinancialPeriodRepository
 {
-	Task CreateAsync(FinancialPeriodEntity financialPeriodEntity, CancellationToken cancellationToken = default);
+	Task CreateAsync(FinancialPeriodEntity entity, CancellationToken cancellationToken = default);
     Task<FinancialPeriodEntity?> GetOverlappingFinancialPeriodAsync(CancellationToken cancellationToken = default, DateTime? startDate = null, DateTime? endDate = null);
     Task<FinancialPeriodEntity?> GetActiveFinancialPeriodAsync(CancellationToken cancellationToken = default);
-    Task<FinancialPeriodEntity?> GetFinancialPeriodByIdAsync(Guid financialPeriodId, CancellationToken cancellationToken = default);
-    Task<IReadOnlyList<FinancialPeriodEntity>> GetAllAsync(FinancialPeriodFilter financialPeriodFilter, CancellationToken cancellationToken = default);
+    Task<FinancialPeriodEntity?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default);
+    Task<IReadOnlyList<FinancialPeriodEntity>> GetAllAsync(FinancialPeriodFilter filter, CancellationToken cancellationToken = default);
 }

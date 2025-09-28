@@ -291,7 +291,7 @@ public class FinancialPeriodTests(ITestOutputHelper testOutputHelper)
             CreatedDate = DateTime.UtcNow,
             ModifiedDate = DateTime.UtcNow
         };
-        unitOfWork.FinancialPeriodRepository.GetFinancialPeriodByIdAsync(financialPeriodId, CancellationToken.None)
+        unitOfWork.FinancialPeriodRepository.GetByIdAsync(financialPeriodId, CancellationToken.None)
             .Returns(existingFinancialPeriodEntity);
 
         var updateFinancialPeriodCommand = new UpdateFinancialPeriodCommand
@@ -341,7 +341,7 @@ public class FinancialPeriodTests(ITestOutputHelper testOutputHelper)
             CreatedDate = DateTime.UtcNow,
             ModifiedDate = DateTime.UtcNow
         };
-        unitOfWork.FinancialPeriodRepository.GetFinancialPeriodByIdAsync(financialPeriodId, CancellationToken.None)
+        unitOfWork.FinancialPeriodRepository.GetByIdAsync(financialPeriodId, CancellationToken.None)
             .Returns(existingFinancialPeriodEntity);
 
         //unitOfWork.HasChanges(existingFinancialPeriodEntity).Returns(true);
@@ -395,7 +395,7 @@ public class FinancialPeriodTests(ITestOutputHelper testOutputHelper)
             CreatedDate = DateTime.UtcNow,
             ModifiedDate = DateTime.UtcNow
         };
-        unitOfWork.FinancialPeriodRepository.GetFinancialPeriodByIdAsync(financialPeriodId, CancellationToken.None)
+        unitOfWork.FinancialPeriodRepository.GetByIdAsync(financialPeriodId, CancellationToken.None)
             .Returns(existingFinancialPeriodEntity);
 
         var updateFinancialPeriodCommand = new UpdateFinancialPeriodCommand
@@ -446,7 +446,7 @@ public class FinancialPeriodTests(ITestOutputHelper testOutputHelper)
             CreatedDate = DateTime.UtcNow,
             ModifiedDate = DateTime.UtcNow
         };
-        unitOfWork.FinancialPeriodRepository.GetFinancialPeriodByIdAsync(financialPeriodId, CancellationToken.None)
+        unitOfWork.FinancialPeriodRepository.GetByIdAsync(financialPeriodId, CancellationToken.None)
             .Returns(existingFinancialPeriodEntity);
 
         var updateFinancialPeriodCommand = new UpdateFinancialPeriodCommand
@@ -497,7 +497,7 @@ public class FinancialPeriodTests(ITestOutputHelper testOutputHelper)
             CreatedDate = DateTime.UtcNow,
             ModifiedDate = DateTime.UtcNow
         };
-        unitOfWork.FinancialPeriodRepository.GetFinancialPeriodByIdAsync(financialPeriodId, CancellationToken.None)
+        unitOfWork.FinancialPeriodRepository.GetByIdAsync(financialPeriodId, CancellationToken.None)
             .Returns(existingFinancialPeriodEntity);
 
         unitOfWork.FinancialPeriodRepository.GetOverlappingFinancialPeriodAsync(CancellationToken.None, Arg.Any<DateTime>(), Arg.Any<DateTime>())
@@ -538,7 +538,7 @@ public class FinancialPeriodTests(ITestOutputHelper testOutputHelper)
             CreatedDate = DateTime.UtcNow,
             ModifiedDate = DateTime.UtcNow
         };
-        unitOfWork.FinancialPeriodRepository.GetFinancialPeriodByIdAsync(financialPeriodId, CancellationToken.None)
+        unitOfWork.FinancialPeriodRepository.GetByIdAsync(financialPeriodId, CancellationToken.None)
             .Returns(existingFinancialPeriodEntity);
 
         //unitOfWork.HasChanges(Arg.Any<FinancialPeriodEntity>()).Returns(true);
@@ -583,7 +583,7 @@ public class FinancialPeriodTests(ITestOutputHelper testOutputHelper)
             ModifiedDate = DateTime.UtcNow
         };
 
-        unitOfWork.FinancialPeriodRepository.GetFinancialPeriodByIdAsync(financialPeriodId, CancellationToken.None)
+        unitOfWork.FinancialPeriodRepository.GetByIdAsync(financialPeriodId, CancellationToken.None)
             .Returns(existingFinancialPeriodEntity);
 
         // Act
@@ -606,7 +606,7 @@ public class FinancialPeriodTests(ITestOutputHelper testOutputHelper)
         var unitOfWork = Substitute.For<IUnitOfWork>();
         var handler = new GetFinancialPeriodByIdQueryHandler(unitOfWork);
 
-        unitOfWork.FinancialPeriodRepository.GetFinancialPeriodByIdAsync(Arg.Any<Guid>(), CancellationToken.None)
+        unitOfWork.FinancialPeriodRepository.GetByIdAsync(Arg.Any<Guid>(), CancellationToken.None)
             .Returns((FinancialPeriodEntity?)null);
 
         // Act

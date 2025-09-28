@@ -15,7 +15,7 @@ public class GetFinancialPeriodByIdQueryHandler(IUnitOfWork unitOfWork)
         if (!validateResult.IsValid)
             return OperationResult<GetFinancialPeriodByIdQueryResult>.FailureResult(validateResult.Errors.ConvertToKeyValuePair());
 
-        var financialPeriod = await unitOfWork.FinancialPeriodRepository.GetFinancialPeriodByIdAsync(query.Id, cancellationToken);
+        var financialPeriod = await unitOfWork.FinancialPeriodRepository.GetByIdAsync(query.Id, cancellationToken);
 
         if (financialPeriod is null)
             return OperationResult<GetFinancialPeriodByIdQueryResult>.NotFoundResult(nameof(GetFinancialPeriodByIdQuery.Id), "Financial period not found.");

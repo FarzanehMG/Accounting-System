@@ -43,7 +43,7 @@ public class JournalVoucherTests(ITestOutputHelper testOutputHelper)
             JournalVoucherNumber = "1"
         };
 
-        unitOfWork.FinancialPeriodRepository.GetFinancialPeriodByIdAsync(financialPeriodId, CancellationToken.None)
+        unitOfWork.FinancialPeriodRepository.GetByIdAsync(financialPeriodId, CancellationToken.None)
             .Returns(existingFinancialPeriod);
 
         unitOfWork.JournalVoucherRepository.GetLastJournalVoucherAsync(financialPeriodId, CancellationToken.None)
@@ -89,7 +89,7 @@ public class JournalVoucherTests(ITestOutputHelper testOutputHelper)
             IsActive = true
         };
 
-        unitOfWork.FinancialPeriodRepository.GetFinancialPeriodByIdAsync(financialPeriodId, CancellationToken.None)
+        unitOfWork.FinancialPeriodRepository.GetByIdAsync(financialPeriodId, CancellationToken.None)
             .Returns(existingFinancialPeriod);
 
         var createJournalVoucherCommand = new CreateJournalVoucherCommand
@@ -129,7 +129,7 @@ public class JournalVoucherTests(ITestOutputHelper testOutputHelper)
             IsActive = false
         };
 
-        unitOfWork.FinancialPeriodRepository.GetFinancialPeriodByIdAsync(financialPeriodId, CancellationToken.None)
+        unitOfWork.FinancialPeriodRepository.GetByIdAsync(financialPeriodId, CancellationToken.None)
             .Returns(existingFinancialPeriod);
 
         var createJournalVoucherCommand = new CreateJournalVoucherCommand
@@ -169,7 +169,7 @@ public class JournalVoucherTests(ITestOutputHelper testOutputHelper)
             IsActive = true
         };
 
-        unitOfWork.FinancialPeriodRepository.GetFinancialPeriodByIdAsync(financialPeriodId, CancellationToken.None)
+        unitOfWork.FinancialPeriodRepository.GetByIdAsync(financialPeriodId, CancellationToken.None)
             .Returns(existingFinancialPeriod);
 
         var createJournalVoucherCommand = new CreateJournalVoucherCommand
@@ -209,7 +209,7 @@ public class JournalVoucherTests(ITestOutputHelper testOutputHelper)
             IsActive = true
         };
 
-        unitOfWork.FinancialPeriodRepository.GetFinancialPeriodByIdAsync(financialPeriodId, CancellationToken.None)
+        unitOfWork.FinancialPeriodRepository.GetByIdAsync(financialPeriodId, CancellationToken.None)
             .Returns(existingFinancialPeriod);
 
         unitOfWork.JournalVoucherRepository.GetLastJournalVoucherAsync(financialPeriodId, CancellationToken.None)
@@ -263,7 +263,7 @@ public class JournalVoucherTests(ITestOutputHelper testOutputHelper)
             JournalVoucherNumber = "1"
         };
 
-        unitOfWork.FinancialPeriodRepository.GetFinancialPeriodByIdAsync(financialPeriodId, CancellationToken.None)
+        unitOfWork.FinancialPeriodRepository.GetByIdAsync(financialPeriodId, CancellationToken.None)
             .Returns(existingFinancialPeriod);
 
         unitOfWork.JournalVoucherRepository.GetLastJournalVoucherAsync(financialPeriodId, CancellationToken.None)

@@ -8,46 +8,31 @@ using Infrastructure.Repositories.Journal;
 
 namespace Infrastructure.Repositories.Common;
 
-public class UnitOfWork : IUnitOfWork
+public class UnitOfWork(AccountingDbContext dbContext) : IUnitOfWork
 {
-    private readonly AccountingDbContext _dbContext;
-
-
-    public UnitOfWork(AccountingDbContext dbContext)
-    {
-        _dbContext = dbContext;
-        FinancialPeriodRepository = new FinancialPeriodRepository(dbContext);
-        JournalVoucherRepository = new JournalVoucherRepository(dbContext);
-        JournalEntryRepository = new JournalEntryRepository(dbContext);
-        GroupAccountRepository = new GroupAccountRepository(dbContext);
-        GeneralLedgerAccountRepository = new GeneralLedgerAccountRepository(dbContext);
-        SubLedgerAccountRepository = new SubLedgerAccountRepository(dbContext);
-        DetailedAccountRepository = new DetailedAccountRepository(dbContext);
-    }
-
     public void Dispose()
     {
-        _dbContext.Dispose();
+        dbContext.Dispose();
     }
 
     public async ValueTask DisposeAsync()
     {
-        await _dbContext.DisposeAsync();
+        await dbContext.DisposeAsync();
     }
 
-    public IGroupAccountRepository GroupAccountRepository { get; }
-    public IGeneralLedgerAccountRepository GeneralLedgerAccountRepository { get; }
-    public ISubLedgerAccountRepository SubLedgerAccountRepository { get; }
-    public IDetailedAccountRepository DetailedAccountRepository { get; }
+    public IGroupAccountRepository GroupAccountRepository { get; } = new GroupAccountRepository(dbContext);
+    public IGeneralLedgerAccountRepository GeneralLedgerAccountRepository { get; } = new GeneralLedgerAccountRepository(dbContext);
+    public ISubLedgerAccountRepository SubLedgerAccountRepository { get; } = new SubLedgerAccountRepository(dbContext);
+    public IDetailedAccountRepository DetailedAccountRepository { get; } = new DetailedAccountRepository(dbContext);
 
-    public IFinancialPeriodRepository FinancialPeriodRepository { get; }
+    public IFinancialPeriodRepository FinancialPeriodRepository { get; } = new FinancialPeriodRepository(dbContext);
 
-    public IJournalVoucherRepository JournalVoucherRepository { get; }
-    public IJournalEntryRepository JournalEntryRepository { get; }
+    public IJournalVoucherRepository JournalVoucherRepository { get; } = new JournalVoucherRepository(dbContext);
+    public IJournalEntryRepository JournalEntryRepository { get; } = new JournalEntryRepository(dbContext);
 
 
     public async Task CommitAsync(CancellationToken cancellationToken = default)
     {
-        await _dbContext.SaveChangesAsync(cancellationToken);
+        await dbContext.SaveChangesAsync(cancellationToken);
     }
 }

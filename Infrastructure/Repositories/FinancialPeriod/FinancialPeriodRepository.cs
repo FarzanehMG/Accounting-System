@@ -2,34 +2,53 @@
 using Application.Repositories.FinancialPeriod;
 using Domain.Entities.FinancialPeriod;
 using Infrastructure.Repositories.Common;
+using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Repositories.FinancialPeriod;
 
 internal class FinancialPeriodRepository(AccountingDbContext dbContext) : BaseRepository<FinancialPeriodEntity>(dbContext), IFinancialPeriodRepository
 {
-    public Task CreateAsync(FinancialPeriodEntity financialPeriodEntity, CancellationToken cancellationToken = default)
+    public async Task CreateAsync(FinancialPeriodEntity entity, CancellationToken cancellationToken = default)
     {
-        throw new NotImplementedException();
+        await base.AddAsync(entity, cancellationToken);
     }
 
-    public Task<FinancialPeriodEntity?> GetOverlappingFinancialPeriodAsync(CancellationToken cancellationToken = default, DateTime? startDate = null,
-        DateTime? endDate = null)
+    public async Task<FinancialPeriodEntity?> GetOverlappingFinancialPeriodAsync(CancellationToken cancellationToken = default, DateTime? startDate = null, DateTime? endDate = null)
     {
-        throw new NotImplementedException();
+        return await TableNoTracking.FirstOrDefaultAsync(x =>
+                (!startDate.HasValue || x.EndDate >= startDate.Value) &&
+                (!endDate.HasValue || x.StartDate <= endDate.Value),
+            cancellationToken);
+
     }
 
-    public Task<FinancialPeriodEntity?> GetActiveFinancialPeriodAsync(CancellationToken cancellationToken = default)
+    public async Task<FinancialPeriodEntity?> GetActiveFinancialPeriodAsync(CancellationToken cancellationToken = default)
     {
-        throw new NotImplementedException();
+        return await TableNoTracking.FirstOrDefaultAsync(x => x.IsActive, cancellationToken);
     }
 
-    public Task<FinancialPeriodEntity?> GetFinancialPeriodByIdAsync(Guid financialPeriodId, CancellationToken cancellationToken = default)
+    public async Task<FinancialPeriodEntity?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
     {
-        throw new NotImplementedException();
+        return await TableNoTracking.FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
     }
 
-    public Task<IReadOnlyList<FinancialPeriodEntity>> GetAllAsync(FinancialPeriodFilter financialPeriodFilter, CancellationToken cancellationToken = default)
+    public async Task<IReadOnlyList<FinancialPeriodEntity>> GetAllAsync(FinancialPeriodFilter filter, CancellationToken cancellationToken = default)
     {
-        throw new NotImplementedException();
+        var query = TableNoTracking;
+
+        if (!string.IsNullOrEmpty(filter.Title))
+            query = query.Where(x => x.FinancialPeriodTitle.Equals(filter.Title));
+
+        if (filter.IsActive.HasValue)
+            query = query.Where(x => x.IsActive == filter.IsActive.Value);
+
+        if (filter.StartDate.HasValue)
+            query = query.Where(x => x.StartDate == filter.StartDate.Value);
+
+        if (filter.EndDate.HasValue)
+            query = query.Where(x => x.EndDate == filter.EndDate.Value);
+
+        // TODO: Apply pagination
+        return await query.ToListAsync(cancellationToken);
     }
 }
