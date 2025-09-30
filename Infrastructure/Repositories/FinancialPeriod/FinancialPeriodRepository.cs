@@ -6,11 +6,11 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Repositories.FinancialPeriod;
 
-internal class FinancialPeriodRepository(AccountingDbContext dbContext) : BaseRepository<FinancialPeriodEntity>(dbContext), IFinancialPeriodRepository
+internal sealed class FinancialPeriodRepository(AccountingDbContext dbContext) : BaseRepository<FinancialPeriodEntity>(dbContext), IFinancialPeriodRepository
 {
     public async Task CreateAsync(FinancialPeriodEntity entity, CancellationToken cancellationToken = default)
     {
-        await base.AddAsync(entity, cancellationToken);
+        await AddAsync(entity, cancellationToken);
     }
 
     public async Task<FinancialPeriodEntity?> GetOverlappingFinancialPeriodAsync(CancellationToken cancellationToken = default, DateTime? startDate = null, DateTime? endDate = null)

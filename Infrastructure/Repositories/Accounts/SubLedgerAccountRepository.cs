@@ -7,11 +7,11 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Repositories.Accounts;
 
-internal class SubLedgerAccountRepository(AccountingDbContext dbContext) : BaseRepository<SubLedgerAccountEntity>(dbContext), ISubLedgerAccountRepository
+internal sealed class SubLedgerAccountRepository(AccountingDbContext dbContext) : BaseRepository<SubLedgerAccountEntity>(dbContext), ISubLedgerAccountRepository
 {
     public async Task CreateAsync(SubLedgerAccountEntity entity, CancellationToken cancellationToken = default)
     {
-        await base.AddAsync(entity, cancellationToken);
+        await AddAsync(entity, cancellationToken);
     }
 
     public async Task<SubLedgerAccountEntity?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)

@@ -7,11 +7,11 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Repositories.Accounts;
 
-internal class DetailedAccountRepository(AccountingDbContext dbContext) : BaseRepository<DetailedAccountEntity>(dbContext), IDetailedAccountRepository
+internal sealed class DetailedAccountRepository(AccountingDbContext dbContext) : BaseRepository<DetailedAccountEntity>(dbContext), IDetailedAccountRepository
 {
     public async Task CreateAsync(DetailedAccountEntity entity, CancellationToken cancellationToken = default)
     {
-        await base.AddAsync(entity, cancellationToken);
+        await AddAsync(entity, cancellationToken);
     }
 
     public async Task<DetailedAccountEntity?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)

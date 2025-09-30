@@ -7,11 +7,11 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Repositories.Accounts;
 
-internal class GroupAccountRepository(AccountingDbContext dbContext) : BaseRepository<GroupAccountEntity>(dbContext), IGroupAccountRepository
+internal sealed class GroupAccountRepository(AccountingDbContext dbContext) : BaseRepository<GroupAccountEntity>(dbContext), IGroupAccountRepository
 {
     public async Task CreateAsync(GroupAccountEntity entity, CancellationToken cancellationToken = default)
     {
-        await base.AddAsync(entity, cancellationToken);
+        await AddAsync(entity, cancellationToken);
     }
 
     public async Task<GroupAccountEntity?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)

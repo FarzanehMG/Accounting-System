@@ -6,11 +6,11 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Repositories.Journal;
 
-internal class JournalEntryRepository(AccountingDbContext dbContext) : BaseRepository<JournalEntryEntity>(dbContext), IJournalEntryRepository
+internal sealed class JournalEntryRepository(AccountingDbContext dbContext) : BaseRepository<JournalEntryEntity>(dbContext), IJournalEntryRepository
 {
     public async Task CreateAsync(JournalEntryEntity entity, CancellationToken cancellationToken = default)
     {
-        await base.AddAsync(entity, cancellationToken);
+        await AddAsync(entity, cancellationToken);
     }
 
     public async Task<JournalEntryEntity?> GetLastEntryByVoucherIdAsync(Guid journalEntryId, CancellationToken cancellationToken = default)
