@@ -2,11 +2,11 @@
 using Application.Repositories.Common;
 using Application.Repositories.FinancialPeriod;
 using Application.Repositories.JournalRepositories;
-using Infrastructure.Repositories.Accounts;
-using Infrastructure.Repositories.FinancialPeriod;
-using Infrastructure.Repositories.Journal;
+using Persistence.Repositories.Accounts;
+using Persistence.Repositories.FinancialPeriod;
+using Persistence.Repositories.Journal;
 
-namespace Infrastructure.Repositories.Common;
+namespace Persistence.Repositories.Common;
 
 public class UnitOfWork(AccountingDbContext dbContext) : IUnitOfWork
 {

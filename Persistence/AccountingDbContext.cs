@@ -1,8 +1,8 @@
 ﻿using Domain.Common;
-using Infrastructure.Extensions;
 using Microsoft.EntityFrameworkCore;
+using Persistence.Extensions;
 
-namespace Infrastructure;
+namespace Persistence;
 
 public class AccountingDbContext(DbContextOptions<AccountingDbContext> options) : DbContext(options)
 {

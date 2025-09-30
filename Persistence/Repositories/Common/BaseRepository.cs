@@ -1,7 +1,7 @@
 ﻿using Domain.Common;
 using Microsoft.EntityFrameworkCore;
 
-namespace Infrastructure.Repositories.Common;
+namespace Persistence.Repositories.Common;
 
 internal abstract class BaseRepository<TEntity>(AccountingDbContext db) where TEntity : class, IEntity
 {

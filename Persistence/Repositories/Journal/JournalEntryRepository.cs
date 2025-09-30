@@ -1,10 +1,10 @@
 ﻿using Application.Features.Journal.Queries.JournalEntry.Dtos;
 using Application.Repositories.JournalRepositories;
 using Domain.Entities.Journal;
-using Infrastructure.Repositories.Common;
 using Microsoft.EntityFrameworkCore;
+using Persistence.Repositories.Common;
 
-namespace Infrastructure.Repositories.Journal;
+namespace Persistence.Repositories.Journal;
 
 internal sealed class JournalEntryRepository(AccountingDbContext dbContext) : BaseRepository<JournalEntryEntity>(dbContext), IJournalEntryRepository
 {

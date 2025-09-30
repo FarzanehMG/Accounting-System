@@ -1,10 +1,10 @@
 ﻿using Application.Features.Journal.Queries.JournalVoucher.Dtos;
 using Application.Repositories.JournalRepositories;
 using Domain.Entities.Journal;
-using Infrastructure.Repositories.Common;
 using Microsoft.EntityFrameworkCore;
+using Persistence.Repositories.Common;
 
-namespace Infrastructure.Repositories.Journal;
+namespace Persistence.Repositories.Journal;
 
 internal sealed class JournalVoucherRepository(AccountingDbContext dbContext) : BaseRepository<JournalVoucherEntity>(dbContext), IJournalVoucherRepository
 {

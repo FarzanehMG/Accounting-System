@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace Infrastructure.Configurations.FinancialPeriod;
+namespace Persistence.Configurations.FinancialPeriod;
 
 internal class FinancialPeriodEntityConfiguration : IEntityTypeConfiguration<FinancialPeriodEntity>
 {

@@ -1,39 +1,39 @@
-﻿using Application.Features.Accounts.Queries.DetailedAccount.Dtos;
+﻿using Application.Features.Accounts.Queries.SubLedgerAccount.Dtos;
 using Application.Repositories.AccountRepositories;
 using Domain.Entities.Accounts;
 using Domain.Enums;
-using Infrastructure.Repositories.Common;
 using Microsoft.EntityFrameworkCore;
+using Persistence.Repositories.Common;
 
-namespace Infrastructure.Repositories.Accounts;
+namespace Persistence.Repositories.Accounts;
 
-internal sealed class DetailedAccountRepository(AccountingDbContext dbContext) : BaseRepository<DetailedAccountEntity>(dbContext), IDetailedAccountRepository
+internal sealed class SubLedgerAccountRepository(AccountingDbContext dbContext) : BaseRepository<SubLedgerAccountEntity>(dbContext), ISubLedgerAccountRepository
 {
-    public async Task CreateAsync(DetailedAccountEntity entity, CancellationToken cancellationToken = default)
+    public async Task CreateAsync(SubLedgerAccountEntity entity, CancellationToken cancellationToken = default)
     {
         await AddAsync(entity, cancellationToken);
     }
 
-    public async Task<DetailedAccountEntity?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
+    public async Task<SubLedgerAccountEntity?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
     {
         return await Table.FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
     }
 
-    public async Task<IReadOnlyList<DetailedAccountEntity>> FindAccountByTitleAndSubLedgerAndTypeAsync(string title, Guid subLedgerAccountId, JournalEntryType journalEntryType, CancellationToken cancellationToken = default)
+    public async Task<IReadOnlyList<SubLedgerAccountEntity>> FindAccountByTitleAndGeneralLedgerAndTypeAsync(string title, Guid generalLedgerAccountId, JournalEntryType journalEntryType, CancellationToken cancellationToken = default)
     {
         return await TableNoTracking.Where(x =>
                 x.AccountTitle.Equals(title) &&
-                x.SubLedgerAccountId == subLedgerAccountId &&
+                x.GeneralLedgerAccountId == generalLedgerAccountId &&
                 x.JournalEntryType == journalEntryType)
             .ToListAsync(cancellationToken);
     }
 
-    public async Task<DetailedAccountEntity?> FindByCodeAsync(string code, CancellationToken cancellationToken = default)
+    public async Task<SubLedgerAccountEntity?> FindByCodeAsync(string code, CancellationToken cancellationToken = default)
     {
         return await TableNoTracking.FirstOrDefaultAsync(x => x.AccountCode.Equals(code), cancellationToken);
     }
 
-    public async Task<IReadOnlyList<DetailedAccountEntity>> GetAllAsync(DetailedAccountFilter filter, CancellationToken cancellationToken = default)
+    public async Task<IReadOnlyList<SubLedgerAccountEntity>> GetAllAsync(SubLedgerAccountFilter filter, CancellationToken cancellationToken = default)
     {
         var query = TableNoTracking;
 
@@ -49,8 +49,8 @@ internal sealed class DetailedAccountRepository(AccountingDbContext dbContext) :
         if (filter.IsActive.HasValue)
             query = query.Where(x => x.IsActive == filter.IsActive.Value);
 
-        if (filter.SubLedgerAccountId.HasValue)
-            query = query.Where(x => x.SubLedgerAccountId == filter.SubLedgerAccountId.Value);
+        if (filter.GeneralLedgerAccountId.HasValue)
+            query = query.Where(x => x.GeneralLedgerAccountId == filter.GeneralLedgerAccountId.Value);
 
         // TODO: Apply pagination
         return await query.ToListAsync(cancellationToken);

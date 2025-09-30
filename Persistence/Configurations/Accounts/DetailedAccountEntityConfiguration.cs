@@ -4,13 +4,13 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
-namespace Infrastructure.Configurations.Accounts;
+namespace Persistence.Configurations.Accounts;
 
-internal class SubLedgerAccountEntityConfiguration : IEntityTypeConfiguration<SubLedgerAccountEntity>
+internal class DetailedAccountEntityConfiguration : IEntityTypeConfiguration<DetailedAccountEntity>
 {
-    public void Configure(EntityTypeBuilder<SubLedgerAccountEntity> builder)
+    public void Configure(EntityTypeBuilder<DetailedAccountEntity> builder)
     {
-        builder.ToTable("SubLedgerAccounts");
+        builder.ToTable("DetailedAccounts");
 
         builder.HasKey(x => x.Id);
 
@@ -32,10 +32,10 @@ internal class SubLedgerAccountEntityConfiguration : IEntityTypeConfiguration<Su
         builder.Property(x => x.JournalEntryType)
             .HasMaxLength(20);
 
-        builder.Property(x => x.GeneralLedgerAccountId)
+        builder.Property(x => x.IsActive)
             .IsRequired();
 
-        builder.Property(x => x.IsActive)
+        builder.Property(x => x.SubLedgerAccountId)
             .IsRequired();
 
         // Index
@@ -45,16 +45,12 @@ internal class SubLedgerAccountEntityConfiguration : IEntityTypeConfiguration<Su
         builder.HasIndex(x => x.IsActive);
 
         // Navigation
-        builder.HasMany(x => x.DetailedAccounts)
-            .WithOne(x => x.SubLedgerAccount)
+        builder.HasOne(x => x.SubLedgerAccount)
+            .WithMany(x => x.DetailedAccounts)
             .HasForeignKey(x => x.SubLedgerAccountId);
-
-        builder.HasOne(x => x.GeneralLedgerAccount)
-            .WithMany(x => x.SubLedgerAccounts)
-            .HasForeignKey(x => x.GeneralLedgerAccountId);
 
         builder.HasMany(x => x.JournalEntries)
-            .WithOne(x => x.SubLedgerAccount)
-            .HasForeignKey(x => x.SubLedgerAccountId);
+            .WithOne(x => x.DetailedAccount)
+            .HasForeignKey(x => x.DetailedAccountId);
     }
 }

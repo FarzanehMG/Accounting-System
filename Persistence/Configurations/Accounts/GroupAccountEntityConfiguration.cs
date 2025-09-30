@@ -4,13 +4,13 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
-namespace Infrastructure.Configurations.Accounts;
+namespace Persistence.Configurations.Accounts;
 
-internal class GeneralLedgerAccountEntityConfiguration : IEntityTypeConfiguration<GeneralLedgerAccountEntity>
+internal class GroupAccountEntityConfiguration : IEntityTypeConfiguration<GroupAccountEntity>
 {
-    public void Configure(EntityTypeBuilder<GeneralLedgerAccountEntity> builder)
+    public void Configure(EntityTypeBuilder<GroupAccountEntity> builder)
     {
-        builder.ToTable("GeneralLedgerAccounts");
+        builder.ToTable("GroupAccounts");
 
         builder.HasKey(x => x.Id);
 
@@ -35,9 +35,6 @@ internal class GeneralLedgerAccountEntityConfiguration : IEntityTypeConfiguratio
         builder.Property(x => x.IsActive)
             .IsRequired();
 
-        builder.Property(x => x.GroupAccountId)
-            .IsRequired();
-
         // Index
         builder.HasIndex(x => x.AccountCode).IsUnique();
         builder.HasIndex(x => x.AccountTitle);
@@ -45,12 +42,8 @@ internal class GeneralLedgerAccountEntityConfiguration : IEntityTypeConfiguratio
         builder.HasIndex(x => x.IsActive);
 
         // Navigation
-        builder.HasMany(x => x.SubLedgerAccounts)
-            .WithOne(x => x.GeneralLedgerAccount)
-            .HasForeignKey(x => x.GeneralLedgerAccountId);
-
-        builder.HasOne(x => x.GroupAccount)
-            .WithMany(x => x.GeneralLedgerAccounts)
+        builder.HasMany(x => x.GeneralLedgerAccounts)
+            .WithOne(x => x.GroupAccount)
             .HasForeignKey(x => x.GroupAccountId);
     }
 }

@@ -4,13 +4,13 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
-namespace Infrastructure.Configurations.Accounts;
+namespace Persistence.Configurations.Accounts;
 
-internal class DetailedAccountEntityConfiguration : IEntityTypeConfiguration<DetailedAccountEntity>
+internal class SubLedgerAccountEntityConfiguration : IEntityTypeConfiguration<SubLedgerAccountEntity>
 {
-    public void Configure(EntityTypeBuilder<DetailedAccountEntity> builder)
+    public void Configure(EntityTypeBuilder<SubLedgerAccountEntity> builder)
     {
-        builder.ToTable("DetailedAccounts");
+        builder.ToTable("SubLedgerAccounts");
 
         builder.HasKey(x => x.Id);
 
@@ -32,10 +32,10 @@ internal class DetailedAccountEntityConfiguration : IEntityTypeConfiguration<Det
         builder.Property(x => x.JournalEntryType)
             .HasMaxLength(20);
 
-        builder.Property(x => x.IsActive)
+        builder.Property(x => x.GeneralLedgerAccountId)
             .IsRequired();
 
-        builder.Property(x => x.SubLedgerAccountId)
+        builder.Property(x => x.IsActive)
             .IsRequired();
 
         // Index
@@ -45,12 +45,16 @@ internal class DetailedAccountEntityConfiguration : IEntityTypeConfiguration<Det
         builder.HasIndex(x => x.IsActive);
 
         // Navigation
-        builder.HasOne(x => x.SubLedgerAccount)
-            .WithMany(x => x.DetailedAccounts)
+        builder.HasMany(x => x.DetailedAccounts)
+            .WithOne(x => x.SubLedgerAccount)
             .HasForeignKey(x => x.SubLedgerAccountId);
 
+        builder.HasOne(x => x.GeneralLedgerAccount)
+            .WithMany(x => x.SubLedgerAccounts)
+            .HasForeignKey(x => x.GeneralLedgerAccountId);
+
         builder.HasMany(x => x.JournalEntries)
-            .WithOne(x => x.DetailedAccount)
-            .HasForeignKey(x => x.DetailedAccountId);
+            .WithOne(x => x.SubLedgerAccount)
+            .HasForeignKey(x => x.SubLedgerAccountId);
     }
 }

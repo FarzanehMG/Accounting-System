@@ -1,7 +1,7 @@
 ﻿using System.Reflection;
 using Microsoft.EntityFrameworkCore;
 
-namespace Infrastructure.Extensions;
+namespace Persistence.Extensions;
 
 internal static class ModelBuilderExtensions
 {

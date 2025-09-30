@@ -1,10 +1,10 @@
 ﻿using Application.Features.FinancialPeriod.Queries.Dtos;
 using Application.Repositories.FinancialPeriod;
 using Domain.Entities.FinancialPeriod;
-using Infrastructure.Repositories.Common;
 using Microsoft.EntityFrameworkCore;
+using Persistence.Repositories.Common;
 
-namespace Infrastructure.Repositories.FinancialPeriod;
+namespace Persistence.Repositories.FinancialPeriod;
 
 internal sealed class FinancialPeriodRepository(AccountingDbContext dbContext) : BaseRepository<FinancialPeriodEntity>(dbContext), IFinancialPeriodRepository
 {

@@ -2,10 +2,10 @@
 using Application.Repositories.AccountRepositories;
 using Domain.Entities.Accounts;
 using Domain.Enums;
-using Infrastructure.Repositories.Common;
 using Microsoft.EntityFrameworkCore;
+using Persistence.Repositories.Common;
 
-namespace Infrastructure.Repositories.Accounts;
+namespace Persistence.Repositories.Accounts;
 
 internal sealed class GroupAccountRepository(AccountingDbContext dbContext) : BaseRepository<GroupAccountEntity>(dbContext), IGroupAccountRepository
 {

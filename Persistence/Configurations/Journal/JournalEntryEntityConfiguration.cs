@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
-namespace Infrastructure.Configurations.Journal;
+namespace Persistence.Configurations.Journal;
 
 internal class JournalEntryEntityConfiguration : IEntityTypeConfiguration<JournalEntryEntity>
 {
