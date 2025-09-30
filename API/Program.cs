@@ -1,4 +1,3 @@
-
 using Microsoft.EntityFrameworkCore;
 using Persistence;
 
@@ -17,7 +16,7 @@ namespace API
 			builder.Services.AddEndpointsApiExplorer();
 			builder.Services.AddSwaggerGen();
 
-			builder.Services.AddDbContext<ApplicationDbContext>(options =>
+			builder.Services.AddDbContext<AccountingDbContext>(options =>
 				options.UseSqlServer(builder.Configuration.GetConnectionString("AccountingDatabase")));
 
 
