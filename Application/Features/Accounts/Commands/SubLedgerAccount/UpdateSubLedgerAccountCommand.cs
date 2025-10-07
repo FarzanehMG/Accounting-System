@@ -2,7 +2,7 @@
 
 namespace Application.Features.Accounts.Commands.SubLedgerAccount;
 
-public record UpdateSubLegerAccountCommand
+public record UpdateSubLedgerAccountCommand
 {
     public required Guid SubLegerAccountId { get; init; }
     public Patch<string>? Title { get; init; }

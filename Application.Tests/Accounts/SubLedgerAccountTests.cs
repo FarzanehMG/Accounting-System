@@ -508,11 +508,11 @@ public class SubLedgerAccountTests(ITestOutputHelper testOutputHelper)
         // Arrange
         var unitOfWork = Substitute.For<IUnitOfWork>();
 
-        var updateSubLedgerAccountCommand = new UpdateSubLegerAccountCommand
+        var updateSubLedgerAccountCommand = new UpdateSubLedgerAccountCommand
         {
             SubLegerAccountId = Guid.Empty
         };
-        var handler = new UpdateSubLegerAccountCommandHandler(unitOfWork);
+        var handler = new UpdateSubLedgerAccountCommandHandler(unitOfWork);
 
         // Act
         var result = await handler.Handle(updateSubLedgerAccountCommand, CancellationToken.None);
@@ -528,11 +528,11 @@ public class SubLedgerAccountTests(ITestOutputHelper testOutputHelper)
         // Arrange
         var unitOfWork = Substitute.For<IUnitOfWork>();
 
-        var updateSubLedgerAccountCommand = new UpdateSubLegerAccountCommand
+        var updateSubLedgerAccountCommand = new UpdateSubLedgerAccountCommand
         {
             SubLegerAccountId = Guid.NewGuid()
         };
-        var handler = new UpdateSubLegerAccountCommandHandler(unitOfWork);
+        var handler = new UpdateSubLedgerAccountCommandHandler(unitOfWork);
 
         unitOfWork.SubLedgerAccountRepository.GetByIdAsync(Guid.NewGuid(), CancellationToken.None)
             .Returns(null as SubLedgerAccountEntity);
@@ -542,7 +542,7 @@ public class SubLedgerAccountTests(ITestOutputHelper testOutputHelper)
 
         // Assert
         result.IsSuccess.Should().BeFalse();
-        result.ErrorMessages.Should().ContainKey(nameof(UpdateSubLegerAccountCommand))
+        result.ErrorMessages.Should().ContainKey(nameof(UpdateSubLedgerAccountCommand))
             .WhoseValue.Should().Contain("SubLeger account not found.");
     }
 
@@ -554,12 +554,12 @@ public class SubLedgerAccountTests(ITestOutputHelper testOutputHelper)
         var faker = new Faker();
         var subLedgerAccountId = Guid.NewGuid();
 
-        var updateSubLedgerAccountCommand = new UpdateSubLegerAccountCommand
+        var updateSubLedgerAccountCommand = new UpdateSubLedgerAccountCommand
         {
             SubLegerAccountId = subLedgerAccountId,
             Title = new Patch<string>(faker.Finance.AccountName())
         };
-        var handler = new UpdateSubLegerAccountCommandHandler(unitOfWork);
+        var handler = new UpdateSubLedgerAccountCommandHandler(unitOfWork);
 
         var existingSubLedgerAccount = new SubLedgerAccountEntity
         {
@@ -593,12 +593,12 @@ public class SubLedgerAccountTests(ITestOutputHelper testOutputHelper)
         var faker = new Faker();
         var subLedgerAccountId = Guid.NewGuid();
 
-        var updateSubLedgerAccountCommand = new UpdateSubLegerAccountCommand
+        var updateSubLedgerAccountCommand = new UpdateSubLedgerAccountCommand
         {
             SubLegerAccountId = subLedgerAccountId,
             IsActive = new Patch<bool>(false)
         };
-        var handler = new UpdateSubLegerAccountCommandHandler(unitOfWork);
+        var handler = new UpdateSubLedgerAccountCommandHandler(unitOfWork);
 
         var existingSubLedgerAccount = new SubLedgerAccountEntity
         {
@@ -633,12 +633,12 @@ public class SubLedgerAccountTests(ITestOutputHelper testOutputHelper)
         var subLedgerAccountId = Guid.NewGuid();
         var code = faker.Finance.Account();
 
-        var updateSubLedgerAccountCommand = new UpdateSubLegerAccountCommand
+        var updateSubLedgerAccountCommand = new UpdateSubLedgerAccountCommand
         {
             SubLegerAccountId = subLedgerAccountId,
             Code = code
         };
-        var handler = new UpdateSubLegerAccountCommandHandler(unitOfWork);
+        var handler = new UpdateSubLedgerAccountCommandHandler(unitOfWork);
 
         var existingSubLedgerAccount = new SubLedgerAccountEntity
         {
@@ -676,12 +676,12 @@ public class SubLedgerAccountTests(ITestOutputHelper testOutputHelper)
         var subLedgerAccountId = Guid.NewGuid();
         var title = faker.Finance.AccountName();
 
-        var updateSubLedgerAccountCommand = new UpdateSubLegerAccountCommand
+        var updateSubLedgerAccountCommand = new UpdateSubLedgerAccountCommand
         {
             SubLegerAccountId = subLedgerAccountId,
             Title = new Patch<string>(title)
         };
-        var handler = new UpdateSubLegerAccountCommandHandler(unitOfWork);
+        var handler = new UpdateSubLedgerAccountCommandHandler(unitOfWork);
 
         var existingSubLedgerAccount = new SubLedgerAccountEntity
         {
@@ -717,12 +717,12 @@ public class SubLedgerAccountTests(ITestOutputHelper testOutputHelper)
         var subLedgerAccountId = Guid.NewGuid();
         var code = faker.Finance.Account();
 
-        var updateSubLedgerAccountCommand = new UpdateSubLegerAccountCommand
+        var updateSubLedgerAccountCommand = new UpdateSubLedgerAccountCommand
         {
             SubLegerAccountId = subLedgerAccountId,
             Code = new Patch<string>(code)
         };
-        var handler = new UpdateSubLegerAccountCommandHandler(unitOfWork);
+        var handler = new UpdateSubLedgerAccountCommandHandler(unitOfWork);
 
         var existingSubLedgerAccount = new SubLedgerAccountEntity
         {
@@ -760,13 +760,13 @@ public class SubLedgerAccountTests(ITestOutputHelper testOutputHelper)
         var faker = new Faker();
         var subLedgerAccountId = Guid.NewGuid();
 
-        var updateSubLedgerAccountCommand = new UpdateSubLegerAccountCommand
+        var updateSubLedgerAccountCommand = new UpdateSubLedgerAccountCommand
         {
             SubLegerAccountId = subLedgerAccountId,
             Code = new Patch<string>(faker.Finance.Account()),
             Title = new Patch<string>(faker.Finance.AccountName())
         };
-        var handler = new UpdateSubLegerAccountCommandHandler(unitOfWork);
+        var handler = new UpdateSubLedgerAccountCommandHandler(unitOfWork);
 
         var existingSubLedgerAccount = new SubLedgerAccountEntity
         {

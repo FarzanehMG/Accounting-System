@@ -31,7 +31,7 @@ public class GeneralLedgerAccountTests(ITestOutputHelper testOutputHelper)
             Description = null,
             GroupAccountId = Guid.NewGuid()
         };
-        var createGeneralAccountCommandHandler = new CreateGeneralAccountCommandHandler(unitOfWork);
+        var createGeneralAccountCommandHandler = new CreateGeneralLedgerAccountCommandHandler(unitOfWork);
 
         // Act
         var result = await createGeneralAccountCommandHandler.Handle(createGeneralAccountCommand, CancellationToken.None);
@@ -61,7 +61,7 @@ public class GeneralLedgerAccountTests(ITestOutputHelper testOutputHelper)
             IsActive = true,
             GroupAccountId = Guid.NewGuid()
         };
-        var createGeneralLedgerAccountCommandHandler = new CreateGeneralAccountCommandHandler(unitOfWork);
+        var createGeneralLedgerAccountCommandHandler = new CreateGeneralLedgerAccountCommandHandler(unitOfWork);
 
         // Act
         var result = await createGeneralLedgerAccountCommandHandler.Handle(createGeneralLedgerAccountCommand, CancellationToken.None);
@@ -86,7 +86,7 @@ public class GeneralLedgerAccountTests(ITestOutputHelper testOutputHelper)
             IsActive = true,
             GroupAccountId = Guid.NewGuid()
         };
-        var createGeneralLedgerAccountCommandHandler = new CreateGeneralAccountCommandHandler(unitOfWork);
+        var createGeneralLedgerAccountCommandHandler = new CreateGeneralLedgerAccountCommandHandler(unitOfWork);
 
         // Act
         var result = await createGeneralLedgerAccountCommandHandler.Handle(createGeneralLedgerAccountCommand, CancellationToken.None);
@@ -111,7 +111,7 @@ public class GeneralLedgerAccountTests(ITestOutputHelper testOutputHelper)
             IsActive = true,
             GroupAccountId = Guid.NewGuid()
         };
-        var createGeneralLedgerAccountCommandHandler = new CreateGeneralAccountCommandHandler(unitOfWork);
+        var createGeneralLedgerAccountCommandHandler = new CreateGeneralLedgerAccountCommandHandler(unitOfWork);
 
         // Act
         var result = await createGeneralLedgerAccountCommandHandler.Handle(createGeneralLedgerAccountCommand, CancellationToken.None);
@@ -136,7 +136,7 @@ public class GeneralLedgerAccountTests(ITestOutputHelper testOutputHelper)
             IsActive = true,
             GroupAccountId = Guid.NewGuid()
         };
-        var createGeneralLedgerAccountCommandHandler = new CreateGeneralAccountCommandHandler(unitOfWork);
+        var createGeneralLedgerAccountCommandHandler = new CreateGeneralLedgerAccountCommandHandler(unitOfWork);
 
         // Act
         await createGeneralLedgerAccountCommandHandler.Handle(createGeneralLedgerAccountCommand, CancellationToken.None);
@@ -175,7 +175,7 @@ public class GeneralLedgerAccountTests(ITestOutputHelper testOutputHelper)
             IsActive = true,
             GroupAccountId = groupAccountId
         };
-        var createGeneralLedgerAccountCommandHandler = new CreateGeneralAccountCommandHandler(unitOfWork);
+        var createGeneralLedgerAccountCommandHandler = new CreateGeneralLedgerAccountCommandHandler(unitOfWork);
 
         // Act
         var result = await createGeneralLedgerAccountCommandHandler.Handle(createGeneralLedgerAccountCommand, CancellationToken.None);
@@ -219,7 +219,7 @@ public class GeneralLedgerAccountTests(ITestOutputHelper testOutputHelper)
             IsActive = true,
             GroupAccountId = groupAccountId
         };
-        var createGeneralLedgerAccountCommandHandler = new CreateGeneralAccountCommandHandler(unitOfWork);
+        var createGeneralLedgerAccountCommandHandler = new CreateGeneralLedgerAccountCommandHandler(unitOfWork);
 
         // Act
         var result = await createGeneralLedgerAccountCommandHandler.Handle(createGeneralLedgerAccountCommand, CancellationToken.None);
@@ -264,7 +264,7 @@ public class GeneralLedgerAccountTests(ITestOutputHelper testOutputHelper)
             IsActive = true,
             GroupAccountId = groupAccountId
         };
-        var createGeneralLedgerAccountCommandHandler = new CreateGeneralAccountCommandHandler(unitOfWork);
+        var createGeneralLedgerAccountCommandHandler = new CreateGeneralLedgerAccountCommandHandler(unitOfWork);
 
         // Act
         var result = await createGeneralLedgerAccountCommandHandler.Handle(createGeneralLedgerAccountCommand, CancellationToken.None);
@@ -313,7 +313,7 @@ public class GeneralLedgerAccountTests(ITestOutputHelper testOutputHelper)
             IsActive = true,
             GroupAccountId = groupAccountId
         };
-        var createGeneralLedgerAccountCommandHandler = new CreateGeneralAccountCommandHandler(unitOfWork);
+        var createGeneralLedgerAccountCommandHandler = new CreateGeneralLedgerAccountCommandHandler(unitOfWork);
 
         // Act
         var result = await createGeneralLedgerAccountCommandHandler.Handle(createGeneralLedgerAccountCommand, CancellationToken.None);
@@ -344,7 +344,7 @@ public class GeneralLedgerAccountTests(ITestOutputHelper testOutputHelper)
             IsActive = true,
             GroupAccountId = Guid.Empty
         };
-        var createGeneralLedgerAccountCommandHandler = new CreateGeneralAccountCommandHandler(unitOfWork);
+        var createGeneralLedgerAccountCommandHandler = new CreateGeneralLedgerAccountCommandHandler(unitOfWork);
 
         // Act
         var result = await createGeneralLedgerAccountCommandHandler.Handle(createGeneralLedgerAccountCommand, CancellationToken.None);
@@ -779,7 +779,7 @@ public class GeneralLedgerAccountTests(ITestOutputHelper testOutputHelper)
     {
         // Arrange
         var unitOfWork = Substitute.For<IUnitOfWork>();
-        var handler = new GetGeneralAccountByIdQueryHandler(unitOfWork);
+        var handler = new GetGeneralLedgerAccountByIdQueryHandler(unitOfWork);
         var faker = new Faker();
         var generalLedgerAccountId = Guid.NewGuid();
         var title = faker.Finance.AccountName();
@@ -814,7 +814,7 @@ public class GeneralLedgerAccountTests(ITestOutputHelper testOutputHelper)
     {
         // Arrange
         var unitOfWork = Substitute.For<IUnitOfWork>();
-        var handler = new GetGeneralAccountByIdQueryHandler(unitOfWork);
+        var handler = new GetGeneralLedgerAccountByIdQueryHandler(unitOfWork);
 
         unitOfWork.GeneralLedgerAccountRepository.GetByIdAsync(Arg.Any<Guid>(), CancellationToken.None)
             .Returns((GeneralLedgerAccountEntity?)null);
@@ -837,7 +837,7 @@ public class GeneralLedgerAccountTests(ITestOutputHelper testOutputHelper)
     {
         // Arrange
         var unitOfWork = Substitute.For<IUnitOfWork>();
-        var handler = new GetGeneralAccountByIdQueryHandler(unitOfWork);
+        var handler = new GetGeneralLedgerAccountByIdQueryHandler(unitOfWork);
 
         // Act
         var result = await handler.Handle(new GetGeneralLedgerAccountByIdQuery

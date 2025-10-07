@@ -17,7 +17,7 @@
 
   <ItemGroup>
     <Folder Include="Repositories\Common\" />
-    <Folder Include="Services\" />
+    <Folder Include="Services\Journal\" />
   </ItemGroup>
 
   <ItemGroup>

@@ -4,9 +4,9 @@ using Application.Repositories.Common;
 
 namespace Application.Features.Accounts.Commands.SubLedgerAccount;
 
-public class UpdateSubLegerAccountCommandHandler(IUnitOfWork unitOfWork)
+public class UpdateSubLedgerAccountCommandHandler(IUnitOfWork unitOfWork)
 {
-    public async Task<OperationResult<bool>> Handle(UpdateSubLegerAccountCommand request, CancellationToken cancellationToken)
+    public async Task<OperationResult<bool>> Handle(UpdateSubLedgerAccountCommand request, CancellationToken cancellationToken)
     {
         var validator = new UpdateSubLegerAccountCommandValidator();
         var validateResult = await validator.ValidateAsync(request, cancellationToken);
@@ -18,7 +18,7 @@ public class UpdateSubLegerAccountCommandHandler(IUnitOfWork unitOfWork)
         var subLegerAccount = await unitOfWork.SubLedgerAccountRepository.GetByIdAsync(request.SubLegerAccountId, cancellationToken);
 
         if (subLegerAccount is null)
-            return OperationResult<bool>.NotFoundResult(nameof(UpdateSubLegerAccountCommand), "SubLeger account not found.");
+            return OperationResult<bool>.NotFoundResult(nameof(UpdateSubLedgerAccountCommand), "SubLeger account not found.");
 
         // Update fields if provided
         if (!string.IsNullOrWhiteSpace(request.Title?.Value))

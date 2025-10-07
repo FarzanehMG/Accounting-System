@@ -2,7 +2,7 @@
 
 namespace Application.Features.Accounts.Commands.SubLedgerAccount;
 
-public class UpdateSubLegerAccountCommandValidator : AbstractValidator<UpdateSubLegerAccountCommand>
+public class UpdateSubLegerAccountCommandValidator : AbstractValidator<UpdateSubLedgerAccountCommand>
 {
     public UpdateSubLegerAccountCommandValidator()
     {

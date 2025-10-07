@@ -5,7 +5,7 @@ using Application.Repositories.Common;
 
 namespace Application.Features.Accounts.Queries.GeneralLedgerAccount;
 
-public class GetGeneralAccountByIdQueryHandler(IUnitOfWork unitOfWork)
+public class GetGeneralLedgerAccountByIdQueryHandler(IUnitOfWork unitOfWork)
 {
     public async Task<OperationResult<GetGeneralLedgerAccountByIdQueryResult>> Handle(GetGeneralLedgerAccountByIdQuery request, CancellationToken cancellationToken)
     {

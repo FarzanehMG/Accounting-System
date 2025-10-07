@@ -5,7 +5,7 @@ using Domain.Entities.Accounts;
 
 namespace Application.Features.Accounts.Commands.GeneralLedgerAccount;
 
-public class CreateGeneralAccountCommandHandler(IUnitOfWork unitOfWork)
+public class CreateGeneralLedgerAccountCommandHandler(IUnitOfWork unitOfWork)
 {
     public async Task<OperationResult<bool>> Handle(CreateGeneralLedgerAccountCommand request, CancellationToken cancellationToken)
     {
