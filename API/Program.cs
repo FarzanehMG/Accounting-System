@@ -1,42 +1,43 @@
-using Microsoft.EntityFrameworkCore;
-using Persistence;
+using API.Extensions;
+using Application.Extensions;
+using Persistence.Extensions;
 
-namespace API
+namespace API;
+
+public class Program
 {
-	public class Program
-	{
-		public static void Main(string[] args)
-		{
-			var builder = WebApplication.CreateBuilder(args);
+    public static async Task Main(string[] args)
+    {
+        var builder = WebApplication.CreateBuilder(args);
 
-			// Add services to the container.
+        // Add services to the container.
+        builder.Services
+            .AddApplicationServices()
+            .AddPersistenceDbContext(builder.Configuration);
 
-			builder.Services.AddControllers();
-			// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-			builder.Services.AddEndpointsApiExplorer();
-			builder.Services.AddSwaggerGen();
+        builder.Services.AddControllers();
+        builder.Services.AddEndpointsApiExplorer();
+        builder.Services.AddSwaggerGen();
 
-			builder.Services.AddDbContext<AccountingDbContext>(options =>
-				options.UseSqlServer(builder.Configuration.GetConnectionString("AccountingDatabase")));
+        var app = builder.Build();
 
+        // Configure the HTTP request pipeline.
+        if (app.Environment.IsDevelopment())
+        {
+            //app.UseDeveloperExceptionPage();
+            
+            app.UseSwagger();
+            app.UseSwaggerUI();
+            await app.ApplyMigrationsAsync();
+        }
 
-			var app = builder.Build();
+        app.UseHttpsRedirection();
 
-			// Configure the HTTP request pipeline.
-			if (app.Environment.IsDevelopment())
-			{
-				app.UseSwagger();
-				app.UseSwaggerUI();
-			}
+        app.UseAuthentication();
+        app.UseAuthorization();
 
-			app.UseHttpsRedirection();
+        app.MapControllers();
 
-			app.UseAuthorization();
-
-
-			app.MapControllers();
-
-			app.Run();
-		}
-	}
+        await app.RunAsync();
+    }
 }

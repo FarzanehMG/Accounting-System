@@ -10,9 +10,9 @@ public sealed class JournalEntryService(
     GetJournalEntryByIdQueryHandler getByIdHandler,
     GetJournalEntriesQueryHandler getAllHandler)
 {
-    public Task<OperationResult<bool>> CreateAsync(List<CreateJournalEntryCommand> command, CancellationToken cancellationToken = default)
+    public Task<OperationResult<bool>> CreateAsync(List<CreateJournalEntryCommand> commands, CancellationToken cancellationToken = default)
     {
-        return createHandler.Handle(command, cancellationToken);
+        return createHandler.Handle(commands, cancellationToken);
     }
 
     public Task<OperationResult<bool>> UpdateAsync(UpdateJournalEntryCommand command, CancellationToken cancellationToken = default)
