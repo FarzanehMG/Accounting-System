@@ -2291,8 +2291,6 @@ public class JournalEntryTests(ITestOutputHelper testOutputHelper)
         unitOfWork.DetailedAccountRepository.GetByIdAsync(detailedAccountId, CancellationToken.None)
             .Returns(existingDetailedAccountEntity);
 
-        //unitOfWork.HasChanges(existingJournalEntryEntity).Returns(true);
-
         var updateJournalEntryCommand = new UpdateJournalEntryCommand
         {
             JournalEntryId = journalEntryId,

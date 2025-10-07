@@ -572,8 +572,6 @@ public class SubLedgerAccountTests(ITestOutputHelper testOutputHelper)
         unitOfWork.SubLedgerAccountRepository.GetByIdAsync(subLedgerAccountId, CancellationToken.None)
             .Returns(existingSubLedgerAccount);
 
-        //unitOfWork.HasChanges(existingSubLedgerAccount).Returns(true);
-
         // Act
         var result = await handler.Handle(updateSubLedgerAccountCommand, CancellationToken.None);
 
@@ -610,8 +608,6 @@ public class SubLedgerAccountTests(ITestOutputHelper testOutputHelper)
         };
         unitOfWork.SubLedgerAccountRepository.GetByIdAsync(subLedgerAccountId, CancellationToken.None)
             .Returns(existingSubLedgerAccount);
-
-        //unitOfWork.HasChanges(existingSubLedgerAccount).Returns(true);
 
         // Act
         var result = await handler.Handle(updateSubLedgerAccountCommand, CancellationToken.None);
@@ -650,8 +646,6 @@ public class SubLedgerAccountTests(ITestOutputHelper testOutputHelper)
         };
         unitOfWork.SubLedgerAccountRepository.GetByIdAsync(subLedgerAccountId, CancellationToken.None)
             .Returns(existingSubLedgerAccount);
-
-        //unitOfWork.HasChanges(existingSubLedgerAccount).Returns(true);
 
         unitOfWork.SubLedgerAccountRepository.FindByCodeAsync(code, CancellationToken.None)
             .Returns(null as SubLedgerAccountEntity);
@@ -694,8 +688,6 @@ public class SubLedgerAccountTests(ITestOutputHelper testOutputHelper)
         unitOfWork.SubLedgerAccountRepository.GetByIdAsync(subLedgerAccountId, CancellationToken.None)
             .Returns(existingSubLedgerAccount);
 
-        //unitOfWork.HasChanges(existingSubLedgerAccount).Returns(true);
-
         // Act
         var result = await handler.Handle(updateSubLedgerAccountCommand, CancellationToken.None);
 
@@ -737,8 +729,6 @@ public class SubLedgerAccountTests(ITestOutputHelper testOutputHelper)
 
         unitOfWork.SubLedgerAccountRepository.FindByCodeAsync(code, CancellationToken.None)
             .Returns(existingSubLedgerAccount);
-
-        //unitOfWork.HasChanges(existingSubLedgerAccount).Returns(true);
 
         // Act
         var result = await handler.Handle(updateSubLedgerAccountCommand, CancellationToken.None);

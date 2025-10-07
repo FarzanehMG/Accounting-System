@@ -563,8 +563,6 @@ public class ApprovedJournalVoucherTests(ITestOutputHelper testOutputHelper)
             .WhoseValue.Should().Contain("Journal entries are not balanced.");
     }
 
-    // ===============================================================================================================
-
     [Fact]
     public async Task ApprovedJournalVoucherHandler_ShouldFail_WhenSubLedgerAccountNotFound()
     {

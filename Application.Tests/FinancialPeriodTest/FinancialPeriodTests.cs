@@ -541,8 +541,6 @@ public class FinancialPeriodTests(ITestOutputHelper testOutputHelper)
         unitOfWork.FinancialPeriodRepository.GetByIdAsync(financialPeriodId, CancellationToken.None)
             .Returns(existingFinancialPeriodEntity);
 
-        //unitOfWork.HasChanges(Arg.Any<FinancialPeriodEntity>()).Returns(true);
-
         var updateFinancialPeriodCommand = new UpdateFinancialPeriodCommand
         {
             FinancialPeriodId = financialPeriodId,

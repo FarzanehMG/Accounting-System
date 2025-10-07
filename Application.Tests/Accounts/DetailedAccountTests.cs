@@ -570,8 +570,6 @@ public class DetailedAccountTests(ITestOutputHelper testOutputHelper)
         unitOfWork.DetailedAccountRepository.GetByIdAsync(detailedAccountId, CancellationToken.None)
             .Returns(existingDetailedAccount);
 
-        //unitOfWork.HasChanges(existingDetailedAccount).Returns(true);
-
         // Act
         var result = await handler.Handle(updateDetailedAccountCommand, CancellationToken.None);
 
@@ -608,8 +606,6 @@ public class DetailedAccountTests(ITestOutputHelper testOutputHelper)
         };
         unitOfWork.DetailedAccountRepository.GetByIdAsync(detailedAccountId, CancellationToken.None)
             .Returns(existingDetailedAccount);
-
-        //unitOfWork.HasChanges(existingDetailedAccount).Returns(true);
 
         // Act
         var result = await handler.Handle(updateDetailedAccountCommand, CancellationToken.None);
@@ -648,8 +644,6 @@ public class DetailedAccountTests(ITestOutputHelper testOutputHelper)
         };
         unitOfWork.DetailedAccountRepository.GetByIdAsync(detailedAccountId, CancellationToken.None)
             .Returns(existingDetailedAccount);
-
-        //unitOfWork.HasChanges(existingDetailedAccount).Returns(true);
 
         unitOfWork.DetailedAccountRepository.FindByCodeAsync(code, CancellationToken.None)
             .Returns(null as DetailedAccountEntity);
@@ -691,8 +685,6 @@ public class DetailedAccountTests(ITestOutputHelper testOutputHelper)
         };
         unitOfWork.DetailedAccountRepository.GetByIdAsync(detailedAccountId, CancellationToken.None)
             .Returns(existingDetailedAccount);
-
-        //unitOfWork.HasChanges(existingDetailedAccount).Returns(true);
 
         // Act
         var result = await handler.Handle(updateDetailedAccountCommand, CancellationToken.None);
@@ -736,8 +728,6 @@ public class DetailedAccountTests(ITestOutputHelper testOutputHelper)
         unitOfWork.DetailedAccountRepository.FindByCodeAsync(code, CancellationToken.None)
             .Returns(existingDetailedAccount);
 
-        //unitOfWork.HasChanges(existingDetailedAccount).Returns(true);
-
         // Act
         var result = await handler.Handle(updateDetailedAccountCommand, CancellationToken.None);
 
@@ -776,8 +766,6 @@ public class DetailedAccountTests(ITestOutputHelper testOutputHelper)
         };
         unitOfWork.DetailedAccountRepository.GetByIdAsync(detailedAccountId, CancellationToken.None)
             .Returns(existingDetailedAccount);
-
-        //unitOfWork.HasChanges(existingDetailedAccount).Returns(true);
 
         // Act
         var result = await handler.Handle(updateDetailedAccountCommand, CancellationToken.None);

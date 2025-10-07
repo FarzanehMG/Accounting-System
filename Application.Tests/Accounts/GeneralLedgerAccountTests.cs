@@ -429,8 +429,6 @@ public class GeneralLedgerAccountTests(ITestOutputHelper testOutputHelper)
         };
         unitOfWork.GeneralLedgerAccountRepository.GetByIdAsync(generalLegerAccountId, CancellationToken.None).Returns(existingGeneralLedgerAccountEntity);
 
-        //unitOfWork.HasChanges(existingGeneralLedgerAccountEntity).Returns(true);
-
         var updateGeneralLedgerAccountCommand = new UpdateGeneralLedgerAccountCommand
         {
             GeneralLedgerAccountId = generalLegerAccountId,
@@ -467,8 +465,6 @@ public class GeneralLedgerAccountTests(ITestOutputHelper testOutputHelper)
         };
         unitOfWork.GeneralLedgerAccountRepository.GetByIdAsync(generalLegerAccountId, CancellationToken.None).Returns(existingGeneralLedgerAccountEntity);
 
-        //unitOfWork.HasChanges(existingGeneralLedgerAccountEntity).Returns(true);
-
         var updateGeneralLedgerAccountCommand = new UpdateGeneralLedgerAccountCommand
         {
             GeneralLedgerAccountId = generalLegerAccountId,
@@ -504,8 +500,6 @@ public class GeneralLedgerAccountTests(ITestOutputHelper testOutputHelper)
             IsActive = true
         };
         unitOfWork.GeneralLedgerAccountRepository.GetByIdAsync(generalLegerAccountId, CancellationToken.None).Returns(existingGeneralLedgerAccountEntity);
-
-        //unitOfWork.HasChanges(existingGeneralLedgerAccountEntity).Returns(true);
 
         var updateGeneralLedgerAccountCommand = new UpdateGeneralLedgerAccountCommand
         {
@@ -580,8 +574,6 @@ public class GeneralLedgerAccountTests(ITestOutputHelper testOutputHelper)
         };
         unitOfWork.GeneralLedgerAccountRepository.GetByIdAsync(generalLegerAccountId, CancellationToken.None).Returns(existingGeneralLedgerAccountEntity);
 
-        //unitOfWork.HasChanges(existingGeneralLedgerAccountEntity).Returns(true);
-
         var updateGeneralLedgerAccountCommand = new UpdateGeneralLedgerAccountCommand
         {
             GeneralLedgerAccountId = generalLegerAccountId,
@@ -617,8 +609,6 @@ public class GeneralLedgerAccountTests(ITestOutputHelper testOutputHelper)
             IsActive = true
         };
         unitOfWork.GeneralLedgerAccountRepository.GetByIdAsync(generalLegerAccountId, CancellationToken.None).Returns(existingGeneralLedgerAccountEntity);
-
-        //unitOfWork.HasChanges(existingGeneralLedgerAccountEntity).Returns(true);
 
         var updateGeneralLedgerAccountCommand = new UpdateGeneralLedgerAccountCommand
         {
@@ -751,8 +741,6 @@ public class GeneralLedgerAccountTests(ITestOutputHelper testOutputHelper)
             IsActive = true
         };
         unitOfWork.GeneralLedgerAccountRepository.GetByIdAsync(generalLegerAccountId, CancellationToken.None).Returns(existingGeneralLedgerAccountEntity);
-
-        //unitOfWork.HasChanges(existingGeneralLedgerAccountEntity).Returns(true);
 
         var updateGeneralLedgerAccountCommand = new UpdateGeneralLedgerAccountCommand
         {
