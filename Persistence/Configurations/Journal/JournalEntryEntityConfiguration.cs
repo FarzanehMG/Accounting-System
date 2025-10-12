@@ -55,5 +55,9 @@ internal class JournalEntryEntityConfiguration : IEntityTypeConfiguration<Journa
         builder.HasOne(x => x.DetailedAccount)
             .WithMany(x => x.JournalEntries)
             .HasForeignKey(x => x.DetailedAccountId);
+
+        builder.HasMany(x => x.Attachments)
+            .WithOne(x => x.JournalEntryEntity)
+            .HasForeignKey(x => x.JournalEntryId);
     }
 }
