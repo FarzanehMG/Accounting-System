@@ -1,4 +1,5 @@
 ﻿using Application.Common;
+using Application.Contracts.FileService.Interfaces;
 using Application.Extensions;
 using Application.Repositories.Common;
 using Domain.Entities.Journal;
@@ -6,7 +7,7 @@ using Domain.Enums;
 
 namespace Application.Features.Journal.Commands.JournalEntry;
 
-public class CreateJournalEntryCommandHandler(IUnitOfWork unitOfWork)
+public class CreateJournalEntryCommandHandler(IUnitOfWork unitOfWork, IFileService fileService)
 {
     public async Task<OperationResult<bool>> Handle(List<CreateJournalEntryCommand> commands, CancellationToken cancellationToken)
     {
@@ -93,6 +94,9 @@ public class CreateJournalEntryCommandHandler(IUnitOfWork unitOfWork)
             };
 
             await unitOfWork.JournalEntryRepository.CreateAsync(journalEntryEntity, cancellationToken);
+            
+            // Save files
+            await fileService.SaveFilesAsync(command.Attachments, journalEntryEntity.Id, cancellationToken);
         }
 
         await unitOfWork.CommitAsync(cancellationToken);

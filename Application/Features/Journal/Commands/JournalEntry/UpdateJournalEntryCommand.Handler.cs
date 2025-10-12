@@ -1,11 +1,12 @@
 ﻿using Application.Common;
+using Application.Contracts.FileService.Interfaces;
 using Application.Extensions;
 using Application.Repositories.Common;
 using Domain.Enums;
 
 namespace Application.Features.Journal.Commands.JournalEntry;
 
-public class UpdateJournalEntryCommandHandler(IUnitOfWork unitOfWork)
+public class UpdateJournalEntryCommandHandler(IUnitOfWork unitOfWork, IFileService fileService)
 {
     public async Task<OperationResult<bool>> Handle(UpdateJournalEntryCommand command, CancellationToken cancellationToken)
     {
@@ -72,6 +73,17 @@ public class UpdateJournalEntryCommandHandler(IUnitOfWork unitOfWork)
 
             journalEntryEntity.DetailedAccountId = command.DetailedAccountId.Value;
         }
+
+        // Remove existing attachments
+        if (command.RemoveAttachments?.Value != null && command.RemoveAttachments.Value.Any())
+        {
+            var fileNamesToRemove = command.RemoveAttachments.Value.Select(f => f.Base64File).ToList();
+            await fileService.RemoveFilesAsync(fileNamesToRemove, cancellationToken);
+        }
+
+        // Add new attachments
+        if (command.NewAttachments?.Value != null && command.NewAttachments.Value.Any())
+            await fileService.SaveFilesAsync(command.NewAttachments, journalEntryEntity.Id, cancellationToken);
 
         await unitOfWork.CommitAsync(cancellationToken);
         return OperationResult<bool>.SuccessResult(true);

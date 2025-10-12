@@ -1,4 +1,5 @@
-﻿using Domain.Enums;
+﻿using Application.Contracts.FileService.Models;
+using Domain.Enums;
 
 namespace Application.Features.Journal.Commands.JournalEntry;
 
@@ -10,4 +11,5 @@ public record CreateJournalEntryCommand
     public required Guid SubLedgerAccountId { get; init; }
     public Guid? DetailedAccountId { get; init; }
     public required Guid JournalVoucherId { get; init; }
+    public required List<SaveFileModel> Attachments { get; init; } = [];
 }

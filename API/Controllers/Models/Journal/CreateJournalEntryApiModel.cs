@@ -1,4 +1,5 @@
-﻿using Domain.Enums;
+﻿using Application.Contracts.FileService.Models;
+using Domain.Enums;
 
 namespace API.Controllers.Models.Journal;
 
@@ -15,4 +16,5 @@ public record JournalEntryApiModel
     public required Guid SubLedgerAccountId { get; init; }
     public Guid? DetailedAccountId { get; init; }
     public required Guid JournalVoucherId { get; init; }
+    public required List<SaveFileModel> Attachments { get; init; } = [];
 }

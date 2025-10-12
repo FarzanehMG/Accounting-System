@@ -1,5 +1,6 @@
 using API.Extensions;
 using Application.Extensions;
+using Infrastructure.Extensions;
 using Persistence.Extensions;
 
 namespace API;
@@ -13,6 +14,7 @@ public class Program
         // Add services to the container.
         builder.Services
             .AddApplicationServices()
+            .AddFileService()
             .AddPersistenceDbContext(builder.Configuration);
 
         builder.Services.AddControllers();

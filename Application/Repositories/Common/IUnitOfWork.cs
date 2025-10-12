@@ -1,4 +1,5 @@
 ﻿using Application.Repositories.AccountRepositories;
+using Application.Repositories.Attachment;
 using Application.Repositories.FinancialPeriod;
 using Application.Repositories.JournalRepositories;
 
@@ -13,6 +14,7 @@ public interface IUnitOfWork : IAsyncDisposable, IDisposable
     IFinancialPeriodRepository FinancialPeriodRepository { get; }
     IJournalVoucherRepository JournalVoucherRepository { get; }
     IJournalEntryRepository JournalEntryRepository { get; }
+    IAttachmentRepository AttachmentRepository { get; }
 
     Task CommitAsync(CancellationToken cancellationToken = default);
 }

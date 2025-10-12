@@ -1,4 +1,5 @@
 ﻿using Application.Common;
+using Application.Contracts.FileService.Interfaces;
 using Application.Features.Journal.Commands.JournalEntry;
 using Application.Features.Journal.Queries.JournalEntry;
 using Application.Features.Journal.Queries.JournalEntry.Dtos;
@@ -22,6 +23,7 @@ public class JournalEntryTests(ITestOutputHelper testOutputHelper)
     {
         // Arrange
         var unitOfWork = Substitute.For<IUnitOfWork>();
+        var fileService = Substitute.For<IFileService>();
         var faker = new Faker();
         var journalVoucherId = Guid.NewGuid();
         var subLedgerAccountId = Guid.NewGuid();
@@ -59,7 +61,8 @@ public class JournalEntryTests(ITestOutputHelper testOutputHelper)
                 Amount = 2,
                 Description = null,
                 SubLedgerAccountId = subLedgerAccountId,
-                JournalVoucherId = journalVoucherId
+                JournalVoucherId = journalVoucherId,
+                Attachments = []
             },
             new()
             {
@@ -68,11 +71,12 @@ public class JournalEntryTests(ITestOutputHelper testOutputHelper)
                 Description = null,
                 SubLedgerAccountId = subLedgerAccountId2,
                 DetailedAccountId = detailedAccountId,
-                JournalVoucherId = journalVoucherId
+                JournalVoucherId = journalVoucherId,
+                Attachments = []
             }
         };
 
-        var handle = new CreateJournalEntryCommandHandler(unitOfWork);
+        var handle = new CreateJournalEntryCommandHandler(unitOfWork, fileService);
 
         // Act
         var result = await handle.Handle(createJournalEntryCommand, CancellationToken.None);
@@ -92,6 +96,7 @@ public class JournalEntryTests(ITestOutputHelper testOutputHelper)
     {
         // Arrange
         var unitOfWork = Substitute.For<IUnitOfWork>();
+        var fileService = Substitute.For<IFileService>();
         var faker = new Faker();
         var journalVoucherId = Guid.NewGuid();
         var subLedgerAccountId = Guid.NewGuid();
@@ -120,11 +125,12 @@ public class JournalEntryTests(ITestOutputHelper testOutputHelper)
                 Amount = 2,
                 Description = null,
                 SubLedgerAccountId = subLedgerAccountId,
-                JournalVoucherId = journalVoucherId
+                JournalVoucherId = journalVoucherId,
+                Attachments = []
             }
         };
 
-        var handle = new CreateJournalEntryCommandHandler(unitOfWork);
+        var handle = new CreateJournalEntryCommandHandler(unitOfWork, fileService);
 
         // Act
         var result = await handle.Handle(createJournalEntryCommand, CancellationToken.None);
@@ -140,6 +146,7 @@ public class JournalEntryTests(ITestOutputHelper testOutputHelper)
     {
         // Arrange
         var unitOfWork = Substitute.For<IUnitOfWork>();
+        var fileService = Substitute.For<IFileService>();
         var faker = new Faker();
         var journalVoucherId = Guid.NewGuid();
         var subLedgerAccountId = Guid.NewGuid();
@@ -162,7 +169,7 @@ public class JournalEntryTests(ITestOutputHelper testOutputHelper)
 
         var createJournalEntryCommand = new List<CreateJournalEntryCommand>();
 
-        var handle = new CreateJournalEntryCommandHandler(unitOfWork);
+        var handle = new CreateJournalEntryCommandHandler(unitOfWork, fileService);
 
         // Act
         var result = await handle.Handle(createJournalEntryCommand, CancellationToken.None);
@@ -178,6 +185,7 @@ public class JournalEntryTests(ITestOutputHelper testOutputHelper)
     {
         // Arrange
         var unitOfWork = Substitute.For<IUnitOfWork>();
+        var fileService = Substitute.For<IFileService>();
         var faker = new Faker();
         var journalVoucherId = Guid.NewGuid();
         var subLedgerAccountId = Guid.NewGuid();
@@ -215,7 +223,8 @@ public class JournalEntryTests(ITestOutputHelper testOutputHelper)
                 Amount = 2,
                 Description = null,
                 SubLedgerAccountId = subLedgerAccountId,
-                JournalVoucherId = journalVoucherId
+                JournalVoucherId = journalVoucherId,
+                Attachments = []
             },
             new()
             {
@@ -224,11 +233,12 @@ public class JournalEntryTests(ITestOutputHelper testOutputHelper)
                 Description = null,
                 SubLedgerAccountId = subLedgerAccountId2,
                 DetailedAccountId = detailedAccountId,
-                JournalVoucherId = Guid.NewGuid()
+                JournalVoucherId = Guid.NewGuid(),
+                Attachments = []
             }
         };
 
-        var handle = new CreateJournalEntryCommandHandler(unitOfWork);
+        var handle = new CreateJournalEntryCommandHandler(unitOfWork, fileService);
 
         // Act
         var result = await handle.Handle(createJournalEntryCommand, CancellationToken.None);
@@ -244,6 +254,7 @@ public class JournalEntryTests(ITestOutputHelper testOutputHelper)
     {
         // Arrange
         var unitOfWork = Substitute.For<IUnitOfWork>();
+        var fileService = Substitute.For<IFileService>();
         var faker = new Faker();
         var journalVoucherId = Guid.NewGuid();
         var subLedgerAccountId = Guid.NewGuid();
@@ -281,7 +292,8 @@ public class JournalEntryTests(ITestOutputHelper testOutputHelper)
                 Amount = 2,
                 Description = null,
                 SubLedgerAccountId = subLedgerAccountId,
-                JournalVoucherId = journalVoucherId
+                JournalVoucherId = journalVoucherId,
+                Attachments = []
             },
             new()
             {
@@ -290,11 +302,12 @@ public class JournalEntryTests(ITestOutputHelper testOutputHelper)
                 Description = null,
                 SubLedgerAccountId = subLedgerAccountId2,
                 DetailedAccountId = detailedAccountId,
-                JournalVoucherId = journalVoucherId
+                JournalVoucherId = journalVoucherId,
+                Attachments = []
             }
         };
 
-        var handle = new CreateJournalEntryCommandHandler(unitOfWork);
+        var handle = new CreateJournalEntryCommandHandler(unitOfWork, fileService);
 
         // Act
         var result = await handle.Handle(createJournalEntryCommand, CancellationToken.None);
@@ -310,6 +323,7 @@ public class JournalEntryTests(ITestOutputHelper testOutputHelper)
     {
         // Arrange
         var unitOfWork = Substitute.For<IUnitOfWork>();
+        var fileService = Substitute.For<IFileService>();
         var faker = new Faker();
         var journalVoucherId = Guid.NewGuid();
         var subLedgerAccountId = Guid.NewGuid();
@@ -347,7 +361,8 @@ public class JournalEntryTests(ITestOutputHelper testOutputHelper)
                 Amount = 0,
                 Description = null,
                 SubLedgerAccountId = subLedgerAccountId,
-                JournalVoucherId = journalVoucherId
+                JournalVoucherId = journalVoucherId,
+                Attachments = []
             },
             new()
             {
@@ -356,11 +371,12 @@ public class JournalEntryTests(ITestOutputHelper testOutputHelper)
                 Description = null,
                 SubLedgerAccountId = subLedgerAccountId2,
                 DetailedAccountId = detailedAccountId,
-                JournalVoucherId = journalVoucherId
+                JournalVoucherId = journalVoucherId,
+                Attachments = []
             }
         };
 
-        var handle = new CreateJournalEntryCommandHandler(unitOfWork);
+        var handle = new CreateJournalEntryCommandHandler(unitOfWork, fileService);
 
         // Act
         var result = await handle.Handle(createJournalEntryCommand, CancellationToken.None);
@@ -375,6 +391,7 @@ public class JournalEntryTests(ITestOutputHelper testOutputHelper)
     {
         // Arrange
         var unitOfWork = Substitute.For<IUnitOfWork>();
+        var fileService = Substitute.For<IFileService>();
         var faker = new Faker();
         var journalVoucherId = Guid.NewGuid();
         var subLedgerAccountId = Guid.NewGuid();
@@ -402,7 +419,8 @@ public class JournalEntryTests(ITestOutputHelper testOutputHelper)
                 Amount = 2,
                 Description = null,
                 SubLedgerAccountId = subLedgerAccountId,
-                JournalVoucherId = journalVoucherId
+                JournalVoucherId = journalVoucherId,
+                Attachments = []
             },
             new()
             {
@@ -411,11 +429,12 @@ public class JournalEntryTests(ITestOutputHelper testOutputHelper)
                 Description = null,
                 SubLedgerAccountId = subLedgerAccountId2,
                 DetailedAccountId = detailedAccountId,
-                JournalVoucherId = journalVoucherId
+                JournalVoucherId = journalVoucherId,
+                Attachments = []
             }
         };
 
-        var handle = new CreateJournalEntryCommandHandler(unitOfWork);
+        var handle = new CreateJournalEntryCommandHandler(unitOfWork, fileService);
 
         // Act
         var result = await handle.Handle(createJournalEntryCommand, CancellationToken.None);
@@ -433,6 +452,7 @@ public class JournalEntryTests(ITestOutputHelper testOutputHelper)
     {
         // Arrange
         var unitOfWork = Substitute.For<IUnitOfWork>();
+        var fileService = Substitute.For<IFileService>();
         var faker = new Faker();
         var journalVoucherId = Guid.NewGuid();
         var subLedgerAccountId = Guid.NewGuid();
@@ -470,7 +490,8 @@ public class JournalEntryTests(ITestOutputHelper testOutputHelper)
                 Amount = 2,
                 Description = null,
                 SubLedgerAccountId = subLedgerAccountId,
-                JournalVoucherId = journalVoucherId
+                JournalVoucherId = journalVoucherId,
+                Attachments = []
             },
             new()
             {
@@ -479,11 +500,12 @@ public class JournalEntryTests(ITestOutputHelper testOutputHelper)
                 Description = null,
                 SubLedgerAccountId = subLedgerAccountId2,
                 DetailedAccountId = detailedAccountId,
-                JournalVoucherId = journalVoucherId
+                JournalVoucherId = journalVoucherId,
+                Attachments = []
             }
         };
 
-        var handle = new CreateJournalEntryCommandHandler(unitOfWork);
+        var handle = new CreateJournalEntryCommandHandler(unitOfWork, fileService);
 
         // Act
         var result = await handle.Handle(createJournalEntryCommand, CancellationToken.None);
@@ -500,6 +522,7 @@ public class JournalEntryTests(ITestOutputHelper testOutputHelper)
     {
         // Arrange
         var unitOfWork = Substitute.For<IUnitOfWork>();
+        var fileService = Substitute.For<IFileService>();
         var faker = new Faker();
         var journalVoucherId = Guid.NewGuid();
         var subLedgerAccountId = Guid.NewGuid();
@@ -537,7 +560,8 @@ public class JournalEntryTests(ITestOutputHelper testOutputHelper)
                 Amount = 2,
                 Description = null,
                 SubLedgerAccountId = subLedgerAccountId,
-                JournalVoucherId = journalVoucherId
+                JournalVoucherId = journalVoucherId,
+                Attachments = []
             },
             new()
             {
@@ -546,11 +570,12 @@ public class JournalEntryTests(ITestOutputHelper testOutputHelper)
                 Description = null,
                 SubLedgerAccountId = subLedgerAccountId2,
                 DetailedAccountId = detailedAccountId,
-                JournalVoucherId = journalVoucherId
+                JournalVoucherId = journalVoucherId,
+                Attachments = []
             }
         };
 
-        var handle = new CreateJournalEntryCommandHandler(unitOfWork);
+        var handle = new CreateJournalEntryCommandHandler(unitOfWork, fileService);
 
         // Act
         var result = await handle.Handle(createJournalEntryCommand, CancellationToken.None);
@@ -567,6 +592,7 @@ public class JournalEntryTests(ITestOutputHelper testOutputHelper)
     {
         // Arrange
         var unitOfWork = Substitute.For<IUnitOfWork>();
+        var fileService = Substitute.For<IFileService>();
         var faker = new Faker();
         var journalVoucherId = Guid.NewGuid();
         var subLedgerAccountId = Guid.NewGuid();
@@ -604,7 +630,8 @@ public class JournalEntryTests(ITestOutputHelper testOutputHelper)
                 Amount = 2,
                 Description = null,
                 SubLedgerAccountId = subLedgerAccountId,
-                JournalVoucherId = journalVoucherId
+                JournalVoucherId = journalVoucherId,
+                Attachments = []
             },
             new()
             {
@@ -613,11 +640,12 @@ public class JournalEntryTests(ITestOutputHelper testOutputHelper)
                 Description = null,
                 SubLedgerAccountId = subLedgerAccountId2,
                 DetailedAccountId = detailedAccountId,
-                JournalVoucherId = journalVoucherId
+                JournalVoucherId = journalVoucherId,
+                Attachments = []
             }
         };
 
-        var handle = new CreateJournalEntryCommandHandler(unitOfWork);
+        var handle = new CreateJournalEntryCommandHandler(unitOfWork, fileService);
 
         // Act
         var result = await handle.Handle(createJournalEntryCommand, CancellationToken.None);
@@ -634,6 +662,7 @@ public class JournalEntryTests(ITestOutputHelper testOutputHelper)
     {
         // Arrange
         var unitOfWork = Substitute.For<IUnitOfWork>();
+        var fileService = Substitute.For<IFileService>();
         var faker = new Faker();
         var journalVoucherId = Guid.NewGuid();
         var subLedgerAccountId = Guid.NewGuid();
@@ -671,7 +700,8 @@ public class JournalEntryTests(ITestOutputHelper testOutputHelper)
                 Amount = 2,
                 Description = null,
                 SubLedgerAccountId = subLedgerAccountId,
-                JournalVoucherId = journalVoucherId
+                JournalVoucherId = journalVoucherId,
+                Attachments = []
             },
             new()
             {
@@ -680,11 +710,12 @@ public class JournalEntryTests(ITestOutputHelper testOutputHelper)
                 Description = null,
                 SubLedgerAccountId = subLedgerAccountId2,
                 DetailedAccountId = detailedAccountId,
-                JournalVoucherId = journalVoucherId
+                JournalVoucherId = journalVoucherId,
+                Attachments = []
             }
         };
 
-        var handle = new CreateJournalEntryCommandHandler(unitOfWork);
+        var handle = new CreateJournalEntryCommandHandler(unitOfWork, fileService);
 
         // Act
         var result = await handle.Handle(createJournalEntryCommand, CancellationToken.None);
@@ -701,6 +732,7 @@ public class JournalEntryTests(ITestOutputHelper testOutputHelper)
     {
         // Arrange
         var unitOfWork = Substitute.For<IUnitOfWork>();
+        var fileService = Substitute.For<IFileService>();
         var faker = new Faker();
         var journalVoucherId = Guid.NewGuid();
         var subLedgerAccountId = Guid.NewGuid();
@@ -738,7 +770,8 @@ public class JournalEntryTests(ITestOutputHelper testOutputHelper)
                 Amount = 2,
                 Description = null,
                 SubLedgerAccountId = subLedgerAccountId,
-                JournalVoucherId = journalVoucherId
+                JournalVoucherId = journalVoucherId,
+                Attachments = []
             },
             new()
             {
@@ -747,11 +780,12 @@ public class JournalEntryTests(ITestOutputHelper testOutputHelper)
                 Description = null,
                 SubLedgerAccountId = subLedgerAccountId2,
                 DetailedAccountId = detailedAccountId,
-                JournalVoucherId = journalVoucherId
+                JournalVoucherId = journalVoucherId,
+                Attachments = []
             }
         };
 
-        var handle = new CreateJournalEntryCommandHandler(unitOfWork);
+        var handle = new CreateJournalEntryCommandHandler(unitOfWork, fileService);
 
         // Act
         var result = await handle.Handle(createJournalEntryCommand, CancellationToken.None);
@@ -768,6 +802,7 @@ public class JournalEntryTests(ITestOutputHelper testOutputHelper)
     {
         // Arrange
         var unitOfWork = Substitute.For<IUnitOfWork>();
+        var fileService = Substitute.For<IFileService>();
         var faker = new Faker();
         var journalVoucherId = Guid.NewGuid();
         var subLedgerAccountId = Guid.NewGuid();
@@ -805,7 +840,8 @@ public class JournalEntryTests(ITestOutputHelper testOutputHelper)
                 Amount = 2,
                 Description = null,
                 SubLedgerAccountId = subLedgerAccountId,
-                JournalVoucherId = journalVoucherId
+                JournalVoucherId = journalVoucherId,
+                Attachments = []
             },
             new()
             {
@@ -814,11 +850,12 @@ public class JournalEntryTests(ITestOutputHelper testOutputHelper)
                 Description = null,
                 SubLedgerAccountId = subLedgerAccountId2,
                 DetailedAccountId = detailedAccountId,
-                JournalVoucherId = journalVoucherId
+                JournalVoucherId = journalVoucherId,
+                Attachments = []
             }
         };
 
-        var handle = new CreateJournalEntryCommandHandler(unitOfWork);
+        var handle = new CreateJournalEntryCommandHandler(unitOfWork, fileService);
 
         // Act
         var result = await handle.Handle(createJournalEntryCommand, CancellationToken.None);
@@ -835,6 +872,7 @@ public class JournalEntryTests(ITestOutputHelper testOutputHelper)
     {
         // Arrange
         var unitOfWork = Substitute.For<IUnitOfWork>();
+        var fileService = Substitute.For<IFileService>();
         var faker = new Faker();
         var journalVoucherId = Guid.NewGuid();
         var subLedgerAccountId = Guid.NewGuid();
@@ -872,7 +910,8 @@ public class JournalEntryTests(ITestOutputHelper testOutputHelper)
                 Amount = 2,
                 Description = null,
                 SubLedgerAccountId = subLedgerAccountId,
-                JournalVoucherId = journalVoucherId
+                JournalVoucherId = journalVoucherId,
+                Attachments = []
             },
             new()
             {
@@ -881,11 +920,12 @@ public class JournalEntryTests(ITestOutputHelper testOutputHelper)
                 Description = null,
                 SubLedgerAccountId = subLedgerAccountId2,
                 DetailedAccountId = detailedAccountId,
-                JournalVoucherId = journalVoucherId
+                JournalVoucherId = journalVoucherId,
+                Attachments = []
             }
         };
 
-        var handle = new CreateJournalEntryCommandHandler(unitOfWork);
+        var handle = new CreateJournalEntryCommandHandler(unitOfWork, fileService);
 
         // Act
         var result = await handle.Handle(createJournalEntryCommand, CancellationToken.None);
@@ -902,6 +942,7 @@ public class JournalEntryTests(ITestOutputHelper testOutputHelper)
     {
         // Arrange
         var unitOfWork = Substitute.For<IUnitOfWork>();
+        var fileService = Substitute.For<IFileService>();
         var faker = new Faker();
         var journalVoucherId = Guid.NewGuid();
         var subLedgerAccountId = Guid.NewGuid();
@@ -938,7 +979,8 @@ public class JournalEntryTests(ITestOutputHelper testOutputHelper)
                 Amount = 2,
                 Description = null,
                 SubLedgerAccountId = subLedgerAccountId,
-                JournalVoucherId = journalVoucherId
+                JournalVoucherId = journalVoucherId,
+                Attachments = []
             },
             new()
             {
@@ -947,11 +989,12 @@ public class JournalEntryTests(ITestOutputHelper testOutputHelper)
                 Description = null,
                 SubLedgerAccountId = subLedgerAccountId2,
                 DetailedAccountId = detailedAccountId,
-                JournalVoucherId = journalVoucherId
+                JournalVoucherId = journalVoucherId,
+                Attachments = []
             }
         };
 
-        var handle = new CreateJournalEntryCommandHandler(unitOfWork);
+        var handle = new CreateJournalEntryCommandHandler(unitOfWork, fileService);
 
         // Act
         var result = await handle.Handle(createJournalEntryCommand, CancellationToken.None);
@@ -971,6 +1014,7 @@ public class JournalEntryTests(ITestOutputHelper testOutputHelper)
     {
         // Arrange
         var unitOfWork = Substitute.For<IUnitOfWork>();
+        var fileService = Substitute.For<IFileService>();
         var faker = new Faker();
         var journalVoucherId = Guid.NewGuid();
         var subLedgerAccountId = Guid.NewGuid();
@@ -1002,7 +1046,8 @@ public class JournalEntryTests(ITestOutputHelper testOutputHelper)
                 Amount = 2,
                 Description = null,
                 SubLedgerAccountId = subLedgerAccountId,
-                JournalVoucherId = journalVoucherId
+                JournalVoucherId = journalVoucherId,
+                Attachments = []
             },
             new()
             {
@@ -1010,11 +1055,12 @@ public class JournalEntryTests(ITestOutputHelper testOutputHelper)
                 Amount = 2,
                 Description = null,
                 SubLedgerAccountId = subLedgerAccountId2,
-                JournalVoucherId = journalVoucherId
+                JournalVoucherId = journalVoucherId,
+                Attachments = []
             }
         };
 
-        var handle = new CreateJournalEntryCommandHandler(unitOfWork);
+        var handle = new CreateJournalEntryCommandHandler(unitOfWork, fileService);
 
         // Act
         var result = await handle.Handle(createJournalEntryCommand, CancellationToken.None);
@@ -1035,6 +1081,7 @@ public class JournalEntryTests(ITestOutputHelper testOutputHelper)
     {
         // Arrange
         var unitOfWork = Substitute.For<IUnitOfWork>();
+        var fileService = Substitute.For<IFileService>();
         var faker = new Faker();
         var journalVoucherId = Guid.NewGuid();
         var subLedgerAccountId = Guid.NewGuid();
@@ -1066,7 +1113,8 @@ public class JournalEntryTests(ITestOutputHelper testOutputHelper)
                 Amount = 0,
                 Description = null,
                 SubLedgerAccountId = subLedgerAccountId,
-                JournalVoucherId = journalVoucherId
+                JournalVoucherId = journalVoucherId,
+                Attachments = []
             },
             new()
             {
@@ -1074,11 +1122,12 @@ public class JournalEntryTests(ITestOutputHelper testOutputHelper)
                 Amount = 2,
                 Description = null,
                 SubLedgerAccountId = subLedgerAccountId2,
-                JournalVoucherId = journalVoucherId
+                JournalVoucherId = journalVoucherId,
+                Attachments = []
             }
         };
 
-        var handle = new CreateJournalEntryCommandHandler(unitOfWork);
+        var handle = new CreateJournalEntryCommandHandler(unitOfWork, fileService);
 
         // Act
         var result = await handle.Handle(createJournalEntryCommand, CancellationToken.None);
@@ -1093,6 +1142,7 @@ public class JournalEntryTests(ITestOutputHelper testOutputHelper)
     {
         // Arrange
         var unitOfWork = Substitute.For<IUnitOfWork>();
+        var fileService = Substitute.For<IFileService>();
         var faker = new Faker();
         var journalVoucherId = Guid.NewGuid();
         var subLedgerAccountId = Guid.NewGuid();
@@ -1124,7 +1174,8 @@ public class JournalEntryTests(ITestOutputHelper testOutputHelper)
                 Amount = 2,
                 Description = null,
                 SubLedgerAccountId = Guid.Empty,
-                JournalVoucherId = journalVoucherId
+                JournalVoucherId = journalVoucherId,
+                Attachments = []
             },
             new()
             {
@@ -1132,11 +1183,12 @@ public class JournalEntryTests(ITestOutputHelper testOutputHelper)
                 Amount = 2,
                 Description = null,
                 SubLedgerAccountId = subLedgerAccountId2,
-                JournalVoucherId = journalVoucherId
+                JournalVoucherId = journalVoucherId,
+                Attachments = []
             }
         };
 
-        var handle = new CreateJournalEntryCommandHandler(unitOfWork);
+        var handle = new CreateJournalEntryCommandHandler(unitOfWork, fileService);
 
         // Act
         var result = await handle.Handle(createJournalEntryCommand, CancellationToken.None);
@@ -1155,6 +1207,7 @@ public class JournalEntryTests(ITestOutputHelper testOutputHelper)
     {
         // Arrange
         var unitOfWork = Substitute.For<IUnitOfWork>();
+        var fileService = Substitute.For<IFileService>();
 
         var createJournalEntryCommand = new List<CreateJournalEntryCommand>
         {
@@ -1164,7 +1217,8 @@ public class JournalEntryTests(ITestOutputHelper testOutputHelper)
                 Amount = 2,
                 Description = null,
                 SubLedgerAccountId = Guid.Empty,
-                JournalVoucherId = Guid.NewGuid()
+                JournalVoucherId = Guid.NewGuid(),
+                Attachments = []
             },
             new()
             {
@@ -1172,11 +1226,12 @@ public class JournalEntryTests(ITestOutputHelper testOutputHelper)
                 Amount = 2,
                 Description = null,
                 SubLedgerAccountId = Guid.NewGuid(),
-                JournalVoucherId = Guid.NewGuid()
+                JournalVoucherId = Guid.NewGuid(),
+                Attachments = []
             }
         };
 
-        var handle = new CreateJournalEntryCommandHandler(unitOfWork);
+        var handle = new CreateJournalEntryCommandHandler(unitOfWork, fileService);
 
         // Act
         await handle.Handle(createJournalEntryCommand, CancellationToken.None);
@@ -1191,6 +1246,7 @@ public class JournalEntryTests(ITestOutputHelper testOutputHelper)
     {
         // Arrange
         var unitOfWork = Substitute.For<IUnitOfWork>();
+        var fileService = Substitute.For<IFileService>();
         var faker = new Faker();
         var journalEntryId = Guid.NewGuid();
         var journalVoucherId = Guid.NewGuid();
@@ -1233,7 +1289,7 @@ public class JournalEntryTests(ITestOutputHelper testOutputHelper)
             Amount = new Patch<decimal>(5)
         };
 
-        var handler = new UpdateJournalEntryCommandHandler(unitOfWork);
+        var handler = new UpdateJournalEntryCommandHandler(unitOfWork, fileService);
 
         // Act
         var result = await handler.Handle(updateJournalEntryCommand, CancellationToken.None);
@@ -1251,6 +1307,7 @@ public class JournalEntryTests(ITestOutputHelper testOutputHelper)
     {
         // Arrange
         var unitOfWork = Substitute.For<IUnitOfWork>();
+        var fileService = Substitute.For<IFileService>();
         var faker = new Faker();
         var journalEntryId = Guid.NewGuid();
         var journalVoucherId = Guid.NewGuid();
@@ -1292,7 +1349,7 @@ public class JournalEntryTests(ITestOutputHelper testOutputHelper)
             JournalEntryId = Guid.Empty,
         };
 
-        var handler = new UpdateJournalEntryCommandHandler(unitOfWork);
+        var handler = new UpdateJournalEntryCommandHandler(unitOfWork, fileService);
 
         // Act
         var result = await handler.Handle(updateJournalEntryCommand, CancellationToken.None);
@@ -1307,6 +1364,7 @@ public class JournalEntryTests(ITestOutputHelper testOutputHelper)
     {
         // Arrange
         var unitOfWork = Substitute.For<IUnitOfWork>();
+        var fileService = Substitute.For<IFileService>();
         var faker = new Faker();
         var journalEntryId = Guid.NewGuid();
         var journalVoucherId = Guid.NewGuid();
@@ -1340,7 +1398,7 @@ public class JournalEntryTests(ITestOutputHelper testOutputHelper)
             Amount = new Patch<decimal>(5)
         };
 
-        var handler = new UpdateJournalEntryCommandHandler(unitOfWork);
+        var handler = new UpdateJournalEntryCommandHandler(unitOfWork, fileService);
 
         // Act
         var result = await handler.Handle(updateJournalEntryCommand, CancellationToken.None);
@@ -1356,6 +1414,7 @@ public class JournalEntryTests(ITestOutputHelper testOutputHelper)
     {
         // Arrange
         var unitOfWork = Substitute.For<IUnitOfWork>();
+        var fileService = Substitute.For<IFileService>();
         var journalEntryId = Guid.NewGuid();
         var journalVoucherId = Guid.NewGuid();
 
@@ -1380,7 +1439,7 @@ public class JournalEntryTests(ITestOutputHelper testOutputHelper)
             Amount = new Patch<decimal>(5)
         };
 
-        var handler = new UpdateJournalEntryCommandHandler(unitOfWork);
+        var handler = new UpdateJournalEntryCommandHandler(unitOfWork, fileService);
 
         // Act
         var result = await handler.Handle(updateJournalEntryCommand, CancellationToken.None);
@@ -1396,6 +1455,7 @@ public class JournalEntryTests(ITestOutputHelper testOutputHelper)
     {
         // Arrange
         var unitOfWork = Substitute.For<IUnitOfWork>();
+        var fileService = Substitute.For<IFileService>();
         var faker = new Faker();
         var journalEntryId = Guid.NewGuid();
         var journalVoucherId = Guid.NewGuid();
@@ -1438,7 +1498,7 @@ public class JournalEntryTests(ITestOutputHelper testOutputHelper)
             Amount = new Patch<decimal>(5)
         };
 
-        var handler = new UpdateJournalEntryCommandHandler(unitOfWork);
+        var handler = new UpdateJournalEntryCommandHandler(unitOfWork, fileService);
 
         // Act
         var result = await handler.Handle(updateJournalEntryCommand, CancellationToken.None);
@@ -1454,6 +1514,7 @@ public class JournalEntryTests(ITestOutputHelper testOutputHelper)
     {
         // Arrange
         var unitOfWork = Substitute.For<IUnitOfWork>();
+        var fileService = Substitute.For<IFileService>();
         var faker = new Faker();
         var journalEntryId = Guid.NewGuid();
         var journalVoucherId = Guid.NewGuid();
@@ -1496,7 +1557,7 @@ public class JournalEntryTests(ITestOutputHelper testOutputHelper)
             Amount = new Patch<decimal>(5)
         };
 
-        var handler = new UpdateJournalEntryCommandHandler(unitOfWork);
+        var handler = new UpdateJournalEntryCommandHandler(unitOfWork, fileService);
 
         // Act
         var result = await handler.Handle(updateJournalEntryCommand, CancellationToken.None);
@@ -1512,6 +1573,7 @@ public class JournalEntryTests(ITestOutputHelper testOutputHelper)
     {
         // Arrange
         var unitOfWork = Substitute.For<IUnitOfWork>();
+        var fileService = Substitute.For<IFileService>();
         var faker = new Faker();
         var journalEntryId = Guid.NewGuid();
         var journalVoucherId = Guid.NewGuid();
@@ -1554,7 +1616,7 @@ public class JournalEntryTests(ITestOutputHelper testOutputHelper)
             Amount = new Patch<decimal>(0)
         };
 
-        var handler = new UpdateJournalEntryCommandHandler(unitOfWork);
+        var handler = new UpdateJournalEntryCommandHandler(unitOfWork, fileService);
 
         // Act
         var result = await handler.Handle(updateJournalEntryCommand, CancellationToken.None);
@@ -1571,6 +1633,7 @@ public class JournalEntryTests(ITestOutputHelper testOutputHelper)
     {
         // Arrange
         var unitOfWork = Substitute.For<IUnitOfWork>();
+        var fileService = Substitute.For<IFileService>();
         var faker = new Faker();
         var journalEntryId = Guid.NewGuid();
         var journalVoucherId = Guid.NewGuid();
@@ -1617,7 +1680,7 @@ public class JournalEntryTests(ITestOutputHelper testOutputHelper)
             SubLedgerAccountId = new Patch<Guid>(subLedgerAccountId)
         };
 
-        var handler = new UpdateJournalEntryCommandHandler(unitOfWork);
+        var handler = new UpdateJournalEntryCommandHandler(unitOfWork, fileService);
 
         // Act
         var result = await handler.Handle(updateJournalEntryCommand, CancellationToken.None);
@@ -1633,6 +1696,7 @@ public class JournalEntryTests(ITestOutputHelper testOutputHelper)
     {
         // Arrange
         var unitOfWork = Substitute.For<IUnitOfWork>();
+        var fileService = Substitute.For<IFileService>();
         var faker = new Faker();
         var journalEntryId = Guid.NewGuid();
         var journalVoucherId = Guid.NewGuid();
@@ -1688,7 +1752,7 @@ public class JournalEntryTests(ITestOutputHelper testOutputHelper)
             SubLedgerAccountId = new Patch<Guid>(subLedgerAccountId)
         };
 
-        var handler = new UpdateJournalEntryCommandHandler(unitOfWork);
+        var handler = new UpdateJournalEntryCommandHandler(unitOfWork, fileService);
 
         // Act
         var result = await handler.Handle(updateJournalEntryCommand, CancellationToken.None);
@@ -1704,6 +1768,7 @@ public class JournalEntryTests(ITestOutputHelper testOutputHelper)
     {
         // Arrange
         var unitOfWork = Substitute.For<IUnitOfWork>();
+        var fileService = Substitute.For<IFileService>();
         var faker = new Faker();
         var journalEntryId = Guid.NewGuid();
         var journalVoucherId = Guid.NewGuid();
@@ -1759,7 +1824,7 @@ public class JournalEntryTests(ITestOutputHelper testOutputHelper)
             SubLedgerAccountId = new Patch<Guid>(subLedgerAccountId)
         };
 
-        var handler = new UpdateJournalEntryCommandHandler(unitOfWork);
+        var handler = new UpdateJournalEntryCommandHandler(unitOfWork, fileService);
 
         // Act
         var result = await handler.Handle(updateJournalEntryCommand, CancellationToken.None);
@@ -1775,6 +1840,7 @@ public class JournalEntryTests(ITestOutputHelper testOutputHelper)
     {
         // Arrange
         var unitOfWork = Substitute.For<IUnitOfWork>();
+        var fileService = Substitute.For<IFileService>();
         var faker = new Faker();
         var journalEntryId = Guid.NewGuid();
         var journalVoucherId = Guid.NewGuid();
@@ -1821,7 +1887,7 @@ public class JournalEntryTests(ITestOutputHelper testOutputHelper)
             DetailedAccountId = new Patch<Guid>(detailedAccountId)
         };
 
-        var handler = new UpdateJournalEntryCommandHandler(unitOfWork);
+        var handler = new UpdateJournalEntryCommandHandler(unitOfWork, fileService);
 
         // Act
         var result = await handler.Handle(updateJournalEntryCommand, CancellationToken.None);
@@ -1837,6 +1903,7 @@ public class JournalEntryTests(ITestOutputHelper testOutputHelper)
     {
         // Arrange
         var unitOfWork = Substitute.For<IUnitOfWork>();
+        var fileService = Substitute.For<IFileService>();
         var faker = new Faker();
         var journalEntryId = Guid.NewGuid();
         var journalVoucherId = Guid.NewGuid();
@@ -1892,7 +1959,7 @@ public class JournalEntryTests(ITestOutputHelper testOutputHelper)
             DetailedAccountId = new Patch<Guid>(detailedAccountId)
         };
 
-        var handler = new UpdateJournalEntryCommandHandler(unitOfWork);
+        var handler = new UpdateJournalEntryCommandHandler(unitOfWork, fileService);
 
         // Act
         var result = await handler.Handle(updateJournalEntryCommand, CancellationToken.None);
@@ -1908,6 +1975,7 @@ public class JournalEntryTests(ITestOutputHelper testOutputHelper)
     {
         // Arrange
         var unitOfWork = Substitute.For<IUnitOfWork>();
+        var fileService = Substitute.For<IFileService>();
         var faker = new Faker();
         var journalEntryId = Guid.NewGuid();
         var journalVoucherId = Guid.NewGuid();
@@ -1963,7 +2031,7 @@ public class JournalEntryTests(ITestOutputHelper testOutputHelper)
             DetailedAccountId = new Patch<Guid>(detailedAccountId)
         };
 
-        var handler = new UpdateJournalEntryCommandHandler(unitOfWork);
+        var handler = new UpdateJournalEntryCommandHandler(unitOfWork, fileService);
 
         // Act
         var result = await handler.Handle(updateJournalEntryCommand, CancellationToken.None);
@@ -1979,6 +2047,7 @@ public class JournalEntryTests(ITestOutputHelper testOutputHelper)
     {
         // Arrange
         var unitOfWork = Substitute.For<IUnitOfWork>();
+        var fileService = Substitute.For<IFileService>();
         var faker = new Faker();
         var journalEntryId = Guid.NewGuid();
         var journalVoucherId = Guid.NewGuid();
@@ -2021,7 +2090,7 @@ public class JournalEntryTests(ITestOutputHelper testOutputHelper)
             Amount = new Patch<decimal>(5)
         };
 
-        var handler = new UpdateJournalEntryCommandHandler(unitOfWork);
+        var handler = new UpdateJournalEntryCommandHandler(unitOfWork, fileService);
 
         // Act
         var result = await handler.Handle(updateJournalEntryCommand, CancellationToken.None);
@@ -2039,6 +2108,7 @@ public class JournalEntryTests(ITestOutputHelper testOutputHelper)
     {
         // Arrange
         var unitOfWork = Substitute.For<IUnitOfWork>();
+        var fileService = Substitute.For<IFileService>();
         var faker = new Faker();
         var journalEntryId = Guid.NewGuid();
         var journalVoucherId = Guid.NewGuid();
@@ -2081,7 +2151,7 @@ public class JournalEntryTests(ITestOutputHelper testOutputHelper)
             Description = new Patch<string>(faker.Finance.AccountName())
         };
 
-        var handler = new UpdateJournalEntryCommandHandler(unitOfWork);
+        var handler = new UpdateJournalEntryCommandHandler(unitOfWork, fileService);
 
         // Act
         var result = await handler.Handle(updateJournalEntryCommand, CancellationToken.None);
@@ -2099,6 +2169,7 @@ public class JournalEntryTests(ITestOutputHelper testOutputHelper)
     {
         // Arrange
         var unitOfWork = Substitute.For<IUnitOfWork>();
+        var fileService = Substitute.For<IFileService>();
         var faker = new Faker();
         var journalEntryId = Guid.NewGuid();
         var journalVoucherId = Guid.NewGuid();
@@ -2153,7 +2224,7 @@ public class JournalEntryTests(ITestOutputHelper testOutputHelper)
             SubLedgerAccountId = new Patch<Guid>(subLedgerAccountId)
         };
 
-        var handler = new UpdateJournalEntryCommandHandler(unitOfWork);
+        var handler = new UpdateJournalEntryCommandHandler(unitOfWork, fileService);
 
         // Act
         var result = await handler.Handle(updateJournalEntryCommand, CancellationToken.None);
@@ -2171,6 +2242,7 @@ public class JournalEntryTests(ITestOutputHelper testOutputHelper)
     {
         // Arrange
         var unitOfWork = Substitute.For<IUnitOfWork>();
+        var fileService = Substitute.For<IFileService>();
         var faker = new Faker();
         var journalEntryId = Guid.NewGuid();
         var journalVoucherId = Guid.NewGuid();
@@ -2225,7 +2297,7 @@ public class JournalEntryTests(ITestOutputHelper testOutputHelper)
             DetailedAccountId = new Patch<Guid>(detailedAccountId)
         };
 
-        var handler = new UpdateJournalEntryCommandHandler(unitOfWork);
+        var handler = new UpdateJournalEntryCommandHandler(unitOfWork, fileService);
 
         // Act
         var result = await handler.Handle(updateJournalEntryCommand, CancellationToken.None);
@@ -2243,6 +2315,7 @@ public class JournalEntryTests(ITestOutputHelper testOutputHelper)
     {
         // Arrange
         var unitOfWork = Substitute.For<IUnitOfWork>();
+        var fileService = Substitute.For<IFileService>();
         var faker = new Faker();
         var journalEntryId = Guid.NewGuid();
         var journalVoucherId = Guid.NewGuid();
@@ -2298,7 +2371,7 @@ public class JournalEntryTests(ITestOutputHelper testOutputHelper)
             Amount = new Patch<decimal>(5)
         };
 
-        var handler = new UpdateJournalEntryCommandHandler(unitOfWork);
+        var handler = new UpdateJournalEntryCommandHandler(unitOfWork, fileService);
 
         // Act
         var result = await handler.Handle(updateJournalEntryCommand, CancellationToken.None);
@@ -2317,6 +2390,7 @@ public class JournalEntryTests(ITestOutputHelper testOutputHelper)
     {
         // Arrange
         var unitOfWork = Substitute.For<IUnitOfWork>();
+        var fileService = Substitute.For<IFileService>();
         var faker = new Faker();
         var journalEntryId = Guid.NewGuid();
         var journalVoucherId = Guid.NewGuid();
@@ -2371,7 +2445,7 @@ public class JournalEntryTests(ITestOutputHelper testOutputHelper)
             DetailedAccountId = new Patch<Guid>(detailedAccountId)
         };
 
-        var handler = new UpdateJournalEntryCommandHandler(unitOfWork);
+        var handler = new UpdateJournalEntryCommandHandler(unitOfWork, fileService);
 
         // Act
         var result = await handler.Handle(updateJournalEntryCommand, CancellationToken.None);
@@ -2389,6 +2463,7 @@ public class JournalEntryTests(ITestOutputHelper testOutputHelper)
     {
         // Arrange
         var unitOfWork = Substitute.For<IUnitOfWork>();
+        var fileService = Substitute.For<IFileService>();
         var faker = new Faker();
         var journalEntryId = Guid.NewGuid();
         var journalVoucherId = Guid.NewGuid();
@@ -2430,7 +2505,7 @@ public class JournalEntryTests(ITestOutputHelper testOutputHelper)
             JournalEntryId = journalEntryId
         };
 
-        var handler = new UpdateJournalEntryCommandHandler(unitOfWork);
+        var handler = new UpdateJournalEntryCommandHandler(unitOfWork, fileService);
 
         // Act
         var result = await handler.Handle(updateJournalEntryCommand, CancellationToken.None);

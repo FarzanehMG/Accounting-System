@@ -1,5 +1,6 @@
 ﻿using Domain.Common;
 using Domain.Entities.Accounts;
+using Domain.Entities.Attachment;
 using Domain.Enums;
 
 namespace Domain.Entities.Journal;
@@ -19,4 +20,6 @@ public sealed class JournalEntryEntity : BaseEntity<Guid>
 
     public required Guid JournalVoucherId { get; set; }
     public JournalVoucherEntity? JournalVoucher { get; init; }
+
+    public ICollection<AttachmentEntity> Attachments { get; set; } = new List<AttachmentEntity>();
 }

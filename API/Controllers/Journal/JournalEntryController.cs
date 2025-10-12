@@ -22,7 +22,8 @@ public class JournalEntryController(JournalEntryService service) : BaseControlle
             SubLedgerAccountId = e.SubLedgerAccountId,
             JournalVoucherId = e.JournalVoucherId,
             DetailedAccountId = e.DetailedAccountId,
-            Description = e.Description
+            Description = e.Description,
+            Attachments = e.Attachments
         }).ToList();
 
         return OperationResult(await service.CreateAsync(commands, cancellationToken));

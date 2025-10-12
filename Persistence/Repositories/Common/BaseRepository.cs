@@ -16,4 +16,9 @@ internal abstract class BaseRepository<TEntity>(AccountingDbContext db) where TE
     {
         await _entities.AddAsync(entity, cancellationToken);
     }
+
+    protected virtual void Remove(TEntity entity)
+    {
+        _entities.Remove(entity);
+    }
 }
