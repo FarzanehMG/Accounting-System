@@ -48,7 +48,7 @@ public class GroupAccountController(GroupAccountService service) : BaseControlle
 
     [HttpGet("GroupAccounts")]
     [ProducesResponseType(typeof(ApiResult<List<GetGroupAccountsQueryResult>>), StatusCodes.Status200OK)]
-    public async Task<IActionResult> GetAll(FilterGroupAccountApiModel model, CancellationToken cancellationToken)
+    public async Task<IActionResult> GetAll([FromQuery]FilterGroupAccountApiModel model, CancellationToken cancellationToken)
     {
         var query = new GetGroupAccountsQuery
         {

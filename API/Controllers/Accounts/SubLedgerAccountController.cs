@@ -49,7 +49,7 @@ public class SubLedgerAccountController(SubLedgerAccountService service) : BaseC
 
     [HttpGet("SubLedgerAccounts")]
     [ProducesResponseType(typeof(ApiResult<List<GetSubLedgerAccountsQueryResult>>), StatusCodes.Status200OK)]
-    public async Task<IActionResult> GetAll(FilterSubLedgerAccountApiModel model, CancellationToken cancellationToken)
+    public async Task<IActionResult> GetAll([FromQuery] FilterSubLedgerAccountApiModel model, CancellationToken cancellationToken)
     {
         var query = new GetSubLedgerAccountsQuery
         {

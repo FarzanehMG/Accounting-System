@@ -18,6 +18,7 @@ public class Program
             .AddPersistenceDbContext(builder.Configuration);
 
         builder.Services.AddControllers();
+        builder.Services.AddOpenApiDocument();
         builder.Services.AddEndpointsApiExplorer();
         builder.Services.AddSwaggerGen();
 
@@ -27,7 +28,7 @@ public class Program
         if (app.Environment.IsDevelopment())
         {
             //app.UseDeveloperExceptionPage();
-            
+            app.UseOpenApi();
             app.UseSwagger();
             app.UseSwaggerUI();
             await app.ApplyMigrationsAsync();

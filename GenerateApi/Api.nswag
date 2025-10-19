@@ -1,0 +1,36 @@
+{
+    "runtime": "Net80",
+    "documentGenerator": {
+        "aspNetCoreToOpenApi": {
+            "project": "$(projectFile)",
+            "startupType": "API.Program, API",
+            "useDocumentProvider": false,
+            "documentName": "v1",
+            "aspNetCoreEnvironment": "Development",
+            "outputType": "Swagger2"
+        }
+    },
+    "codeGenerators": {
+      "openApiToCSharpClient": {
+        "className": "{controller}Client",
+        "namespace": "$(namespace)",
+        "generateClientClasses": true,
+        "generateDtoTypes": true,
+        "generateOptionalParameters": true,
+        "output": "Api.cs",
+        "useBaseUrl": false,
+        "generateBaseUrlProperty": true
+      },
+        "openApiToTypeScriptClient": {
+            "className": "{controller}Client",
+            "namespace": "$(namespace)",
+            "generateClientClasses": true,
+            "generateDtoTypes": true,
+            "generateOptionalParameters": true,
+            "output": "Api.ts",
+            "template": "Angular",
+            "httpClass": "HttpClient",
+            "promiseType": "Promise"
+        }
+    }
+}

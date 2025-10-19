@@ -49,7 +49,7 @@ public class GeneralLedgerAccountController(GeneralLedgerAccountService service)
 
     [HttpGet("GeneralLedgerAccounts")]
     [ProducesResponseType(typeof(ApiResult<List<GetGeneralLedgerAccountsQueryResult>>), StatusCodes.Status200OK)]
-    public async Task<IActionResult> GetAll(FilterGeneralLedgerAccountApiModel model, CancellationToken cancellationToken)
+    public async Task<IActionResult> GetAll([FromQuery] FilterGeneralLedgerAccountApiModel model, CancellationToken cancellationToken)
     {
         var query = new GetGeneralLedgerAccountsQuery
         {

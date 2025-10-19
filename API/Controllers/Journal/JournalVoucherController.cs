@@ -49,7 +49,7 @@ public class JournalVoucherController(JournalVoucherService service) : BaseContr
 
     [HttpGet("journalVouchers")]
     [ProducesResponseType(typeof(ApiResult<List<GetJournalVouchersQueryResult>>), StatusCodes.Status200OK)]
-    public async Task<IActionResult> GetAll(FilterJournalVoucherApiModel model, CancellationToken cancellationToken)
+    public async Task<IActionResult> GetAll([FromQuery] FilterJournalVoucherApiModel model, CancellationToken cancellationToken)
     {
         var query = new GetJournalVouchersQuery
         {

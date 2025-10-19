@@ -46,7 +46,7 @@ public class FinancialPeriodController(FinancialPeriodService service) : BaseCon
 
     [HttpGet("FinancialPeriods")]
     [ProducesResponseType(typeof(ApiResult<List<GetFinancialPeriodsQueryResult>>), StatusCodes.Status200OK)]
-    public async Task<IActionResult> GetAll(FilterFinancialPeriodApiModel model, CancellationToken cancellationToken)
+    public async Task<IActionResult> GetAll([FromQuery] FilterFinancialPeriodApiModel model, CancellationToken cancellationToken)
     {
         var query = new GetFinancialPeriodsQuery
         {

@@ -8,23 +8,24 @@ public class BaseController : ControllerBase
     protected IActionResult OperationResult<TModel>(OperationResult<TModel> result)
     {
         if (result.IsSuccess)
-            return result.Result is bool ? Ok() : Ok(result.Result);
+        {
+            // Always return JSON body
+            if (result.IsSuccess)
+                return Ok(result);
+        }
 
         if (result.IsNotFound)
         {
             AddErrors(result);
-
             var errors = new ValidationProblemDetails(ModelState);
-
             return NotFound(errors.Errors);
         }
 
         AddErrors(result);
-
         var badRequestErrors = new ValidationProblemDetails(ModelState);
-
         return BadRequest(badRequestErrors);
     }
+
 
     private void AddErrors<TModel>(OperationResult<TModel> result)
     {

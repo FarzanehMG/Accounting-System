@@ -49,7 +49,7 @@ public class DetailedAccountController(DetailedAccountService service) : BaseCon
 
     [HttpGet("DetailedAccounts")]
     [ProducesResponseType(typeof(ApiResult<List<GetDetailedAccountsQueryResult>>), StatusCodes.Status200OK)]
-    public async Task<IActionResult> GetAll(FilterDetailedAccountApiModel model, CancellationToken cancellationToken)
+    public async Task<IActionResult> GetAll([FromQuery] FilterDetailedAccountApiModel model, CancellationToken cancellationToken)
     {
         var query = new GetDetailedAccountsQuery
         {

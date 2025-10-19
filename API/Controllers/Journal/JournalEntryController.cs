@@ -50,7 +50,7 @@ public class JournalEntryController(JournalEntryService service) : BaseControlle
 
     [HttpGet("journalEntries")]
     [ProducesResponseType(typeof(ApiResult<List<GetJournalEntriesQueryResult>>), StatusCodes.Status200OK)]
-    public async Task<IActionResult> GetAll(FilterJournalEntriesApiModel model, CancellationToken cancellationToken)
+    public async Task<IActionResult> GetAll([FromQuery] FilterJournalEntriesApiModel model, CancellationToken cancellationToken)
     {
         var query = new GetJournalEntriesQuery
         {
