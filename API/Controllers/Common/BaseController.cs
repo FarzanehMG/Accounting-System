@@ -9,23 +9,43 @@ public class BaseController : ControllerBase
     {
         if (result.IsSuccess)
         {
-            // Always return JSON body
-            if (result.IsSuccess)
-                return Ok(result);
+            var apiResult = new ApiResult<TModel>(
+                IsSuccess: true,
+                Message: "Success",
+                StatusCode: ApiResultStatusCode.Ok,
+                Data: result.Result!
+            );
+
+            return Ok(apiResult);
         }
 
+        // For NotFound
         if (result.IsNotFound)
         {
-            AddErrors(result);
-            var errors = new ValidationProblemDetails(ModelState);
-            return NotFound(errors.Errors);
+            var message = result.ErrorMessages.FirstOrDefault().Value ?? "Not Found";
+
+            var apiResult = new ApiResult<TModel>(
+                IsSuccess: false,
+                Message: message,
+                StatusCode: ApiResultStatusCode.NotFound,
+                Data: default!
+            );
+
+            return NotFound(apiResult);
         }
 
-        AddErrors(result);
-        var badRequestErrors = new ValidationProblemDetails(ModelState);
-        return BadRequest(badRequestErrors);
-    }
+        // For validation or other errors
+        var errorMessage = result.ErrorMessages.FirstOrDefault().Value ?? "Validation failed";
 
+        var badRequestResult = new ApiResult<TModel>(
+            IsSuccess: false,
+            Message: errorMessage,
+            StatusCode: ApiResultStatusCode.BadRequest,
+            Data: default!
+        );
+
+        return BadRequest(badRequestResult);
+    }
 
     private void AddErrors<TModel>(OperationResult<TModel> result)
     {
