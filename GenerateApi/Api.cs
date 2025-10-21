@@ -286,21 +286,14 @@ namespace GenerateApi
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<ApiResultOfListOfGetJournalEntriesQueryResult> GetAllAsync(FilterJournalEntriesApiModel model, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        public virtual async System.Threading.Tasks.Task<ApiResultOfListOfGetJournalEntriesQueryResult> GetAllAsync(string journalEntryNumber = null, JournalEntryType? journalEntryType = null, decimal? amount = null, System.Guid? detailedAccountId = null, System.Guid? subLedgerAccountId = null, System.Guid? journalVoucherId = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
-            if (model == null)
-                throw new System.ArgumentNullException("model");
-
             var client_ = _httpClient;
             var disposeClient_ = false;
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
-                    var json_ = Newtonsoft.Json.JsonConvert.SerializeObject(model, JsonSerializerSettings);
-                    var content_ = new System.Net.Http.StringContent(json_);
-                    content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
-                    request_.Content = content_;
                     request_.Method = new System.Net.Http.HttpMethod("GET");
                     request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/json"));
 
@@ -308,6 +301,32 @@ namespace GenerateApi
                 
                     // Operation Path: "api/journal_entries/journalEntries"
                     urlBuilder_.Append("api/journal_entries/journalEntries");
+                    urlBuilder_.Append('?');
+                    if (journalEntryNumber != null)
+                    {
+                        urlBuilder_.Append(System.Uri.EscapeDataString("JournalEntryNumber")).Append('=').Append(System.Uri.EscapeDataString(ConvertToString(journalEntryNumber, System.Globalization.CultureInfo.InvariantCulture))).Append('&');
+                    }
+                    if (journalEntryType != null)
+                    {
+                        urlBuilder_.Append(System.Uri.EscapeDataString("JournalEntryType")).Append('=').Append(System.Uri.EscapeDataString(ConvertToString(journalEntryType, System.Globalization.CultureInfo.InvariantCulture))).Append('&');
+                    }
+                    if (amount != null)
+                    {
+                        urlBuilder_.Append(System.Uri.EscapeDataString("Amount")).Append('=').Append(System.Uri.EscapeDataString(ConvertToString(amount, System.Globalization.CultureInfo.InvariantCulture))).Append('&');
+                    }
+                    if (detailedAccountId != null)
+                    {
+                        urlBuilder_.Append(System.Uri.EscapeDataString("DetailedAccountId")).Append('=').Append(System.Uri.EscapeDataString(ConvertToString(detailedAccountId, System.Globalization.CultureInfo.InvariantCulture))).Append('&');
+                    }
+                    if (subLedgerAccountId != null)
+                    {
+                        urlBuilder_.Append(System.Uri.EscapeDataString("SubLedgerAccountId")).Append('=').Append(System.Uri.EscapeDataString(ConvertToString(subLedgerAccountId, System.Globalization.CultureInfo.InvariantCulture))).Append('&');
+                    }
+                    if (journalVoucherId != null)
+                    {
+                        urlBuilder_.Append(System.Uri.EscapeDataString("JournalVoucherId")).Append('=').Append(System.Uri.EscapeDataString(ConvertToString(journalVoucherId, System.Globalization.CultureInfo.InvariantCulture))).Append('&');
+                    }
+                    urlBuilder_.Length--;
 
                     PrepareRequest(client_, request_, urlBuilder_);
 
@@ -737,21 +756,14 @@ namespace GenerateApi
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<ApiResultOfListOfGetJournalVouchersQueryResult> GetAllAsync(FilterJournalVoucherApiModel model, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        public virtual async System.Threading.Tasks.Task<ApiResultOfListOfGetJournalVouchersQueryResult> GetAllAsync(string journalVoucherTitle = null, string journalVoucherNumber = null, string referenceNumber = null, System.DateTime? transactionTime = null, JournalVoucherState? journalVoucherState = null, System.Guid? createdByUserId = null, System.Guid? approvedByUserId = null, System.DateTime? approvedTime = null, System.Guid? financialPeriodId = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
-            if (model == null)
-                throw new System.ArgumentNullException("model");
-
             var client_ = _httpClient;
             var disposeClient_ = false;
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
-                    var json_ = Newtonsoft.Json.JsonConvert.SerializeObject(model, JsonSerializerSettings);
-                    var content_ = new System.Net.Http.StringContent(json_);
-                    content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
-                    request_.Content = content_;
                     request_.Method = new System.Net.Http.HttpMethod("GET");
                     request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/json"));
 
@@ -759,6 +771,44 @@ namespace GenerateApi
                 
                     // Operation Path: "api/journal_vouchers/journalVouchers"
                     urlBuilder_.Append("api/journal_vouchers/journalVouchers");
+                    urlBuilder_.Append('?');
+                    if (journalVoucherTitle != null)
+                    {
+                        urlBuilder_.Append(System.Uri.EscapeDataString("JournalVoucherTitle")).Append('=').Append(System.Uri.EscapeDataString(ConvertToString(journalVoucherTitle, System.Globalization.CultureInfo.InvariantCulture))).Append('&');
+                    }
+                    if (journalVoucherNumber != null)
+                    {
+                        urlBuilder_.Append(System.Uri.EscapeDataString("JournalVoucherNumber")).Append('=').Append(System.Uri.EscapeDataString(ConvertToString(journalVoucherNumber, System.Globalization.CultureInfo.InvariantCulture))).Append('&');
+                    }
+                    if (referenceNumber != null)
+                    {
+                        urlBuilder_.Append(System.Uri.EscapeDataString("ReferenceNumber")).Append('=').Append(System.Uri.EscapeDataString(ConvertToString(referenceNumber, System.Globalization.CultureInfo.InvariantCulture))).Append('&');
+                    }
+                    if (transactionTime != null)
+                    {
+                        urlBuilder_.Append(System.Uri.EscapeDataString("TransactionTime")).Append('=').Append(System.Uri.EscapeDataString(transactionTime.Value.ToString("s", System.Globalization.CultureInfo.InvariantCulture))).Append('&');
+                    }
+                    if (journalVoucherState != null)
+                    {
+                        urlBuilder_.Append(System.Uri.EscapeDataString("JournalVoucherState")).Append('=').Append(System.Uri.EscapeDataString(ConvertToString(journalVoucherState, System.Globalization.CultureInfo.InvariantCulture))).Append('&');
+                    }
+                    if (createdByUserId != null)
+                    {
+                        urlBuilder_.Append(System.Uri.EscapeDataString("CreatedByUserId")).Append('=').Append(System.Uri.EscapeDataString(ConvertToString(createdByUserId, System.Globalization.CultureInfo.InvariantCulture))).Append('&');
+                    }
+                    if (approvedByUserId != null)
+                    {
+                        urlBuilder_.Append(System.Uri.EscapeDataString("ApprovedByUserId")).Append('=').Append(System.Uri.EscapeDataString(ConvertToString(approvedByUserId, System.Globalization.CultureInfo.InvariantCulture))).Append('&');
+                    }
+                    if (approvedTime != null)
+                    {
+                        urlBuilder_.Append(System.Uri.EscapeDataString("ApprovedTime")).Append('=').Append(System.Uri.EscapeDataString(approvedTime.Value.ToString("s", System.Globalization.CultureInfo.InvariantCulture))).Append('&');
+                    }
+                    if (financialPeriodId != null)
+                    {
+                        urlBuilder_.Append(System.Uri.EscapeDataString("FinancialPeriodId")).Append('=').Append(System.Uri.EscapeDataString(ConvertToString(financialPeriodId, System.Globalization.CultureInfo.InvariantCulture))).Append('&');
+                    }
+                    urlBuilder_.Length--;
 
                     PrepareRequest(client_, request_, urlBuilder_);
 
@@ -1188,21 +1238,14 @@ namespace GenerateApi
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<ApiResultOfListOfGetFinancialPeriodsQueryResult> GetAllAsync(FilterFinancialPeriodApiModel model, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        public virtual async System.Threading.Tasks.Task<ApiResultOfListOfGetFinancialPeriodsQueryResult> GetAllAsync(string title = null, bool? isActive = null, System.DateTime? startDate = null, System.DateTime? endDate = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
-            if (model == null)
-                throw new System.ArgumentNullException("model");
-
             var client_ = _httpClient;
             var disposeClient_ = false;
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
-                    var json_ = Newtonsoft.Json.JsonConvert.SerializeObject(model, JsonSerializerSettings);
-                    var content_ = new System.Net.Http.StringContent(json_);
-                    content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
-                    request_.Content = content_;
                     request_.Method = new System.Net.Http.HttpMethod("GET");
                     request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/json"));
 
@@ -1210,6 +1253,24 @@ namespace GenerateApi
                 
                     // Operation Path: "api/financial_periods/FinancialPeriods"
                     urlBuilder_.Append("api/financial_periods/FinancialPeriods");
+                    urlBuilder_.Append('?');
+                    if (title != null)
+                    {
+                        urlBuilder_.Append(System.Uri.EscapeDataString("Title")).Append('=').Append(System.Uri.EscapeDataString(ConvertToString(title, System.Globalization.CultureInfo.InvariantCulture))).Append('&');
+                    }
+                    if (isActive != null)
+                    {
+                        urlBuilder_.Append(System.Uri.EscapeDataString("IsActive")).Append('=').Append(System.Uri.EscapeDataString(ConvertToString(isActive, System.Globalization.CultureInfo.InvariantCulture))).Append('&');
+                    }
+                    if (startDate != null)
+                    {
+                        urlBuilder_.Append(System.Uri.EscapeDataString("StartDate")).Append('=').Append(System.Uri.EscapeDataString(startDate.Value.ToString("s", System.Globalization.CultureInfo.InvariantCulture))).Append('&');
+                    }
+                    if (endDate != null)
+                    {
+                        urlBuilder_.Append(System.Uri.EscapeDataString("EndDate")).Append('=').Append(System.Uri.EscapeDataString(endDate.Value.ToString("s", System.Globalization.CultureInfo.InvariantCulture))).Append('&');
+                    }
+                    urlBuilder_.Length--;
 
                     PrepareRequest(client_, request_, urlBuilder_);
 
@@ -1639,21 +1700,14 @@ namespace GenerateApi
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<ApiResultOfListOfGetDetailedAccountsQueryResult> GetAllAsync(FilterDetailedAccountApiModel model, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        public virtual async System.Threading.Tasks.Task<ApiResultOfListOfGetDetailedAccountsQueryResult> GetAllAsync(string title = null, string code = null, bool? isActive = null, JournalEntryType? journalEntryType = null, System.Guid? subLedgerAccountId = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
-            if (model == null)
-                throw new System.ArgumentNullException("model");
-
             var client_ = _httpClient;
             var disposeClient_ = false;
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
-                    var json_ = Newtonsoft.Json.JsonConvert.SerializeObject(model, JsonSerializerSettings);
-                    var content_ = new System.Net.Http.StringContent(json_);
-                    content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
-                    request_.Content = content_;
                     request_.Method = new System.Net.Http.HttpMethod("GET");
                     request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/json"));
 
@@ -1661,6 +1715,28 @@ namespace GenerateApi
                 
                     // Operation Path: "api/detailed-accounts/DetailedAccounts"
                     urlBuilder_.Append("api/detailed-accounts/DetailedAccounts");
+                    urlBuilder_.Append('?');
+                    if (title != null)
+                    {
+                        urlBuilder_.Append(System.Uri.EscapeDataString("Title")).Append('=').Append(System.Uri.EscapeDataString(ConvertToString(title, System.Globalization.CultureInfo.InvariantCulture))).Append('&');
+                    }
+                    if (code != null)
+                    {
+                        urlBuilder_.Append(System.Uri.EscapeDataString("Code")).Append('=').Append(System.Uri.EscapeDataString(ConvertToString(code, System.Globalization.CultureInfo.InvariantCulture))).Append('&');
+                    }
+                    if (isActive != null)
+                    {
+                        urlBuilder_.Append(System.Uri.EscapeDataString("IsActive")).Append('=').Append(System.Uri.EscapeDataString(ConvertToString(isActive, System.Globalization.CultureInfo.InvariantCulture))).Append('&');
+                    }
+                    if (journalEntryType != null)
+                    {
+                        urlBuilder_.Append(System.Uri.EscapeDataString("JournalEntryType")).Append('=').Append(System.Uri.EscapeDataString(ConvertToString(journalEntryType, System.Globalization.CultureInfo.InvariantCulture))).Append('&');
+                    }
+                    if (subLedgerAccountId != null)
+                    {
+                        urlBuilder_.Append(System.Uri.EscapeDataString("SubLedgerAccountId")).Append('=').Append(System.Uri.EscapeDataString(ConvertToString(subLedgerAccountId, System.Globalization.CultureInfo.InvariantCulture))).Append('&');
+                    }
+                    urlBuilder_.Length--;
 
                     PrepareRequest(client_, request_, urlBuilder_);
 
@@ -2090,21 +2166,14 @@ namespace GenerateApi
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<ApiResultOfListOfGetGeneralLedgerAccountsQueryResult> GetAllAsync(FilterGeneralLedgerAccountApiModel model, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        public virtual async System.Threading.Tasks.Task<ApiResultOfListOfGetGeneralLedgerAccountsQueryResult> GetAllAsync(string title = null, string code = null, bool? isActive = null, JournalEntryType? journalEntryType = null, System.Guid? groupAccountId = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
-            if (model == null)
-                throw new System.ArgumentNullException("model");
-
             var client_ = _httpClient;
             var disposeClient_ = false;
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
-                    var json_ = Newtonsoft.Json.JsonConvert.SerializeObject(model, JsonSerializerSettings);
-                    var content_ = new System.Net.Http.StringContent(json_);
-                    content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
-                    request_.Content = content_;
                     request_.Method = new System.Net.Http.HttpMethod("GET");
                     request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/json"));
 
@@ -2112,6 +2181,28 @@ namespace GenerateApi
                 
                     // Operation Path: "api/generalLedger_account/GeneralLedgerAccounts"
                     urlBuilder_.Append("api/generalLedger_account/GeneralLedgerAccounts");
+                    urlBuilder_.Append('?');
+                    if (title != null)
+                    {
+                        urlBuilder_.Append(System.Uri.EscapeDataString("Title")).Append('=').Append(System.Uri.EscapeDataString(ConvertToString(title, System.Globalization.CultureInfo.InvariantCulture))).Append('&');
+                    }
+                    if (code != null)
+                    {
+                        urlBuilder_.Append(System.Uri.EscapeDataString("Code")).Append('=').Append(System.Uri.EscapeDataString(ConvertToString(code, System.Globalization.CultureInfo.InvariantCulture))).Append('&');
+                    }
+                    if (isActive != null)
+                    {
+                        urlBuilder_.Append(System.Uri.EscapeDataString("IsActive")).Append('=').Append(System.Uri.EscapeDataString(ConvertToString(isActive, System.Globalization.CultureInfo.InvariantCulture))).Append('&');
+                    }
+                    if (journalEntryType != null)
+                    {
+                        urlBuilder_.Append(System.Uri.EscapeDataString("JournalEntryType")).Append('=').Append(System.Uri.EscapeDataString(ConvertToString(journalEntryType, System.Globalization.CultureInfo.InvariantCulture))).Append('&');
+                    }
+                    if (groupAccountId != null)
+                    {
+                        urlBuilder_.Append(System.Uri.EscapeDataString("GroupAccountId")).Append('=').Append(System.Uri.EscapeDataString(ConvertToString(groupAccountId, System.Globalization.CultureInfo.InvariantCulture))).Append('&');
+                    }
+                    urlBuilder_.Length--;
 
                     PrepareRequest(client_, request_, urlBuilder_);
 
@@ -2541,21 +2632,14 @@ namespace GenerateApi
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<ApiResultOfListOfGetGroupAccountsQueryResult> GetAllAsync(FilterGroupAccountApiModel model, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        public virtual async System.Threading.Tasks.Task<ApiResultOfListOfGetGroupAccountsQueryResult> GetAllAsync(string title = null, string code = null, bool? isActive = null, JournalEntryType? journalEntryType = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
-            if (model == null)
-                throw new System.ArgumentNullException("model");
-
             var client_ = _httpClient;
             var disposeClient_ = false;
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
-                    var json_ = Newtonsoft.Json.JsonConvert.SerializeObject(model, JsonSerializerSettings);
-                    var content_ = new System.Net.Http.StringContent(json_);
-                    content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
-                    request_.Content = content_;
                     request_.Method = new System.Net.Http.HttpMethod("GET");
                     request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/json"));
 
@@ -2563,6 +2647,24 @@ namespace GenerateApi
                 
                     // Operation Path: "api/group_accounts/GroupAccounts"
                     urlBuilder_.Append("api/group_accounts/GroupAccounts");
+                    urlBuilder_.Append('?');
+                    if (title != null)
+                    {
+                        urlBuilder_.Append(System.Uri.EscapeDataString("Title")).Append('=').Append(System.Uri.EscapeDataString(ConvertToString(title, System.Globalization.CultureInfo.InvariantCulture))).Append('&');
+                    }
+                    if (code != null)
+                    {
+                        urlBuilder_.Append(System.Uri.EscapeDataString("Code")).Append('=').Append(System.Uri.EscapeDataString(ConvertToString(code, System.Globalization.CultureInfo.InvariantCulture))).Append('&');
+                    }
+                    if (isActive != null)
+                    {
+                        urlBuilder_.Append(System.Uri.EscapeDataString("IsActive")).Append('=').Append(System.Uri.EscapeDataString(ConvertToString(isActive, System.Globalization.CultureInfo.InvariantCulture))).Append('&');
+                    }
+                    if (journalEntryType != null)
+                    {
+                        urlBuilder_.Append(System.Uri.EscapeDataString("JournalEntryType")).Append('=').Append(System.Uri.EscapeDataString(ConvertToString(journalEntryType, System.Globalization.CultureInfo.InvariantCulture))).Append('&');
+                    }
+                    urlBuilder_.Length--;
 
                     PrepareRequest(client_, request_, urlBuilder_);
 
@@ -2992,21 +3094,14 @@ namespace GenerateApi
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<ApiResultOfListOfGetSubLedgerAccountsQueryResult> GetAllAsync(FilterSubLedgerAccountApiModel model, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        public virtual async System.Threading.Tasks.Task<ApiResultOfListOfGetSubLedgerAccountsQueryResult> GetAllAsync(string title = null, string code = null, bool? isActive = null, JournalEntryType? journalEntryType = null, System.Guid? generalLedgerAccountId = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
-            if (model == null)
-                throw new System.ArgumentNullException("model");
-
             var client_ = _httpClient;
             var disposeClient_ = false;
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
-                    var json_ = Newtonsoft.Json.JsonConvert.SerializeObject(model, JsonSerializerSettings);
-                    var content_ = new System.Net.Http.StringContent(json_);
-                    content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
-                    request_.Content = content_;
                     request_.Method = new System.Net.Http.HttpMethod("GET");
                     request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/json"));
 
@@ -3014,6 +3109,28 @@ namespace GenerateApi
                 
                     // Operation Path: "api/sub-ledger-accounts/SubLedgerAccounts"
                     urlBuilder_.Append("api/sub-ledger-accounts/SubLedgerAccounts");
+                    urlBuilder_.Append('?');
+                    if (title != null)
+                    {
+                        urlBuilder_.Append(System.Uri.EscapeDataString("Title")).Append('=').Append(System.Uri.EscapeDataString(ConvertToString(title, System.Globalization.CultureInfo.InvariantCulture))).Append('&');
+                    }
+                    if (code != null)
+                    {
+                        urlBuilder_.Append(System.Uri.EscapeDataString("Code")).Append('=').Append(System.Uri.EscapeDataString(ConvertToString(code, System.Globalization.CultureInfo.InvariantCulture))).Append('&');
+                    }
+                    if (isActive != null)
+                    {
+                        urlBuilder_.Append(System.Uri.EscapeDataString("IsActive")).Append('=').Append(System.Uri.EscapeDataString(ConvertToString(isActive, System.Globalization.CultureInfo.InvariantCulture))).Append('&');
+                    }
+                    if (journalEntryType != null)
+                    {
+                        urlBuilder_.Append(System.Uri.EscapeDataString("JournalEntryType")).Append('=').Append(System.Uri.EscapeDataString(ConvertToString(journalEntryType, System.Globalization.CultureInfo.InvariantCulture))).Append('&');
+                    }
+                    if (generalLedgerAccountId != null)
+                    {
+                        urlBuilder_.Append(System.Uri.EscapeDataString("GeneralLedgerAccountId")).Append('=').Append(System.Uri.EscapeDataString(ConvertToString(generalLedgerAccountId, System.Globalization.CultureInfo.InvariantCulture))).Append('&');
+                    }
+                    urlBuilder_.Length--;
 
                     PrepareRequest(client_, request_, urlBuilder_);
 
@@ -3407,30 +3524,6 @@ namespace GenerateApi
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.2.0.0 (NJsonSchema v11.1.0.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial class FilterJournalEntriesApiModel
-    {
-        [Newtonsoft.Json.JsonProperty("journalEntryNumber", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public string JournalEntryNumber { get; set; }
-
-        [Newtonsoft.Json.JsonProperty("journalEntryType", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        [Newtonsoft.Json.JsonConverter(typeof(Newtonsoft.Json.Converters.StringEnumConverter))]
-        public JournalEntryType? JournalEntryType { get; set; }
-
-        [Newtonsoft.Json.JsonProperty("amount", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public decimal? Amount { get; set; }
-
-        [Newtonsoft.Json.JsonProperty("detailedAccountId", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public System.Guid? DetailedAccountId { get; set; }
-
-        [Newtonsoft.Json.JsonProperty("subLedgerAccountId", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public System.Guid? SubLedgerAccountId { get; set; }
-
-        [Newtonsoft.Json.JsonProperty("journalVoucherId", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public System.Guid? JournalVoucherId { get; set; }
-
-    }
-
-    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.2.0.0 (NJsonSchema v11.1.0.0 (Newtonsoft.Json v13.0.0.0))")]
     public partial class CreateJournalVoucherApiModel
     {
         [Newtonsoft.Json.JsonProperty("journalVoucherTitle", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
@@ -3440,7 +3533,7 @@ namespace GenerateApi
         public string ReferenceNumber { get; set; }
 
         [Newtonsoft.Json.JsonProperty("transactionTime", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public System.DateTimeOffset TransactionTime { get; set; }
+        public System.DateTime TransactionTime { get; set; }
 
         [Newtonsoft.Json.JsonProperty("description", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string Description { get; set; }
@@ -3477,7 +3570,7 @@ namespace GenerateApi
     public partial class PatchOfDateTime
     {
         [Newtonsoft.Json.JsonProperty("value", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public System.DateTimeOffset Value { get; set; }
+        public System.DateTime Value { get; set; }
 
     }
 
@@ -3505,7 +3598,7 @@ namespace GenerateApi
         public string ReferenceNumber { get; set; }
 
         [Newtonsoft.Json.JsonProperty("transactionTime", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public System.DateTimeOffset TransactionTime { get; set; }
+        public System.DateTime TransactionTime { get; set; }
 
         [Newtonsoft.Json.JsonProperty("description", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string Description { get; set; }
@@ -3521,7 +3614,7 @@ namespace GenerateApi
         public System.Guid? ApprovedByUserId { get; set; }
 
         [Newtonsoft.Json.JsonProperty("approvedTime", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public System.DateTimeOffset? ApprovedTime { get; set; }
+        public System.DateTime? ApprovedTime { get; set; }
 
         [Newtonsoft.Json.JsonProperty("financialPeriodId", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public System.Guid FinancialPeriodId { get; set; }
@@ -3567,7 +3660,7 @@ namespace GenerateApi
         public string ReferenceNumber { get; set; }
 
         [Newtonsoft.Json.JsonProperty("transactionTime", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public System.DateTimeOffset TransactionTime { get; set; }
+        public System.DateTime TransactionTime { get; set; }
 
         [Newtonsoft.Json.JsonProperty("description", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string Description { get; set; }
@@ -3583,43 +3676,10 @@ namespace GenerateApi
         public System.Guid? ApprovedByUserId { get; set; }
 
         [Newtonsoft.Json.JsonProperty("approvedTime", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public System.DateTimeOffset? ApprovedTime { get; set; }
+        public System.DateTime? ApprovedTime { get; set; }
 
         [Newtonsoft.Json.JsonProperty("financialPeriodId", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public System.Guid FinancialPeriodId { get; set; }
-
-    }
-
-    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.2.0.0 (NJsonSchema v11.1.0.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial class FilterJournalVoucherApiModel
-    {
-        [Newtonsoft.Json.JsonProperty("journalVoucherTitle", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public string JournalVoucherTitle { get; set; }
-
-        [Newtonsoft.Json.JsonProperty("journalVoucherNumber", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public string JournalVoucherNumber { get; set; }
-
-        [Newtonsoft.Json.JsonProperty("referenceNumber", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public string ReferenceNumber { get; set; }
-
-        [Newtonsoft.Json.JsonProperty("transactionTime", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public System.DateTimeOffset? TransactionTime { get; set; }
-
-        [Newtonsoft.Json.JsonProperty("journalVoucherState", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        [Newtonsoft.Json.JsonConverter(typeof(Newtonsoft.Json.Converters.StringEnumConverter))]
-        public JournalVoucherState? JournalVoucherState { get; set; }
-
-        [Newtonsoft.Json.JsonProperty("createdByUserId", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public System.Guid? CreatedByUserId { get; set; }
-
-        [Newtonsoft.Json.JsonProperty("approvedByUserId", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public System.Guid? ApprovedByUserId { get; set; }
-
-        [Newtonsoft.Json.JsonProperty("approvedTime", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public System.DateTimeOffset? ApprovedTime { get; set; }
-
-        [Newtonsoft.Json.JsonProperty("financialPeriodId", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public System.Guid? FinancialPeriodId { get; set; }
 
     }
 
@@ -3630,10 +3690,10 @@ namespace GenerateApi
         public string FinancialPeriodTitle { get; set; }
 
         [Newtonsoft.Json.JsonProperty("startDate", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public System.DateTimeOffset StartDate { get; set; }
+        public System.DateTime StartDate { get; set; }
 
         [Newtonsoft.Json.JsonProperty("endDate", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public System.DateTimeOffset EndDate { get; set; }
+        public System.DateTime EndDate { get; set; }
 
     }
 
@@ -3672,10 +3732,10 @@ namespace GenerateApi
         public string Title { get; set; }
 
         [Newtonsoft.Json.JsonProperty("startDate", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public System.DateTimeOffset StartDate { get; set; }
+        public System.DateTime StartDate { get; set; }
 
         [Newtonsoft.Json.JsonProperty("endDate", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public System.DateTimeOffset EndDate { get; set; }
+        public System.DateTime EndDate { get; set; }
 
         [Newtonsoft.Json.JsonProperty("isActive", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public bool IsActive { get; set; }
@@ -3700,27 +3760,10 @@ namespace GenerateApi
         public bool IsActive { get; set; }
 
         [Newtonsoft.Json.JsonProperty("startDate", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public System.DateTimeOffset StartDate { get; set; }
+        public System.DateTime StartDate { get; set; }
 
         [Newtonsoft.Json.JsonProperty("endDate", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public System.DateTimeOffset EndDate { get; set; }
-
-    }
-
-    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.2.0.0 (NJsonSchema v11.1.0.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial class FilterFinancialPeriodApiModel
-    {
-        [Newtonsoft.Json.JsonProperty("title", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public string Title { get; set; }
-
-        [Newtonsoft.Json.JsonProperty("isActive", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public bool? IsActive { get; set; }
-
-        [Newtonsoft.Json.JsonProperty("startDate", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public System.DateTimeOffset? StartDate { get; set; }
-
-        [Newtonsoft.Json.JsonProperty("endDate", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public System.DateTimeOffset? EndDate { get; set; }
+        public System.DateTime EndDate { get; set; }
 
     }
 
@@ -3821,27 +3864,6 @@ namespace GenerateApi
 
         [Newtonsoft.Json.JsonProperty("subLedgerAccountId", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public System.Guid SubLedgerAccountId { get; set; }
-
-    }
-
-    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.2.0.0 (NJsonSchema v11.1.0.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial class FilterDetailedAccountApiModel
-    {
-        [Newtonsoft.Json.JsonProperty("title", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public string Title { get; set; }
-
-        [Newtonsoft.Json.JsonProperty("code", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public string Code { get; set; }
-
-        [Newtonsoft.Json.JsonProperty("isActive", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public bool? IsActive { get; set; }
-
-        [Newtonsoft.Json.JsonProperty("journalEntryType", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        [Newtonsoft.Json.JsonConverter(typeof(Newtonsoft.Json.Converters.StringEnumConverter))]
-        public JournalEntryType? JournalEntryType { get; set; }
-
-        [Newtonsoft.Json.JsonProperty("subLedgerAccountId", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public System.Guid? SubLedgerAccountId { get; set; }
 
     }
 
@@ -3953,27 +3975,6 @@ namespace GenerateApi
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.2.0.0 (NJsonSchema v11.1.0.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial class FilterGeneralLedgerAccountApiModel
-    {
-        [Newtonsoft.Json.JsonProperty("title", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public string Title { get; set; }
-
-        [Newtonsoft.Json.JsonProperty("code", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public string Code { get; set; }
-
-        [Newtonsoft.Json.JsonProperty("isActive", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public bool? IsActive { get; set; }
-
-        [Newtonsoft.Json.JsonProperty("journalEntryType", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        [Newtonsoft.Json.JsonConverter(typeof(Newtonsoft.Json.Converters.StringEnumConverter))]
-        public JournalEntryType? JournalEntryType { get; set; }
-
-        [Newtonsoft.Json.JsonProperty("groupAccountId", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public System.Guid? GroupAccountId { get; set; }
-
-    }
-
-    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.2.0.0 (NJsonSchema v11.1.0.0 (Newtonsoft.Json v13.0.0.0))")]
     public partial class CreateGroupAccountApiModel
     {
         [Newtonsoft.Json.JsonProperty("title", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
@@ -4066,24 +4067,6 @@ namespace GenerateApi
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.2.0.0 (NJsonSchema v11.1.0.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial class FilterGroupAccountApiModel
-    {
-        [Newtonsoft.Json.JsonProperty("title", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public string Title { get; set; }
-
-        [Newtonsoft.Json.JsonProperty("code", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public string Code { get; set; }
-
-        [Newtonsoft.Json.JsonProperty("isActive", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public bool? IsActive { get; set; }
-
-        [Newtonsoft.Json.JsonProperty("journalEntryType", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        [Newtonsoft.Json.JsonConverter(typeof(Newtonsoft.Json.Converters.StringEnumConverter))]
-        public JournalEntryType? JournalEntryType { get; set; }
-
-    }
-
-    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.2.0.0 (NJsonSchema v11.1.0.0 (Newtonsoft.Json v13.0.0.0))")]
     public partial class CreateSubLedgerAccountApiModel
     {
         [Newtonsoft.Json.JsonProperty("title", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
@@ -4172,27 +4155,6 @@ namespace GenerateApi
 
         [Newtonsoft.Json.JsonProperty("generalLedgerAccountId", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public System.Guid GeneralLedgerAccountId { get; set; }
-
-    }
-
-    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.2.0.0 (NJsonSchema v11.1.0.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial class FilterSubLedgerAccountApiModel
-    {
-        [Newtonsoft.Json.JsonProperty("title", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public string Title { get; set; }
-
-        [Newtonsoft.Json.JsonProperty("code", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public string Code { get; set; }
-
-        [Newtonsoft.Json.JsonProperty("isActive", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public bool? IsActive { get; set; }
-
-        [Newtonsoft.Json.JsonProperty("journalEntryType", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        [Newtonsoft.Json.JsonConverter(typeof(Newtonsoft.Json.Converters.StringEnumConverter))]
-        public JournalEntryType? JournalEntryType { get; set; }
-
-        [Newtonsoft.Json.JsonProperty("generalLedgerAccountId", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public System.Guid? GeneralLedgerAccountId { get; set; }
 
     }
 

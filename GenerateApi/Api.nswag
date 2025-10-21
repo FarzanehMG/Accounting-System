@@ -19,18 +19,22 @@
         "generateOptionalParameters": true,
         "output": "Api.cs",
         "useBaseUrl": false,
-        "generateBaseUrlProperty": true
+        "generateBaseUrlProperty": true,
+        "generateOptionalPropertiesAsNullable": false,
+        "generateDateTimeOffset": false,
+        "dateTimeType": "System.DateTime"
       },
-        "openApiToTypeScriptClient": {
-            "className": "{controller}Client",
-            "namespace": "$(namespace)",
-            "generateClientClasses": true,
-            "generateDtoTypes": true,
-            "generateOptionalParameters": true,
-            "output": "Api.ts",
-            "template": "Angular",
-            "httpClass": "HttpClient",
-            "promiseType": "Promise"
-        }
+      "openApiToTypeScriptClient": {
+        "className": "{controller}Client",
+        "namespace": "$(namespace)",
+        "generateClientClasses": true,
+        "generateDtoTypes": true,
+        "generateOptionalParameters": true,
+        "output": "Api.ts",
+        "template": "Angular",
+        "httpClass": "HttpClient",
+        "promiseType": "Promise",
+        "dateTimeType": "Date"
+      }
     }
 }

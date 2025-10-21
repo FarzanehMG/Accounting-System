@@ -183,18 +183,26 @@ export class JournalEntryClient {
         return _observableOf<ApiResultOfGetJournalEntryByIdQueryResult>(null as any);
     }
 
-    getAll(model: FilterJournalEntriesApiModel): Observable<ApiResultOfListOfGetJournalEntriesQueryResult> {
-        let url_ = this.baseUrl + "/api/journal_entries/journalEntries";
+    getAll(journalEntryNumber?: string | null | undefined, journalEntryType?: JournalEntryType | null | undefined, amount?: number | null | undefined, detailedAccountId?: string | null | undefined, subLedgerAccountId?: string | null | undefined, journalVoucherId?: string | null | undefined): Observable<ApiResultOfListOfGetJournalEntriesQueryResult> {
+        let url_ = this.baseUrl + "/api/journal_entries/journalEntries?";
+        if (journalEntryNumber !== undefined && journalEntryNumber !== null)
+            url_ += "JournalEntryNumber=" + encodeURIComponent("" + journalEntryNumber) + "&";
+        if (journalEntryType !== undefined && journalEntryType !== null)
+            url_ += "JournalEntryType=" + encodeURIComponent("" + journalEntryType) + "&";
+        if (amount !== undefined && amount !== null)
+            url_ += "Amount=" + encodeURIComponent("" + amount) + "&";
+        if (detailedAccountId !== undefined && detailedAccountId !== null)
+            url_ += "DetailedAccountId=" + encodeURIComponent("" + detailedAccountId) + "&";
+        if (subLedgerAccountId !== undefined && subLedgerAccountId !== null)
+            url_ += "SubLedgerAccountId=" + encodeURIComponent("" + subLedgerAccountId) + "&";
+        if (journalVoucherId !== undefined && journalVoucherId !== null)
+            url_ += "JournalVoucherId=" + encodeURIComponent("" + journalVoucherId) + "&";
         url_ = url_.replace(/[?&]$/, "");
 
-        const content_ = JSON.stringify(model);
-
         let options_ : any = {
-            body: content_,
             observe: "response",
             responseType: "blob",
             headers: new HttpHeaders({
-                "Content-Type": "application/json",
                 "Accept": "application/json"
             })
         };
@@ -403,18 +411,32 @@ export class JournalVoucherClient {
         return _observableOf<ApiResultOfGetJournalVoucherByIdQueryResult>(null as any);
     }
 
-    getAll(model: FilterJournalVoucherApiModel): Observable<ApiResultOfListOfGetJournalVouchersQueryResult> {
-        let url_ = this.baseUrl + "/api/journal_vouchers/journalVouchers";
+    getAll(journalVoucherTitle?: string | null | undefined, journalVoucherNumber?: string | null | undefined, referenceNumber?: string | null | undefined, transactionTime?: Date | null | undefined, journalVoucherState?: JournalVoucherState | null | undefined, createdByUserId?: string | null | undefined, approvedByUserId?: string | null | undefined, approvedTime?: Date | null | undefined, financialPeriodId?: string | null | undefined): Observable<ApiResultOfListOfGetJournalVouchersQueryResult> {
+        let url_ = this.baseUrl + "/api/journal_vouchers/journalVouchers?";
+        if (journalVoucherTitle !== undefined && journalVoucherTitle !== null)
+            url_ += "JournalVoucherTitle=" + encodeURIComponent("" + journalVoucherTitle) + "&";
+        if (journalVoucherNumber !== undefined && journalVoucherNumber !== null)
+            url_ += "JournalVoucherNumber=" + encodeURIComponent("" + journalVoucherNumber) + "&";
+        if (referenceNumber !== undefined && referenceNumber !== null)
+            url_ += "ReferenceNumber=" + encodeURIComponent("" + referenceNumber) + "&";
+        if (transactionTime !== undefined && transactionTime !== null)
+            url_ += "TransactionTime=" + encodeURIComponent(transactionTime ? "" + transactionTime.toISOString() : "") + "&";
+        if (journalVoucherState !== undefined && journalVoucherState !== null)
+            url_ += "JournalVoucherState=" + encodeURIComponent("" + journalVoucherState) + "&";
+        if (createdByUserId !== undefined && createdByUserId !== null)
+            url_ += "CreatedByUserId=" + encodeURIComponent("" + createdByUserId) + "&";
+        if (approvedByUserId !== undefined && approvedByUserId !== null)
+            url_ += "ApprovedByUserId=" + encodeURIComponent("" + approvedByUserId) + "&";
+        if (approvedTime !== undefined && approvedTime !== null)
+            url_ += "ApprovedTime=" + encodeURIComponent(approvedTime ? "" + approvedTime.toISOString() : "") + "&";
+        if (financialPeriodId !== undefined && financialPeriodId !== null)
+            url_ += "FinancialPeriodId=" + encodeURIComponent("" + financialPeriodId) + "&";
         url_ = url_.replace(/[?&]$/, "");
 
-        const content_ = JSON.stringify(model);
-
         let options_ : any = {
-            body: content_,
             observe: "response",
             responseType: "blob",
             headers: new HttpHeaders({
-                "Content-Type": "application/json",
                 "Accept": "application/json"
             })
         };
@@ -623,18 +645,22 @@ export class FinancialPeriodClient {
         return _observableOf<ApiResultOfGetFinancialPeriodByIdQueryResult>(null as any);
     }
 
-    getAll(model: FilterFinancialPeriodApiModel): Observable<ApiResultOfListOfGetFinancialPeriodsQueryResult> {
-        let url_ = this.baseUrl + "/api/financial_periods/FinancialPeriods";
+    getAll(title?: string | null | undefined, isActive?: boolean | null | undefined, startDate?: Date | null | undefined, endDate?: Date | null | undefined): Observable<ApiResultOfListOfGetFinancialPeriodsQueryResult> {
+        let url_ = this.baseUrl + "/api/financial_periods/FinancialPeriods?";
+        if (title !== undefined && title !== null)
+            url_ += "Title=" + encodeURIComponent("" + title) + "&";
+        if (isActive !== undefined && isActive !== null)
+            url_ += "IsActive=" + encodeURIComponent("" + isActive) + "&";
+        if (startDate !== undefined && startDate !== null)
+            url_ += "StartDate=" + encodeURIComponent(startDate ? "" + startDate.toISOString() : "") + "&";
+        if (endDate !== undefined && endDate !== null)
+            url_ += "EndDate=" + encodeURIComponent(endDate ? "" + endDate.toISOString() : "") + "&";
         url_ = url_.replace(/[?&]$/, "");
 
-        const content_ = JSON.stringify(model);
-
         let options_ : any = {
-            body: content_,
             observe: "response",
             responseType: "blob",
             headers: new HttpHeaders({
-                "Content-Type": "application/json",
                 "Accept": "application/json"
             })
         };
@@ -843,18 +869,24 @@ export class DetailedAccountClient {
         return _observableOf<ApiResultOfGetDetailedAccountByIdQueryResult>(null as any);
     }
 
-    getAll(model: FilterDetailedAccountApiModel): Observable<ApiResultOfListOfGetDetailedAccountsQueryResult> {
-        let url_ = this.baseUrl + "/api/detailed-accounts/DetailedAccounts";
+    getAll(title?: string | null | undefined, code?: string | null | undefined, isActive?: boolean | null | undefined, journalEntryType?: JournalEntryType | null | undefined, subLedgerAccountId?: string | null | undefined): Observable<ApiResultOfListOfGetDetailedAccountsQueryResult> {
+        let url_ = this.baseUrl + "/api/detailed-accounts/DetailedAccounts?";
+        if (title !== undefined && title !== null)
+            url_ += "Title=" + encodeURIComponent("" + title) + "&";
+        if (code !== undefined && code !== null)
+            url_ += "Code=" + encodeURIComponent("" + code) + "&";
+        if (isActive !== undefined && isActive !== null)
+            url_ += "IsActive=" + encodeURIComponent("" + isActive) + "&";
+        if (journalEntryType !== undefined && journalEntryType !== null)
+            url_ += "JournalEntryType=" + encodeURIComponent("" + journalEntryType) + "&";
+        if (subLedgerAccountId !== undefined && subLedgerAccountId !== null)
+            url_ += "SubLedgerAccountId=" + encodeURIComponent("" + subLedgerAccountId) + "&";
         url_ = url_.replace(/[?&]$/, "");
 
-        const content_ = JSON.stringify(model);
-
         let options_ : any = {
-            body: content_,
             observe: "response",
             responseType: "blob",
             headers: new HttpHeaders({
-                "Content-Type": "application/json",
                 "Accept": "application/json"
             })
         };
@@ -1063,18 +1095,24 @@ export class GeneralLedgerAccountClient {
         return _observableOf<ApiResultOfGetGeneralLedgerAccountByIdQueryResult>(null as any);
     }
 
-    getAll(model: FilterGeneralLedgerAccountApiModel): Observable<ApiResultOfListOfGetGeneralLedgerAccountsQueryResult> {
-        let url_ = this.baseUrl + "/api/generalLedger_account/GeneralLedgerAccounts";
+    getAll(title?: string | null | undefined, code?: string | null | undefined, isActive?: boolean | null | undefined, journalEntryType?: JournalEntryType | null | undefined, groupAccountId?: string | null | undefined): Observable<ApiResultOfListOfGetGeneralLedgerAccountsQueryResult> {
+        let url_ = this.baseUrl + "/api/generalLedger_account/GeneralLedgerAccounts?";
+        if (title !== undefined && title !== null)
+            url_ += "Title=" + encodeURIComponent("" + title) + "&";
+        if (code !== undefined && code !== null)
+            url_ += "Code=" + encodeURIComponent("" + code) + "&";
+        if (isActive !== undefined && isActive !== null)
+            url_ += "IsActive=" + encodeURIComponent("" + isActive) + "&";
+        if (journalEntryType !== undefined && journalEntryType !== null)
+            url_ += "JournalEntryType=" + encodeURIComponent("" + journalEntryType) + "&";
+        if (groupAccountId !== undefined && groupAccountId !== null)
+            url_ += "GroupAccountId=" + encodeURIComponent("" + groupAccountId) + "&";
         url_ = url_.replace(/[?&]$/, "");
 
-        const content_ = JSON.stringify(model);
-
         let options_ : any = {
-            body: content_,
             observe: "response",
             responseType: "blob",
             headers: new HttpHeaders({
-                "Content-Type": "application/json",
                 "Accept": "application/json"
             })
         };
@@ -1283,18 +1321,22 @@ export class GroupAccountClient {
         return _observableOf<ApiResultOfGetGroupAccountByIdQueryResult>(null as any);
     }
 
-    getAll(model: FilterGroupAccountApiModel): Observable<ApiResultOfListOfGetGroupAccountsQueryResult> {
-        let url_ = this.baseUrl + "/api/group_accounts/GroupAccounts";
+    getAll(title?: string | null | undefined, code?: string | null | undefined, isActive?: boolean | null | undefined, journalEntryType?: JournalEntryType | null | undefined): Observable<ApiResultOfListOfGetGroupAccountsQueryResult> {
+        let url_ = this.baseUrl + "/api/group_accounts/GroupAccounts?";
+        if (title !== undefined && title !== null)
+            url_ += "Title=" + encodeURIComponent("" + title) + "&";
+        if (code !== undefined && code !== null)
+            url_ += "Code=" + encodeURIComponent("" + code) + "&";
+        if (isActive !== undefined && isActive !== null)
+            url_ += "IsActive=" + encodeURIComponent("" + isActive) + "&";
+        if (journalEntryType !== undefined && journalEntryType !== null)
+            url_ += "JournalEntryType=" + encodeURIComponent("" + journalEntryType) + "&";
         url_ = url_.replace(/[?&]$/, "");
 
-        const content_ = JSON.stringify(model);
-
         let options_ : any = {
-            body: content_,
             observe: "response",
             responseType: "blob",
             headers: new HttpHeaders({
-                "Content-Type": "application/json",
                 "Accept": "application/json"
             })
         };
@@ -1503,18 +1545,24 @@ export class SubLedgerAccountClient {
         return _observableOf<ApiResultOfGetSubLedgerAccountByIdQueryResult>(null as any);
     }
 
-    getAll(model: FilterSubLedgerAccountApiModel): Observable<ApiResultOfListOfGetSubLedgerAccountsQueryResult> {
-        let url_ = this.baseUrl + "/api/sub-ledger-accounts/SubLedgerAccounts";
+    getAll(title?: string | null | undefined, code?: string | null | undefined, isActive?: boolean | null | undefined, journalEntryType?: JournalEntryType | null | undefined, generalLedgerAccountId?: string | null | undefined): Observable<ApiResultOfListOfGetSubLedgerAccountsQueryResult> {
+        let url_ = this.baseUrl + "/api/sub-ledger-accounts/SubLedgerAccounts?";
+        if (title !== undefined && title !== null)
+            url_ += "Title=" + encodeURIComponent("" + title) + "&";
+        if (code !== undefined && code !== null)
+            url_ += "Code=" + encodeURIComponent("" + code) + "&";
+        if (isActive !== undefined && isActive !== null)
+            url_ += "IsActive=" + encodeURIComponent("" + isActive) + "&";
+        if (journalEntryType !== undefined && journalEntryType !== null)
+            url_ += "JournalEntryType=" + encodeURIComponent("" + journalEntryType) + "&";
+        if (generalLedgerAccountId !== undefined && generalLedgerAccountId !== null)
+            url_ += "GeneralLedgerAccountId=" + encodeURIComponent("" + generalLedgerAccountId) + "&";
         url_ = url_.replace(/[?&]$/, "");
 
-        const content_ = JSON.stringify(model);
-
         let options_ : any = {
-            body: content_,
             observe: "response",
             responseType: "blob",
             headers: new HttpHeaders({
-                "Content-Type": "application/json",
                 "Accept": "application/json"
             })
         };
@@ -2184,62 +2232,6 @@ export interface IGetJournalEntriesQueryResult {
     journalVoucherId?: string;
 }
 
-export class FilterJournalEntriesApiModel implements IFilterJournalEntriesApiModel {
-    journalEntryNumber?: string | undefined;
-    journalEntryType?: JournalEntryType | undefined;
-    amount?: number | undefined;
-    detailedAccountId?: string | undefined;
-    subLedgerAccountId?: string | undefined;
-    journalVoucherId?: string | undefined;
-
-    constructor(data?: IFilterJournalEntriesApiModel) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.journalEntryNumber = _data["journalEntryNumber"];
-            this.journalEntryType = _data["journalEntryType"];
-            this.amount = _data["amount"];
-            this.detailedAccountId = _data["detailedAccountId"];
-            this.subLedgerAccountId = _data["subLedgerAccountId"];
-            this.journalVoucherId = _data["journalVoucherId"];
-        }
-    }
-
-    static fromJS(data: any): FilterJournalEntriesApiModel {
-        data = typeof data === 'object' ? data : {};
-        let result = new FilterJournalEntriesApiModel();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["journalEntryNumber"] = this.journalEntryNumber;
-        data["journalEntryType"] = this.journalEntryType;
-        data["amount"] = this.amount;
-        data["detailedAccountId"] = this.detailedAccountId;
-        data["subLedgerAccountId"] = this.subLedgerAccountId;
-        data["journalVoucherId"] = this.journalVoucherId;
-        return data;
-    }
-}
-
-export interface IFilterJournalEntriesApiModel {
-    journalEntryNumber?: string | undefined;
-    journalEntryType?: JournalEntryType | undefined;
-    amount?: number | undefined;
-    detailedAccountId?: string | undefined;
-    subLedgerAccountId?: string | undefined;
-    journalVoucherId?: string | undefined;
-}
-
 export class CreateJournalVoucherApiModel implements ICreateJournalVoucherApiModel {
     journalVoucherTitle?: string;
     referenceNumber?: string;
@@ -2616,74 +2608,6 @@ export interface IGetJournalVouchersQueryResult {
     financialPeriodId?: string;
 }
 
-export class FilterJournalVoucherApiModel implements IFilterJournalVoucherApiModel {
-    journalVoucherTitle?: string | undefined;
-    journalVoucherNumber?: string | undefined;
-    referenceNumber?: string | undefined;
-    transactionTime?: Date | undefined;
-    journalVoucherState?: JournalVoucherState | undefined;
-    createdByUserId?: string | undefined;
-    approvedByUserId?: string | undefined;
-    approvedTime?: Date | undefined;
-    financialPeriodId?: string | undefined;
-
-    constructor(data?: IFilterJournalVoucherApiModel) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.journalVoucherTitle = _data["journalVoucherTitle"];
-            this.journalVoucherNumber = _data["journalVoucherNumber"];
-            this.referenceNumber = _data["referenceNumber"];
-            this.transactionTime = _data["transactionTime"] ? new Date(_data["transactionTime"].toString()) : <any>undefined;
-            this.journalVoucherState = _data["journalVoucherState"];
-            this.createdByUserId = _data["createdByUserId"];
-            this.approvedByUserId = _data["approvedByUserId"];
-            this.approvedTime = _data["approvedTime"] ? new Date(_data["approvedTime"].toString()) : <any>undefined;
-            this.financialPeriodId = _data["financialPeriodId"];
-        }
-    }
-
-    static fromJS(data: any): FilterJournalVoucherApiModel {
-        data = typeof data === 'object' ? data : {};
-        let result = new FilterJournalVoucherApiModel();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["journalVoucherTitle"] = this.journalVoucherTitle;
-        data["journalVoucherNumber"] = this.journalVoucherNumber;
-        data["referenceNumber"] = this.referenceNumber;
-        data["transactionTime"] = this.transactionTime ? this.transactionTime.toISOString() : <any>undefined;
-        data["journalVoucherState"] = this.journalVoucherState;
-        data["createdByUserId"] = this.createdByUserId;
-        data["approvedByUserId"] = this.approvedByUserId;
-        data["approvedTime"] = this.approvedTime ? this.approvedTime.toISOString() : <any>undefined;
-        data["financialPeriodId"] = this.financialPeriodId;
-        return data;
-    }
-}
-
-export interface IFilterJournalVoucherApiModel {
-    journalVoucherTitle?: string | undefined;
-    journalVoucherNumber?: string | undefined;
-    referenceNumber?: string | undefined;
-    transactionTime?: Date | undefined;
-    journalVoucherState?: JournalVoucherState | undefined;
-    createdByUserId?: string | undefined;
-    approvedByUserId?: string | undefined;
-    approvedTime?: Date | undefined;
-    financialPeriodId?: string | undefined;
-}
-
 export class CreateFinancialPeriodApiModel implements ICreateFinancialPeriodApiModel {
     financialPeriodTitle?: string;
     startDate?: Date;
@@ -2948,54 +2872,6 @@ export interface IGetFinancialPeriodsQueryResult {
     isActive?: boolean;
     startDate?: Date;
     endDate?: Date;
-}
-
-export class FilterFinancialPeriodApiModel implements IFilterFinancialPeriodApiModel {
-    title?: string | undefined;
-    isActive?: boolean | undefined;
-    startDate?: Date | undefined;
-    endDate?: Date | undefined;
-
-    constructor(data?: IFilterFinancialPeriodApiModel) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.title = _data["title"];
-            this.isActive = _data["isActive"];
-            this.startDate = _data["startDate"] ? new Date(_data["startDate"].toString()) : <any>undefined;
-            this.endDate = _data["endDate"] ? new Date(_data["endDate"].toString()) : <any>undefined;
-        }
-    }
-
-    static fromJS(data: any): FilterFinancialPeriodApiModel {
-        data = typeof data === 'object' ? data : {};
-        let result = new FilterFinancialPeriodApiModel();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["title"] = this.title;
-        data["isActive"] = this.isActive;
-        data["startDate"] = this.startDate ? this.startDate.toISOString() : <any>undefined;
-        data["endDate"] = this.endDate ? this.endDate.toISOString() : <any>undefined;
-        return data;
-    }
-}
-
-export interface IFilterFinancialPeriodApiModel {
-    title?: string | undefined;
-    isActive?: boolean | undefined;
-    startDate?: Date | undefined;
-    endDate?: Date | undefined;
 }
 
 export class CreateDetailedAccountApiModel implements ICreateDetailedAccountApiModel {
@@ -3306,58 +3182,6 @@ export interface IGetDetailedAccountsQueryResult {
     isActive?: boolean;
     journalEntryType?: JournalEntryType;
     subLedgerAccountId?: string;
-}
-
-export class FilterDetailedAccountApiModel implements IFilterDetailedAccountApiModel {
-    title?: string | undefined;
-    code?: string | undefined;
-    isActive?: boolean | undefined;
-    journalEntryType?: JournalEntryType | undefined;
-    subLedgerAccountId?: string | undefined;
-
-    constructor(data?: IFilterDetailedAccountApiModel) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.title = _data["title"];
-            this.code = _data["code"];
-            this.isActive = _data["isActive"];
-            this.journalEntryType = _data["journalEntryType"];
-            this.subLedgerAccountId = _data["subLedgerAccountId"];
-        }
-    }
-
-    static fromJS(data: any): FilterDetailedAccountApiModel {
-        data = typeof data === 'object' ? data : {};
-        let result = new FilterDetailedAccountApiModel();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["title"] = this.title;
-        data["code"] = this.code;
-        data["isActive"] = this.isActive;
-        data["journalEntryType"] = this.journalEntryType;
-        data["subLedgerAccountId"] = this.subLedgerAccountId;
-        return data;
-    }
-}
-
-export interface IFilterDetailedAccountApiModel {
-    title?: string | undefined;
-    code?: string | undefined;
-    isActive?: boolean | undefined;
-    journalEntryType?: JournalEntryType | undefined;
-    subLedgerAccountId?: string | undefined;
 }
 
 export class CreateGeneralLedgerAccountApiModel implements ICreateGeneralLedgerAccountApiModel {
@@ -3678,58 +3502,6 @@ export interface IGetGeneralLedgerAccountsQueryResult {
     groupAccountId?: string;
 }
 
-export class FilterGeneralLedgerAccountApiModel implements IFilterGeneralLedgerAccountApiModel {
-    title?: string | undefined;
-    code?: string | undefined;
-    isActive?: boolean | undefined;
-    journalEntryType?: JournalEntryType | undefined;
-    groupAccountId?: string | undefined;
-
-    constructor(data?: IFilterGeneralLedgerAccountApiModel) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.title = _data["title"];
-            this.code = _data["code"];
-            this.isActive = _data["isActive"];
-            this.journalEntryType = _data["journalEntryType"];
-            this.groupAccountId = _data["groupAccountId"];
-        }
-    }
-
-    static fromJS(data: any): FilterGeneralLedgerAccountApiModel {
-        data = typeof data === 'object' ? data : {};
-        let result = new FilterGeneralLedgerAccountApiModel();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["title"] = this.title;
-        data["code"] = this.code;
-        data["isActive"] = this.isActive;
-        data["journalEntryType"] = this.journalEntryType;
-        data["groupAccountId"] = this.groupAccountId;
-        return data;
-    }
-}
-
-export interface IFilterGeneralLedgerAccountApiModel {
-    title?: string | undefined;
-    code?: string | undefined;
-    isActive?: boolean | undefined;
-    journalEntryType?: JournalEntryType | undefined;
-    groupAccountId?: string | undefined;
-}
-
 export class CreateGroupAccountApiModel implements ICreateGroupAccountApiModel {
     title?: string;
     code?: string;
@@ -4004,54 +3776,6 @@ export interface IGetGroupAccountsQueryResult {
     journalEntryType?: JournalEntryType;
 }
 
-export class FilterGroupAccountApiModel implements IFilterGroupAccountApiModel {
-    title?: string | undefined;
-    code?: string | undefined;
-    isActive?: boolean | undefined;
-    journalEntryType?: JournalEntryType | undefined;
-
-    constructor(data?: IFilterGroupAccountApiModel) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.title = _data["title"];
-            this.code = _data["code"];
-            this.isActive = _data["isActive"];
-            this.journalEntryType = _data["journalEntryType"];
-        }
-    }
-
-    static fromJS(data: any): FilterGroupAccountApiModel {
-        data = typeof data === 'object' ? data : {};
-        let result = new FilterGroupAccountApiModel();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["title"] = this.title;
-        data["code"] = this.code;
-        data["isActive"] = this.isActive;
-        data["journalEntryType"] = this.journalEntryType;
-        return data;
-    }
-}
-
-export interface IFilterGroupAccountApiModel {
-    title?: string | undefined;
-    code?: string | undefined;
-    isActive?: boolean | undefined;
-    journalEntryType?: JournalEntryType | undefined;
-}
-
 export class CreateSubLedgerAccountApiModel implements ICreateSubLedgerAccountApiModel {
     title?: string;
     code?: string;
@@ -4324,58 +4048,6 @@ export interface IGetSubLedgerAccountsQueryResult {
     isActive?: boolean;
     journalEntryType?: JournalEntryType;
     generalLedgerAccountId?: string;
-}
-
-export class FilterSubLedgerAccountApiModel implements IFilterSubLedgerAccountApiModel {
-    title?: string | undefined;
-    code?: string | undefined;
-    isActive?: boolean | undefined;
-    journalEntryType?: JournalEntryType | undefined;
-    generalLedgerAccountId?: string | undefined;
-
-    constructor(data?: IFilterSubLedgerAccountApiModel) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.title = _data["title"];
-            this.code = _data["code"];
-            this.isActive = _data["isActive"];
-            this.journalEntryType = _data["journalEntryType"];
-            this.generalLedgerAccountId = _data["generalLedgerAccountId"];
-        }
-    }
-
-    static fromJS(data: any): FilterSubLedgerAccountApiModel {
-        data = typeof data === 'object' ? data : {};
-        let result = new FilterSubLedgerAccountApiModel();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["title"] = this.title;
-        data["code"] = this.code;
-        data["isActive"] = this.isActive;
-        data["journalEntryType"] = this.journalEntryType;
-        data["generalLedgerAccountId"] = this.generalLedgerAccountId;
-        return data;
-    }
-}
-
-export interface IFilterSubLedgerAccountApiModel {
-    title?: string | undefined;
-    code?: string | undefined;
-    isActive?: boolean | undefined;
-    journalEntryType?: JournalEntryType | undefined;
-    generalLedgerAccountId?: string | undefined;
 }
 
 export class ApiException extends Error {
