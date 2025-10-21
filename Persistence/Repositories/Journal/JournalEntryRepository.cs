@@ -51,4 +51,18 @@ internal sealed class JournalEntryRepository(AccountingDbContext dbContext) : Ba
         // TODO: Apply pagination
         return await query.ToListAsync(cancellationToken);
     }
+
+    public async Task<bool> AnyByGroupAccountIdAsync(Guid groupAccountId, CancellationToken cancellationToken = default)
+    {
+        var subLedgerUsed = await TableNoTracking
+            .AnyAsync(e => e.SubLedgerAccount!.GeneralLedgerAccount!.GroupAccountId == groupAccountId, cancellationToken);
+
+        if (subLedgerUsed)
+            return true;
+
+        var detailedUsed = await TableNoTracking
+            .AnyAsync(e => e.DetailedAccount!.SubLedgerAccount!.GeneralLedgerAccount!.GroupAccountId == groupAccountId, cancellationToken);
+
+        return detailedUsed;
+    }
 }

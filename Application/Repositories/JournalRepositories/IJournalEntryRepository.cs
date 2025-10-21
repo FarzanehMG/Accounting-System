@@ -9,4 +9,5 @@ public interface IJournalEntryRepository
     Task<JournalEntryEntity?> GetLastEntryByVoucherIdAsync(Guid journalEntryId, CancellationToken cancellationToken = default);
     public Task<JournalEntryEntity?> GetByIdAsync(Guid journalEntryId, CancellationToken cancellationToken = default);
     Task<IReadOnlyList<JournalEntryEntity>> GetAllAsync(JournalEntryFilter filter, CancellationToken cancellationToken = default);
+    Task<bool> AnyByGroupAccountIdAsync(Guid groupAccountId, CancellationToken cancellationToken = default);
 }
