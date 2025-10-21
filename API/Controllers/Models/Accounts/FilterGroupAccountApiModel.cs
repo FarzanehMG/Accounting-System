@@ -1,11 +1,19 @@
 ﻿using Domain.Enums;
+using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers.Models.Accounts;
 
-public record FilterGroupAccountApiModel
+public class FilterGroupAccountApiModel
 {
-    public string? Title { get; set; }
-    public string? Code { get; set; }
-    public bool? IsActive { get; set; }
+    [FromQuery(Name = "Title")]
+    public string? Title { get; init; }
+
+    [FromQuery(Name = "Code")]
+    public string? Code { get; init; }
+
+    [FromQuery(Name = "IsActive")]
+    public bool? IsActive { get; init; }
+
+    [FromQuery(Name = "JournalEntryType")]
     public JournalEntryType? JournalEntryType { get; init; }
 }
