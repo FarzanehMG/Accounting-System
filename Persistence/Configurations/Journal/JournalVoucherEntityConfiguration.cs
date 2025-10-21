@@ -47,7 +47,7 @@ internal class JournalVoucherEntityConfiguration : IEntityTypeConfiguration<Jour
 
         // Index
         builder.HasIndex(x => x.FinancialPeriodId);
-        builder.HasIndex(x => x.JournalVoucherNumber).IsUnique();
+        builder.HasIndex(x => new { x.JournalVoucherNumber , x.Id}).IsUnique();
         builder.HasIndex(x => x.TransactionTime);
         builder.HasIndex(x => x.JournalVoucherState);
         builder.HasIndex(x => x.ReferenceNumber);

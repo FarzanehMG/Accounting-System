@@ -343,14 +343,14 @@ namespace Persistence.Migrations
 
                     b.HasIndex("DetailedAccountId");
 
-                    b.HasIndex("JournalEntryNumber")
-                        .IsUnique();
-
                     b.HasIndex("JournalEntryType");
 
                     b.HasIndex("JournalVoucherId");
 
                     b.HasIndex("SubLedgerAccountId");
+
+                    b.HasIndex("JournalEntryNumber", "Id")
+                        .IsUnique();
 
                     b.ToTable("JournalEntries", (string)null);
                 });
@@ -410,14 +410,14 @@ namespace Persistence.Migrations
 
                     b.HasIndex("FinancialPeriodId");
 
-                    b.HasIndex("JournalVoucherNumber")
-                        .IsUnique();
-
                     b.HasIndex("JournalVoucherState");
 
                     b.HasIndex("ReferenceNumber");
 
                     b.HasIndex("TransactionTime");
+
+                    b.HasIndex("JournalVoucherNumber", "Id")
+                        .IsUnique();
 
                     b.ToTable("JournalVouchers", (string)null);
                 });

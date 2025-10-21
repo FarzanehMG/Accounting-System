@@ -41,7 +41,7 @@ internal class JournalEntryEntityConfiguration : IEntityTypeConfiguration<Journa
         builder.HasIndex(x => x.SubLedgerAccountId);
         builder.HasIndex(x => x.JournalVoucherId);
         builder.HasIndex(x => x.JournalEntryType);
-        builder.HasIndex(x => x.JournalEntryNumber).IsUnique();
+        builder.HasIndex(x => new { x.JournalEntryNumber, x.Id}).IsUnique();
 
         // Navigation
         builder.HasOne(x => x.JournalVoucher)
