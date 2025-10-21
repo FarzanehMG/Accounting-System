@@ -30,22 +30,21 @@ internal sealed class GroupAccountRepository(AccountingDbContext dbContext) : Ba
 
     public async Task<IReadOnlyList<GroupAccountEntity>> GetAllAsync(GroupAccountFilter filter, CancellationToken cancellationToken = default)
     {
-        var query = TableNoTracking;
+        var query = TableNoTracking.AsQueryable();
 
         if (filter.IsActive.HasValue)
             query = query.Where(x => x.IsActive == filter.IsActive.Value);
 
         if (!string.IsNullOrEmpty(filter.Title))
-            query = query.Where(x => x.AccountTitle.Equals(filter.Title));
+            query = query.Where(x => x.AccountTitle.Contains(filter.Title));
 
         if (!string.IsNullOrEmpty(filter.Code))
-            query = query.Where(x => x.AccountCode.Equals(filter.Code));
+            query = query.Where(x => x.AccountCode.Contains(filter.Code)); 
 
         if (filter.JournalEntryType.HasValue)
             query = query.Where(x => x.JournalEntryType == filter.JournalEntryType.Value);
 
         // TODO: Apply pagination
-        return await query.ToListAsync(cancellationToken);
-
+        return await query.OrderBy(x => x.Id).ToListAsync(cancellationToken);
     }
 }
