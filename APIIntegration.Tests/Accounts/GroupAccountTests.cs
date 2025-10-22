@@ -198,6 +198,30 @@ public class GroupAccountTests(ApiTestSetup setup, ITestOutputHelper output) : I
     }
 
     [Fact]
+    public async Task CreateGroupAccount_ShouldFail_WhenDuplicateCodeExists()
+    {
+        throw new NotImplementedException();
+    }
+
+    [Fact]
+    public async Task CreateGroupAccount_ShouldFail_WhenNoActiveFinancialPeriodExists()
+    {
+        throw new NotImplementedException();
+    }
+
+    [Fact]
+    public async Task CreateGroupAccount_ShouldReturnInactiveGroupAccountId_WhenInactiveGroupWithSameTitleExists()
+    {
+        throw new NotImplementedException();
+    }
+
+    [Fact]
+    public async Task CreateGroupAccount_ShouldSuccess_WhenFinancialPeriodIsActive()
+    {
+        throw new NotImplementedException();
+    }
+
+    [Fact]
     public async Task UpdateGroupAccount_ShouldNotChange_WhenNoFieldsProvided()
     {
         // Create group account
@@ -307,7 +331,7 @@ public class GroupAccountTests(ApiTestSetup setup, ITestOutputHelper output) : I
     }
 
     [Fact]
-    public async Task UpdateGroupAccount_ShouldSucceed_WhenCodeIsProvided()
+    public async Task UpdateGroupAccount_ShouldChangeCode_WhenValidAndNoJournalEntries()
     {
         // Create group account
         var model = new CreateGroupAccountApiModel
@@ -355,7 +379,7 @@ public class GroupAccountTests(ApiTestSetup setup, ITestOutputHelper output) : I
     }
 
     [Fact]
-    public async Task UpdateGroupAccount_ShouldSucceed_WhenJournalEntryTypeIsProvided()
+    public async Task UpdateGroupAccount_ShouldChangeJournalType_WhenNoJournalEntries()
     {
         // Create group account
         var model = new CreateGroupAccountApiModel
@@ -458,6 +482,90 @@ public class GroupAccountTests(ApiTestSetup setup, ITestOutputHelper output) : I
         updated.AccountDescription.Should().Be(original.AccountDescription);
         updated.JournalEntryType.Should().Be(original.JournalEntryType);
         updated.IsActive.Should().Be(original.IsActive);
+    }
+
+    [Fact]
+    public async Task UpdateGroupAccount_ShouldFail_WhenValidatorFails()
+    {
+        throw new NotImplementedException();
+    }
+
+    [Fact]
+    public async Task UpdateGroupAccount_ShouldFail_WhenNoActiveFinancialPeriod()
+    {
+        throw new NotImplementedException();
+    }
+
+    [Fact]
+    public async Task UpdateGroupAccount_ShouldFail_WhenFinancialPeriodInActive()
+    {
+        throw new NotImplementedException();
+    }
+
+    [Fact]
+    public async Task UpdateGroupAccount_ShouldFail_WhenCodeChangedAndHasJournalEntries()
+    {
+        throw new NotImplementedException();
+    }
+
+    [Fact]
+    public async Task UpdateGroupAccount_ShouldFail_WhenCodeIsDuplicate()
+    {
+        throw new NotImplementedException();
+    }
+
+    [Fact]
+    public async Task UpdateGroupAccount_ShouldFail_WhenActiveDuplicateTitleExists()
+    {
+        throw new NotImplementedException();
+    }
+
+    [Fact]
+    public async Task UpdateGroupAccount_ShouldSuggestReactivation_WhenInactiveDuplicateTitleExists()
+    {
+        throw new NotImplementedException();
+    }
+
+    [Fact]
+    public async Task UpdateGroupAccount_ShouldFail_WhenDeactivatingWithJournalEntries()
+    {
+        throw new NotImplementedException();
+    }
+
+    [Fact]
+    public async Task UpdateGroupAccount_ShouldChangeIsActive_WhenNoJournalEntries()
+    {
+        throw new NotImplementedException();
+    }
+
+    [Fact]
+    public async Task UpdateGroupAccount_ShouldChangeIsActive_WhenActivatingAccount()
+    {
+        throw new NotImplementedException();
+    }
+
+    [Fact]
+    public async Task UpdateGroupAccount_ShouldChangeDescription_WhenProvided()
+    {
+        throw new NotImplementedException();
+    }
+
+    [Fact]
+    public async Task UpdateGroupAccount_ShouldNotChangeDescription_WhenNull()
+    {
+        throw new NotImplementedException();
+    }
+
+    [Fact]
+    public async Task UpdateGroupAccount_ShouldFailOrChangeFields_WhenMultipleUpdatesProvided_WithJournalEntries()
+    {
+        throw new NotImplementedException();
+    }
+
+    [Fact]
+    public async Task UpdateGroupAccount_ShouldUpdateAllFields_WhenMultipleUpdatesProvided_NoJournalEntries()
+    {
+        throw new NotImplementedException();
     }
 
     [Fact]

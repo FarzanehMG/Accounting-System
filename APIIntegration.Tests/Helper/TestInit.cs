@@ -62,7 +62,7 @@ public class TestInit
         return testInit;
     }
 
-    public async Task CreateJournalEntry(Guid groupAccountId)
+    internal async Task CreateJournalEntry(Guid groupAccountId)
     {
         // Create GeneralLedger account
         var generalLedgerAccount = await CreateGeneralLedgerAccount(groupAccountId, JournalEntryType.Credit);
@@ -111,6 +111,30 @@ public class TestInit
         journalEntries.Should().ContainSingle(x => x.SubLedgerAccountId == subLedgerAccount2.Id && x.JournalEntryType == Domain.Enums.JournalEntryType.Debit);
     }
 
+    internal async Task<GroupAccountEntity> CreateGroupAccount(JournalEntryType journalEntryType)
+    {
+        var createGroupAccount = new CreateGroupAccountApiModel
+        {
+            Title = Guid.NewGuid().ToString(),
+            Code = Guid.NewGuid().ToString(),
+            IsActive = true,
+            JournalEntryType = journalEntryType,
+        };
+        await GroupAccountClient.CreateAsync(createGroupAccount);
+
+        // Assert
+        var groupAccount = await AccountingDbContext.Set<GroupAccountEntity>()
+            .SingleAsync(x => x.AccountTitle == createGroupAccount.Title && x.AccountCode == createGroupAccount.Code);
+
+        groupAccount.Should().NotBeNull();
+        groupAccount.AccountTitle.Should().Be(createGroupAccount.Title);
+        groupAccount.AccountCode.Should().Be(createGroupAccount.Code);
+        groupAccount.IsActive.Should().BeTrue();
+
+        // Return Group account
+        return groupAccount;
+    }
+
     private async Task<GeneralLedgerAccountEntity> CreateGeneralLedgerAccount(Guid groupAccountId, JournalEntryType journalEntryType)
     {
         var createGeneralLedgerAccount = new CreateGeneralLedgerAccountApiModel
@@ -136,7 +160,6 @@ public class TestInit
         // Return GeneralLedger account
         return generalLedgerAccount;
     }
-
 
     private async Task<SubLedgerAccountEntity> CreateSubLedgerAccount(Guid generalLedgerAccountId, JournalEntryType journalEntryType)
     {
