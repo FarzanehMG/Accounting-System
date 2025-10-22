@@ -34,7 +34,7 @@ internal sealed class GeneralLedgerAccountRepository(AccountingDbContext dbConte
         return await TableNoTracking.FirstOrDefaultAsync(x => x.AccountCode.Equals(code), cancellationToken);
     }
 
-    public async Task<IReadOnlyList<GeneralLedgerAccountEntity>> FindActiveAccountByTitleAndGroupAsync(string title, Guid groupAccountId, CancellationToken cancellationToken = default)
+    public async Task<IReadOnlyList<GeneralLedgerAccountEntity>> FindAccountByTitleAndGroupAccountAsync(string title, Guid groupAccountId, CancellationToken cancellationToken = default)
     {
         return await TableNoTracking.Where(x =>
                 x.AccountTitle.Equals(title) &&

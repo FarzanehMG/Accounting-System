@@ -52,7 +52,7 @@ internal sealed class JournalEntryRepository(AccountingDbContext dbContext) : Ba
         return await query.ToListAsync(cancellationToken);
     }
 
-    public async Task<bool> AnyByGroupAccountIdAsync(Guid groupAccountId, CancellationToken cancellationToken = default)
+    public async Task<bool> AnyJournalEntryByGroupAccountIdAsync(Guid groupAccountId, CancellationToken cancellationToken = default)
     {
         var subLedgerUsed = await TableNoTracking
             .AnyAsync(e => e.SubLedgerAccount!.GeneralLedgerAccount!.GroupAccountId == groupAccountId, cancellationToken);

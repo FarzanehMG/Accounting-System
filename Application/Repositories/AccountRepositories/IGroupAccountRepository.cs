@@ -8,6 +8,7 @@ public interface IGroupAccountRepository
 {
 	Task CreateAsync(GroupAccountEntity entity, CancellationToken cancellationToken = default);
 	Task<GroupAccountEntity?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default);
-	Task<GroupAccountEntity?> FindActiveAccountByTitleAndTypeAsync(string accountTitle, JournalEntryType journalEntryType, CancellationToken cancellationToken = default);
-    Task<IReadOnlyList<GroupAccountEntity>> GetAllAsync(GroupAccountFilter filter, CancellationToken cancellationToken = default);
+	Task<IReadOnlyList<GroupAccountEntity>> FindAccountByTitleAndTypeAsync(string accountTitle, JournalEntryType journalEntryType, CancellationToken cancellationToken = default);
+	Task<IReadOnlyList<GroupAccountEntity>> GetAllAsync(GroupAccountFilter filter, CancellationToken cancellationToken = default);
+    Task<GroupAccountEntity?> FindByCodeAsync(string code, CancellationToken cancellationToken = default);
 }
