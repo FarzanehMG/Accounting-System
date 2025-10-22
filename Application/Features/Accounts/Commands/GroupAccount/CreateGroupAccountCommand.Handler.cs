@@ -15,17 +15,50 @@ public class CreateGroupAccountCommandHandler(IUnitOfWork unitOfWork)
 		if (!validateResult.IsValid)
 			return OperationResult<bool>.FailureResult(validateResult.Errors.ConvertToKeyValuePair());
 
-        if (request.IsActive)
-        {
-            var exists = await unitOfWork.GroupAccountRepository
-                .FindActiveAccountByTitleAndTypeAsync(request.Title, request.JournalEntryType, cancellationToken);
+        // Business Rule: Each active account must have a unique title.
+        // Prevents confusion in reporting and ensures accurate posting of journal entries.
+        var existingGroups = await unitOfWork.GroupAccountRepository
+            .FindAccountByTitleAndTypeAsync(request.Title, request.JournalEntryType, cancellationToken);
 
-            if (exists != null)
-            {
-                return OperationResult<bool>.FailureResult(nameof(request.Title), "An active group account with the same title or type already exists.");
-            }
+        if (request.IsActive && existingGroups.Any(g => g.IsActive))
+        {
+            return OperationResult<bool>.FailureResult([
+                new KeyValuePair<string, string>("Title", "An active group account with this title already exists.")
+            ]);
         }
 
+        // Business Rule: If an account with the same title already exists but is inactive,
+        // return its ID and code so the system can provide a direct "Reactivate" option.
+        var inactiveGroup = existingGroups.FirstOrDefault(g => !g.IsActive);
+        if (inactiveGroup is not null)
+        {
+            return OperationResult<bool>.FailureResult([
+                new KeyValuePair<string, string>("Title", $"An inactive group account with this title already exists (Code: {inactiveGroup.AccountCode}). Consider reactivating it instead of creating a new one."),
+                new KeyValuePair<string, string>("InactiveGroupAccountId", inactiveGroup.Id.ToString())
+            ]);
+        }
+
+        // Business Rule: Account code must always be unique to guarantee data integrity.
+        var duplicateCode = await unitOfWork.GroupAccountRepository
+            .FindByCodeAsync(request.Code, cancellationToken);
+
+        if (duplicateCode is not null)
+        {
+            return OperationResult<bool>.FailureResult([
+                new KeyValuePair<string, string>("Code", "Group account code already exists.")
+            ]);
+        }
+
+        // Business Rule: GeneralLedger account should be active
+        var activePeriod = await unitOfWork.FinancialPeriodRepository.GetActiveFinancialPeriodAsync(cancellationToken);
+        if (activePeriod is null)
+        {
+            return OperationResult<bool>.FailureResult([
+                new KeyValuePair<string, string>("FinancialPeriod", "No active financial period found.")
+            ]);
+        }
+
+        // Create new group account entity
         var createGroupAccount = new GroupAccountEntity
 		{
 			AccountTitle = request.Title,
