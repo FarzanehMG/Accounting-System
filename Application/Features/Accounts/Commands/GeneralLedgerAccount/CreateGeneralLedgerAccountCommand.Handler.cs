@@ -39,7 +39,7 @@ public class CreateGeneralLedgerAccountCommandHandler(IUnitOfWork unitOfWork)
             ]);
         }
 
-        // Technical Rule: Account code must always be unique to guarantee data integrity.
+        // Business Rule: Account code must always be unique to guarantee data integrity.
         var duplicateCode = await unitOfWork.GeneralLedgerAccountRepository
             .FindByCodeAsync(request.Code, cancellationToken);
 
@@ -48,6 +48,13 @@ public class CreateGeneralLedgerAccountCommandHandler(IUnitOfWork unitOfWork)
             return OperationResult<bool>.FailureResult([new KeyValuePair<string, string>(
                 "Code", "Account code already exists.")]);
         }
+
+        // Business Rule: GeneralLedger account should be active
+        var activePeriod = await unitOfWork.FinancialPeriodRepository.GetActiveFinancialPeriodAsync(cancellationToken);
+        if (activePeriod is null)
+            return OperationResult<bool>.FailureResult([
+                new KeyValuePair<string, string>("FinancialPeriod", "No active financial period found.")
+            ]);
 
         // Create new general ledger account entity
         var createGeneralAccount = new GeneralLedgerAccountEntity
