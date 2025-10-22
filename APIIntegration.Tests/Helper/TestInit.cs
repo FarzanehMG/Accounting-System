@@ -111,13 +111,13 @@ public class TestInit
         journalEntries.Should().ContainSingle(x => x.SubLedgerAccountId == subLedgerAccount2.Id && x.JournalEntryType == Domain.Enums.JournalEntryType.Debit);
     }
 
-    internal async Task<GroupAccountEntity> CreateGroupAccount(JournalEntryType journalEntryType)
+    internal async Task<GroupAccountEntity> CreateGroupAccount(JournalEntryType journalEntryType, bool isActive = true)
     {
         var createGroupAccount = new CreateGroupAccountApiModel
         {
             Title = Guid.NewGuid().ToString(),
             Code = Guid.NewGuid().ToString(),
-            IsActive = true,
+            IsActive = isActive,
             JournalEntryType = journalEntryType,
         };
         await GroupAccountClient.CreateAsync(createGroupAccount);
@@ -129,7 +129,6 @@ public class TestInit
         groupAccount.Should().NotBeNull();
         groupAccount.AccountTitle.Should().Be(createGroupAccount.Title);
         groupAccount.AccountCode.Should().Be(createGroupAccount.Code);
-        groupAccount.IsActive.Should().BeTrue();
 
         // Return Group account
         return groupAccount;

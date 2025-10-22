@@ -17,8 +17,9 @@ internal sealed class FinancialPeriodRepository(AccountingDbContext dbContext) :
     {
         return await TableNoTracking.FirstOrDefaultAsync(x =>
                 (!startDate.HasValue || x.EndDate >= startDate.Value) &&
-                (!endDate.HasValue || x.StartDate <= endDate.Value),
-            cancellationToken);
+                (!endDate.HasValue || x.StartDate <= endDate.Value) &&
+                x.IsActive, 
+                cancellationToken);
 
     }
 

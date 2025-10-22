@@ -1,6 +1,7 @@
 ﻿using API.Controllers.Models.Accounts;
 using APIIntegration.Tests.Helper;
 using Domain.Entities.Accounts;
+using Domain.Entities.FinancialPeriod;
 using FluentAssertions;
 using GenerateApi;
 using Microsoft.EntityFrameworkCore;
@@ -74,7 +75,7 @@ public class GroupAccountTests(ApiTestSetup setup, ITestOutputHelper output) : I
         try
         {
             var result2 = await setup.TestInit1.GroupAccountClient.CreateAsync(createGroupAccountCommand2);
-            result2.IsSuccess.Should().BeTrue("Expected an ApiException was not thrown.");
+            result2.IsSuccess.Should().BeFalse("Expected an ApiException was not thrown.");
         }
         catch (ApiException ex)
         {
@@ -133,7 +134,7 @@ public class GroupAccountTests(ApiTestSetup setup, ITestOutputHelper output) : I
         try
         {
             var result = await setup.TestInit1.GroupAccountClient.CreateAsync(createGroupAccountCommand);
-            result.IsSuccess.Should().BeTrue("Expected an ApiException was not thrown.");
+            result.IsSuccess.Should().BeFalse("Expected an ApiException was not thrown.");
         }
         catch (ApiException ex)
         {
@@ -160,7 +161,7 @@ public class GroupAccountTests(ApiTestSetup setup, ITestOutputHelper output) : I
         try
         {
             var result = await setup.TestInit1.GroupAccountClient.CreateAsync(createGroupAccountCommand);
-            result.IsSuccess.Should().BeTrue("Expected an ApiException was not thrown.");
+            result.IsSuccess.Should().BeFalse("Expected an ApiException was not thrown.");
         }
         catch (ApiException ex)
         {
@@ -187,7 +188,7 @@ public class GroupAccountTests(ApiTestSetup setup, ITestOutputHelper output) : I
         try
         {
             var result = await setup.TestInit1.GroupAccountClient.CreateAsync(createGroupAccountCommand);
-            result.IsSuccess.Should().BeTrue("Expected an ApiException was not thrown.");
+            result.IsSuccess.Should().BeFalse("Expected an ApiException was not thrown.");
         }
         catch (ApiException ex)
         {
@@ -200,25 +201,95 @@ public class GroupAccountTests(ApiTestSetup setup, ITestOutputHelper output) : I
     [Fact]
     public async Task CreateGroupAccount_ShouldFail_WhenDuplicateCodeExists()
     {
-        throw new NotImplementedException();
+        // Arrange
+        var groupAccount = await setup.TestInit1.CreateGroupAccount(JournalEntryType.Credit);
+
+        var createGroupAccountCommand = new CreateGroupAccountApiModel
+        {
+            Title = Guid.NewGuid().ToString(),
+            Code = groupAccount.AccountCode,
+            IsActive = true,
+            JournalEntryType = JournalEntryType.Credit,
+            Description = "Integration test group account"
+        };
+
+        // Act and Assert
+        try
+        {
+            var result = await setup.TestInit1.GroupAccountClient.CreateAsync(createGroupAccountCommand);
+            result.IsSuccess.Should().BeFalse("Expected an ApiException was not thrown.");
+        }
+        catch (ApiException ex)
+        {
+            var responseContent = ex.Response;
+            responseContent.Should().Contain("Group account code already exists.");
+            ex.StatusCode.Should().Be(400);
+        }
     }
 
     [Fact]
     public async Task CreateGroupAccount_ShouldFail_WhenNoActiveFinancialPeriodExists()
     {
-        throw new NotImplementedException();
+        // Arrange
+        var financialPeriod = await setup.TestInit1.AccountingDbContext
+            .Set<FinancialPeriodEntity>()
+            .SingleAsync(f => f.Id == setup.TestInit1.FinancialPeriodId);
+
+        financialPeriod.IsActive = false;
+
+        await setup.TestInit1.AccountingDbContext.SaveChangesAsync();
+
+        var createGroupAccountCommand = new CreateGroupAccountApiModel
+        {
+            Title = Guid.NewGuid().ToString(),
+            Code = Guid.NewGuid().ToString(),
+            IsActive = true,
+            JournalEntryType = JournalEntryType.Credit,
+            Description = "Integration test group account"
+        };
+
+        // Act And Assert
+        try
+        {
+            var result = await setup.TestInit1.GroupAccountClient.CreateAsync(createGroupAccountCommand);
+            result.IsSuccess.Should().BeFalse("Expected an ApiException was not thrown.");
+        }
+        catch (ApiException ex)
+        {
+            var responseContent = ex.Response;
+            responseContent.Should().Contain("No active financial period found.");
+            ex.StatusCode.Should().Be(400);
+        }
     }
 
     [Fact]
     public async Task CreateGroupAccount_ShouldReturnInactiveGroupAccountId_WhenInactiveGroupWithSameTitleExists()
     {
-        throw new NotImplementedException();
-    }
+        // Arrange
+        var groupAccount = await setup.TestInit1.CreateGroupAccount(JournalEntryType.Credit, false);
 
-    [Fact]
-    public async Task CreateGroupAccount_ShouldSuccess_WhenFinancialPeriodIsActive()
-    {
-        throw new NotImplementedException();
+        var createGroupAccountCommand = new CreateGroupAccountApiModel
+        {
+            Title = groupAccount.AccountTitle,
+            Code = Guid.NewGuid().ToString(),
+            IsActive = true,
+            JournalEntryType = JournalEntryType.Credit,
+            Description = "Integration test group account"
+        };
+
+        // Act And Assert
+        try
+        {
+            var result = await setup.TestInit1.GroupAccountClient.CreateAsync(createGroupAccountCommand);
+            result.IsSuccess.Should().BeFalse("Expected an ApiException was not thrown.");
+        }
+        catch (ApiException ex)
+        {
+            var responseContent = ex.Response;
+            responseContent.Should().Contain($"An inactive group account with this title already exists (Code: {groupAccount.AccountCode}). Consider reactivating it instead of creating a new one.");
+            responseContent.Should().Contain($"{groupAccount.Id}");
+            ex.StatusCode.Should().Be(400);
+        }
     }
 
     [Fact]
@@ -272,7 +343,7 @@ public class GroupAccountTests(ApiTestSetup setup, ITestOutputHelper output) : I
         try
         {
             var result = await setup.TestInit1.GroupAccountClient.GetByIdAsync(Guid.NewGuid());
-            result.IsSuccess.Should().BeTrue("Expected an ApiException was not thrown.");
+            result.IsSuccess.Should().BeFalse("Expected an ApiException was not thrown.");
         }
         catch (ApiException ex)
         {
@@ -462,7 +533,7 @@ public class GroupAccountTests(ApiTestSetup setup, ITestOutputHelper output) : I
         try
         {
             var result = await setup.TestInit1.GroupAccountClient.UpdateAsync(updateGroupAccountCommand);
-            result.IsSuccess.Should().BeTrue("Expected an ApiException was not thrown.");
+            result.IsSuccess.Should().BeFalse("Expected an ApiException was not thrown.");
         }
         catch (ApiException ex)
         {
@@ -487,13 +558,68 @@ public class GroupAccountTests(ApiTestSetup setup, ITestOutputHelper output) : I
     [Fact]
     public async Task UpdateGroupAccount_ShouldFail_WhenValidatorFails()
     {
-        throw new NotImplementedException();
+        // Create group account
+        var groupAccount = await setup.TestInit1.CreateGroupAccount(JournalEntryType.Credit);
+
+        // Update group account
+        var updateGroupAccountCommand = new UpdateGroupAccountCommand
+        {
+            GroupAccountId = groupAccount.Id,
+            Title = new PatchOfString
+            {
+                Value = ""
+            }
+        };
+
+        try
+        {
+            var result = await setup.TestInit1.GroupAccountClient.UpdateAsync(updateGroupAccountCommand);
+            result.IsSuccess.Should().BeFalse("Expected an ApiException was not thrown.");
+        }
+        catch (ApiException ex)
+        {
+            var responseContent = ex.Response;
+            responseContent.Should().Contain("Title should not be null.");
+            ex.StatusCode.Should().Be(400);
+        }
     }
 
     [Fact]
     public async Task UpdateGroupAccount_ShouldFail_WhenNoActiveFinancialPeriod()
     {
-        throw new NotImplementedException();
+        // Create group account
+        var groupAccount = await setup.TestInit1.CreateGroupAccount(JournalEntryType.Credit);
+
+        // Update financial period
+        var financialPeriod = await setup.TestInit1.AccountingDbContext
+            .Set<FinancialPeriodEntity>()
+            .SingleAsync(f => f.Id == setup.TestInit1.FinancialPeriodId);
+
+        financialPeriod.IsActive = false;
+
+        await setup.TestInit1.AccountingDbContext.SaveChangesAsync();
+
+        var updateGroupAccountCommand = new UpdateGroupAccountCommand
+        {
+            GroupAccountId = groupAccount.Id,
+            Title = new PatchOfString
+            {
+                Value = Guid.NewGuid().ToString()
+            }
+        };
+
+        // Act And Assert
+        try
+        {
+            var result = await setup.TestInit1.GroupAccountClient.UpdateAsync(updateGroupAccountCommand);
+            result.IsSuccess.Should().BeFalse("Expected an ApiException was not thrown.");
+        }
+        catch (ApiException ex)
+        {
+            var responseContent = ex.Response;
+            responseContent.Should().Contain("Cannot modify group accounts without an active open financial period.");
+            ex.StatusCode.Should().Be(400);
+        }
     }
 
     [Fact]
