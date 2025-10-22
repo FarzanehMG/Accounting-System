@@ -22,7 +22,7 @@ public class UpdateGeneralLedgerAccountCommandHandler(IUnitOfWork unitOfWork)
 
         // Ensure there is an active financial period
         var activePeriod = await unitOfWork.FinancialPeriodRepository.GetActiveFinancialPeriodAsync(cancellationToken);
-        if (activePeriod is null || activePeriod.IsActive)
+        if (activePeriod is null || !activePeriod.IsActive)
             return OperationResult<bool>.FailureResult("FinancialPeriod", "Cannot modify accounts without an active open financial period.");
 
         // Check if the account has journal entries
@@ -85,7 +85,7 @@ public class UpdateGeneralLedgerAccountCommandHandler(IUnitOfWork unitOfWork)
     private async Task<OperationResult<bool>> UpdateAccountCode(GeneralLedgerAccountEntity generalLedgerAccount, UpdateGeneralLedgerAccountCommand request, bool hasJournalEntries, CancellationToken cancellationToken)
     {
         if (string.IsNullOrWhiteSpace(request.Code?.Value))
-            return OperationResult<bool>.FailureResult(nameof(request.Code), "Account code cannot be empty.");
+            return OperationResult<bool>.SuccessResult(true);
 
         if (hasJournalEntries && request.Code.Value != generalLedgerAccount.AccountCode)
             return OperationResult<bool>.FailureResult(nameof(request.Code), "Cannot change account code for an account with journal entries.");

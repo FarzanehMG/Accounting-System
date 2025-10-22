@@ -6,6 +6,7 @@ using Application.Repositories.Common;
 using Application.Tests.Extensions;
 using Bogus;
 using Domain.Entities.Accounts;
+using Domain.Entities.FinancialPeriod;
 using Domain.Enums;
 using FluentAssertions;
 using NSubstitute;
@@ -21,6 +22,16 @@ public class GeneralLedgerAccountTests(ITestOutputHelper testOutputHelper)
         // Arrange
         var unitOfWork = Substitute.For<IUnitOfWork>();
         var faker = new Faker();
+
+        var existingFinancialPeriodEntity = new FinancialPeriodEntity
+        {
+            FinancialPeriodTitle = faker.Finance.AccountName(),
+            StartDate = DateTime.UtcNow.AddDays(-100),
+            EndDate = DateTime.UtcNow.AddDays(100)
+        };
+        unitOfWork.FinancialPeriodRepository
+            .GetActiveFinancialPeriodAsync(Arg.Any<CancellationToken>())
+            .Returns(existingFinancialPeriodEntity);
 
         var createGeneralAccountCommand = new CreateGeneralLedgerAccountCommand
         {
@@ -198,6 +209,16 @@ public class GeneralLedgerAccountTests(ITestOutputHelper testOutputHelper)
         var title = faker.Finance.AccountName();
         var groupAccountId = Guid.NewGuid();
         const JournalEntryType journalEntryType = JournalEntryType.Debit;
+
+        var existingFinancialPeriodEntity = new FinancialPeriodEntity
+        {
+            FinancialPeriodTitle = faker.Finance.AccountName(),
+            StartDate = DateTime.UtcNow.AddDays(-100),
+            EndDate = DateTime.UtcNow.AddDays(100)
+        };
+        unitOfWork.FinancialPeriodRepository
+            .GetActiveFinancialPeriodAsync(Arg.Any<CancellationToken>())
+            .Returns(existingFinancialPeriodEntity);
 
         var existingGeneralLedgerAccount = new GeneralLedgerAccountEntity
         {
@@ -419,6 +440,16 @@ public class GeneralLedgerAccountTests(ITestOutputHelper testOutputHelper)
         var faker = new Faker();
         var generalLegerAccountId = Guid.NewGuid();
 
+        var existingFinancialPeriodEntity = new FinancialPeriodEntity
+        {
+            FinancialPeriodTitle = faker.Finance.AccountName(),
+            StartDate = DateTime.UtcNow.AddDays(-100),
+            EndDate = DateTime.UtcNow.AddDays(100)
+        };
+        unitOfWork.FinancialPeriodRepository
+            .GetActiveFinancialPeriodAsync(Arg.Any<CancellationToken>())
+            .Returns(existingFinancialPeriodEntity);
+
         var existingGeneralLedgerAccountEntity = new GeneralLedgerAccountEntity
         {
             AccountTitle = faker.Finance.AccountName(),
@@ -455,6 +486,16 @@ public class GeneralLedgerAccountTests(ITestOutputHelper testOutputHelper)
         var faker = new Faker();
         var generalLegerAccountId = Guid.NewGuid();
 
+        var existingFinancialPeriodEntity = new FinancialPeriodEntity
+        {
+            FinancialPeriodTitle = faker.Finance.AccountName(),
+            StartDate = DateTime.UtcNow.AddDays(-100),
+            EndDate = DateTime.UtcNow.AddDays(100)
+        };
+        unitOfWork.FinancialPeriodRepository
+            .GetActiveFinancialPeriodAsync(Arg.Any<CancellationToken>())
+            .Returns(existingFinancialPeriodEntity);
+
         var existingGeneralLedgerAccountEntity = new GeneralLedgerAccountEntity
         {
             AccountTitle = faker.Finance.AccountName(),
@@ -490,6 +531,26 @@ public class GeneralLedgerAccountTests(ITestOutputHelper testOutputHelper)
         var unitOfWork = Substitute.For<IUnitOfWork>();
         var faker = new Faker();
         var generalLegerAccountId = Guid.NewGuid();
+        var groupAccountId = Guid.NewGuid();
+
+        var existingFinancialPeriodEntity = new FinancialPeriodEntity
+        {
+            FinancialPeriodTitle = faker.Finance.AccountName(),
+            StartDate = DateTime.UtcNow.AddDays(-100),
+            EndDate = DateTime.UtcNow.AddDays(100)
+        };
+        unitOfWork.FinancialPeriodRepository
+            .GetActiveFinancialPeriodAsync(Arg.Any<CancellationToken>())
+            .Returns(existingFinancialPeriodEntity);
+
+        var existingGroupAccountEntity = new GroupAccountEntity
+        {
+            AccountTitle = faker.Finance.AccountName(),
+            AccountCode = faker.Finance.Account(),
+            JournalEntryType = JournalEntryType.Credit
+        };
+        unitOfWork.GroupAccountRepository.GetByIdAsync(groupAccountId, Arg.Any<CancellationToken>())
+            .Returns(existingGroupAccountEntity);
 
         var existingGeneralLedgerAccountEntity = new GeneralLedgerAccountEntity
         {
@@ -504,7 +565,7 @@ public class GeneralLedgerAccountTests(ITestOutputHelper testOutputHelper)
         var updateGeneralLedgerAccountCommand = new UpdateGeneralLedgerAccountCommand
         {
             GeneralLedgerAccountId = generalLegerAccountId,
-            GroupAccountId = new Patch<Guid>(Guid.NewGuid())
+            GroupAccountId = new Patch<Guid>(groupAccountId)
         };
         var updateGeneralLedgerAccountHandler = new UpdateGeneralLedgerAccountCommandHandler(unitOfWork);
 
@@ -526,6 +587,16 @@ public class GeneralLedgerAccountTests(ITestOutputHelper testOutputHelper)
         var unitOfWork = Substitute.For<IUnitOfWork>();
         var faker = new Faker();
         var generalLegerAccountId = Guid.NewGuid();
+
+        var existingFinancialPeriodEntity = new FinancialPeriodEntity
+        {
+            FinancialPeriodTitle = faker.Finance.AccountName(),
+            StartDate = DateTime.UtcNow.AddDays(-100),
+            EndDate = DateTime.UtcNow.AddDays(100)
+        };
+        unitOfWork.FinancialPeriodRepository
+            .GetActiveFinancialPeriodAsync(Arg.Any<CancellationToken>())
+            .Returns(existingFinancialPeriodEntity);
 
         var existingGeneralLedgerAccountEntity = new GeneralLedgerAccountEntity
         {
@@ -564,6 +635,16 @@ public class GeneralLedgerAccountTests(ITestOutputHelper testOutputHelper)
         var faker = new Faker();
         var generalLegerAccountId = Guid.NewGuid();
 
+        var existingFinancialPeriodEntity = new FinancialPeriodEntity
+        {
+            FinancialPeriodTitle = faker.Finance.AccountName(),
+            StartDate = DateTime.UtcNow.AddDays(-100),
+            EndDate = DateTime.UtcNow.AddDays(100)
+        };
+        unitOfWork.FinancialPeriodRepository
+            .GetActiveFinancialPeriodAsync(Arg.Any<CancellationToken>())
+            .Returns(existingFinancialPeriodEntity);
+
         var existingGeneralLedgerAccountEntity = new GeneralLedgerAccountEntity
         {
             AccountTitle = faker.Finance.AccountName(),
@@ -599,6 +680,16 @@ public class GeneralLedgerAccountTests(ITestOutputHelper testOutputHelper)
         var unitOfWork = Substitute.For<IUnitOfWork>();
         var faker = new Faker();
         var generalLegerAccountId = Guid.NewGuid();
+
+        var existingFinancialPeriodEntity = new FinancialPeriodEntity
+        {
+            FinancialPeriodTitle = faker.Finance.AccountName(),
+            StartDate = DateTime.UtcNow.AddDays(-100),
+            EndDate = DateTime.UtcNow.AddDays(100)
+        };
+        unitOfWork.FinancialPeriodRepository
+            .GetActiveFinancialPeriodAsync(Arg.Any<CancellationToken>())
+            .Returns(existingFinancialPeriodEntity);
 
         var existingGeneralLedgerAccountEntity = new GeneralLedgerAccountEntity
         {
@@ -638,6 +729,16 @@ public class GeneralLedgerAccountTests(ITestOutputHelper testOutputHelper)
         var groupAccountId = Guid.NewGuid();
         var title = faker.Finance.AccountName();
 
+        var existingFinancialPeriodEntity = new FinancialPeriodEntity
+        {
+            FinancialPeriodTitle = faker.Finance.AccountName(),
+            StartDate = DateTime.UtcNow.AddDays(-100),
+            EndDate = DateTime.UtcNow.AddDays(100)
+        };
+        unitOfWork.FinancialPeriodRepository
+            .GetActiveFinancialPeriodAsync(Arg.Any<CancellationToken>())
+            .Returns(existingFinancialPeriodEntity);
+
         var existingGeneralLedgerAccountEntity = new GeneralLedgerAccountEntity
         {
             AccountTitle = title,
@@ -664,6 +765,11 @@ public class GeneralLedgerAccountTests(ITestOutputHelper testOutputHelper)
         unitOfWork.GeneralLedgerAccountRepository.FindAccountByTitleAndGroupAccountAsync(title, groupAccountId, CancellationToken.None)
             .Returns(Task.FromResult<IReadOnlyList<GeneralLedgerAccountEntity>>(new List<GeneralLedgerAccountEntity> { duplicateGeneralLedgerAccountEntity }));
 
+        // Assign ID via reflection
+        typeof(GeneralLedgerAccountEntity)
+            .GetProperty(nameof(GeneralLedgerAccountEntity.Id))!
+            .SetValue(duplicateGeneralLedgerAccountEntity, Guid.NewGuid());
+
         var updateGeneralLedgerAccountCommand = new UpdateGeneralLedgerAccountCommand
         {
             GeneralLedgerAccountId = generalLegerAccountId,
@@ -677,7 +783,7 @@ public class GeneralLedgerAccountTests(ITestOutputHelper testOutputHelper)
         // Assert
         result.IsSuccess.Should().BeFalse();
         result.ErrorMessages.Should().ContainKey(nameof(updateGeneralLedgerAccountCommand.Title))
-            .WhoseValue.Should().Contain("An active account with this title already exists in the selected group. Consider renaming or reactivating the existing account.");
+            .WhoseValue.Should().Contain("An active account with this title already exists in the selected group.");
 
         await unitOfWork.DidNotReceive()
             .CommitAsync(CancellationToken.None);
@@ -691,6 +797,16 @@ public class GeneralLedgerAccountTests(ITestOutputHelper testOutputHelper)
         var faker = new Faker();
         var generalLegerAccountId = Guid.NewGuid();
         var code = faker.Finance.Account();
+
+        var existingFinancialPeriodEntity = new FinancialPeriodEntity
+        {
+            FinancialPeriodTitle = faker.Finance.AccountName(),
+            StartDate = DateTime.UtcNow.AddDays(-100),
+            EndDate = DateTime.UtcNow.AddDays(100)
+        };
+        unitOfWork.FinancialPeriodRepository
+            .GetActiveFinancialPeriodAsync(Arg.Any<CancellationToken>())
+            .Returns(existingFinancialPeriodEntity);
 
         var existingGeneralLedgerAccountEntity = new GeneralLedgerAccountEntity
         {
@@ -709,8 +825,21 @@ public class GeneralLedgerAccountTests(ITestOutputHelper testOutputHelper)
         };
         var updateGeneralLedgerAccountHandler = new UpdateGeneralLedgerAccountCommandHandler(unitOfWork);
 
+        var existingGeneralLedgerAccountEntity2 = new GeneralLedgerAccountEntity
+        {
+            AccountTitle = faker.Finance.AccountName(),
+            AccountCode = code,
+            JournalEntryType = JournalEntryType.Credit,
+            GroupAccountId = Guid.NewGuid(),
+            IsActive = true
+        };
         unitOfWork.GeneralLedgerAccountRepository.FindByCodeAsync(updateGeneralLedgerAccountCommand.Code, CancellationToken.None)
-            .Returns(existingGeneralLedgerAccountEntity);
+            .Returns(existingGeneralLedgerAccountEntity2);
+
+        // Assign ID via reflection
+        typeof(GeneralLedgerAccountEntity)
+            .GetProperty(nameof(GeneralLedgerAccountEntity.Id))!
+            .SetValue(existingGeneralLedgerAccountEntity2, Guid.NewGuid());
 
         // Act
         var result = await updateGeneralLedgerAccountHandler.Handle(updateGeneralLedgerAccountCommand, CancellationToken.None);
@@ -731,6 +860,16 @@ public class GeneralLedgerAccountTests(ITestOutputHelper testOutputHelper)
         var unitOfWork = Substitute.For<IUnitOfWork>();
         var faker = new Faker();
         var generalLegerAccountId = Guid.NewGuid();
+
+        var existingFinancialPeriodEntity = new FinancialPeriodEntity
+        {
+            FinancialPeriodTitle = faker.Finance.AccountName(),
+            StartDate = DateTime.UtcNow.AddDays(-100),
+            EndDate = DateTime.UtcNow.AddDays(100)
+        };
+        unitOfWork.FinancialPeriodRepository
+            .GetActiveFinancialPeriodAsync(Arg.Any<CancellationToken>())
+            .Returns(existingFinancialPeriodEntity);
 
         var existingGeneralLedgerAccountEntity = new GeneralLedgerAccountEntity
         {

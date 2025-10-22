@@ -21,7 +21,7 @@ public class UpdateGroupAccountCommandHandler(IUnitOfWork unitOfWork)
 
         // Ensure there is an active financial period
         var activePeriod = await unitOfWork.FinancialPeriodRepository.GetActiveFinancialPeriodAsync(cancellationToken);
-        if (activePeriod is null || activePeriod.IsActive)
+        if (activePeriod is null || !activePeriod.IsActive)
             return OperationResult<bool>.FailureResult("FinancialPeriod", "Cannot modify group accounts without an active open financial period.");
 
         // Check if this group account has journal entries
@@ -84,9 +84,6 @@ public class UpdateGroupAccountCommandHandler(IUnitOfWork unitOfWork)
 
             groupAccount.AccountCode = request.Code.Value;
         }
-
-        if (groupAccount.AccountCode.Length < 4)
-            return OperationResult<bool>.FailureResult(nameof(request.Code), "Group account code must have at least 4 digits.");
 
         return OperationResult<bool>.SuccessResult(true);
     }

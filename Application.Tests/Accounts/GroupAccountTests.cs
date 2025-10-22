@@ -6,6 +6,7 @@ using Application.Repositories.Common;
 using Application.Tests.Extensions;
 using Bogus;
 using Domain.Entities.Accounts;
+using Domain.Entities.FinancialPeriod;
 using Domain.Enums;
 using FluentAssertions;
 using NSubstitute;
@@ -21,6 +22,16 @@ public class GroupAccountTests(ITestOutputHelper testOutputHelper)
         // Arrange
         var unitOfWork = Substitute.For<IUnitOfWork>();
         var faker = new Faker();
+
+        var existingFinancialPeriodEntity = new FinancialPeriodEntity
+        {
+            FinancialPeriodTitle = faker.Finance.AccountName(),
+            StartDate = DateTime.UtcNow.AddDays(-100),
+            EndDate = DateTime.UtcNow.AddDays(100)
+        };
+        unitOfWork.FinancialPeriodRepository
+            .GetActiveFinancialPeriodAsync(Arg.Any<CancellationToken>())
+            .Returns(existingFinancialPeriodEntity);
 
         var createGroupAccountCommand = new CreateGroupAccountCommand
         {
@@ -145,7 +156,7 @@ public class GroupAccountTests(ITestOutputHelper testOutputHelper)
         // Arrange
         var unitOfWork = Substitute.For<IUnitOfWork>();
         var faker = new Faker();
-        var title = faker.Finance.AccountName();
+        var title = Guid.NewGuid().ToString();
 
         var existingGroupAccount = new List<GroupAccountEntity>
         {
@@ -184,7 +195,7 @@ public class GroupAccountTests(ITestOutputHelper testOutputHelper)
         // Assert
         result.IsSuccess.Should().BeFalse();
         result.ErrorMessages.Should().ContainKey(nameof(createGroupAccountCommand.Title))
-            .WhoseValue.Should().Contain("An active group account with the same title or type already exists.");
+            .WhoseValue.Should().Contain("An active group account with this title already exists.");
 
         await unitOfWork.GroupAccountRepository.DidNotReceive()
             .CreateAsync(Arg.Any<GroupAccountEntity>(), CancellationToken.None);
@@ -198,26 +209,19 @@ public class GroupAccountTests(ITestOutputHelper testOutputHelper)
         var faker = new Faker();
         var title = faker.Finance.AccountName();
 
-        var existingGroupAccount = new List<GroupAccountEntity>
-        {
-            new()
-            {
-                AccountTitle = title,
-                AccountCode = faker.Finance.AccountName(),
-                IsActive = true,
-                JournalEntryType = JournalEntryType.Debit
-            },
-            new()
-            {
-                AccountTitle = title,
-                AccountCode = faker.Finance.AccountName(),
-                IsActive = true,
-                JournalEntryType = JournalEntryType.Credit
-            }
-        };
         unitOfWork.GroupAccountRepository
-            .FindAccountByTitleAndTypeAsync(title, JournalEntryType.Debit, Arg.Any<CancellationToken>())
-            .Returns(existingGroupAccount);
+            .FindAccountByTitleAndTypeAsync(title, Arg.Any<JournalEntryType>(), Arg.Any<CancellationToken>())
+            .Returns([]);
+
+        var existingFinancialPeriodEntity = new FinancialPeriodEntity
+        {
+            FinancialPeriodTitle = faker.Finance.AccountName(),
+            StartDate = DateTime.UtcNow.AddDays(-100),
+            EndDate = DateTime.UtcNow.AddDays(100)
+        };
+        unitOfWork.FinancialPeriodRepository
+            .GetActiveFinancialPeriodAsync(Arg.Any<CancellationToken>())
+            .Returns(existingFinancialPeriodEntity);
 
         var createGroupAccountCommand = new CreateGroupAccountCommand
         {
@@ -248,6 +252,16 @@ public class GroupAccountTests(ITestOutputHelper testOutputHelper)
         var unitOfWork = Substitute.For<IUnitOfWork>();
         var faker = new Faker();
         var groupAccountId = Guid.NewGuid();
+
+        var existingFinancialPeriodEntity = new FinancialPeriodEntity
+        {
+            FinancialPeriodTitle = faker.Finance.AccountName(),
+            StartDate = DateTime.UtcNow.AddDays(-100),
+            EndDate = DateTime.UtcNow.AddDays(100)
+        };
+        unitOfWork.FinancialPeriodRepository
+            .GetActiveFinancialPeriodAsync(Arg.Any<CancellationToken>())
+            .Returns(existingFinancialPeriodEntity);
 
         var existingGroupAccount = new GroupAccountEntity
         {
@@ -285,6 +299,16 @@ public class GroupAccountTests(ITestOutputHelper testOutputHelper)
         var unitOfWork = Substitute.For<IUnitOfWork>();
         var faker = new Faker();
         var groupAccountId = Guid.NewGuid();
+
+        var existingFinancialPeriodEntity = new FinancialPeriodEntity
+        {
+            FinancialPeriodTitle = faker.Finance.AccountName(),
+            StartDate = DateTime.UtcNow.AddDays(-100),
+            EndDate = DateTime.UtcNow.AddDays(100)
+        };
+        unitOfWork.FinancialPeriodRepository
+            .GetActiveFinancialPeriodAsync(Arg.Any<CancellationToken>())
+            .Returns(existingFinancialPeriodEntity);
 
         var existingGroupAccount = new GroupAccountEntity
         {
@@ -325,6 +349,16 @@ public class GroupAccountTests(ITestOutputHelper testOutputHelper)
         var faker = new Faker();
         var groupAccountId = Guid.NewGuid();
 
+        var existingFinancialPeriodEntity = new FinancialPeriodEntity
+        {
+            FinancialPeriodTitle = faker.Finance.AccountName(),
+            StartDate = DateTime.UtcNow.AddDays(-100),
+            EndDate = DateTime.UtcNow.AddDays(100)
+        };
+        unitOfWork.FinancialPeriodRepository
+            .GetActiveFinancialPeriodAsync(Arg.Any<CancellationToken>())
+            .Returns(existingFinancialPeriodEntity);
+
         var existingGroupAccount = new GroupAccountEntity
         {
             AccountTitle = faker.Finance.AccountName(),
@@ -364,6 +398,16 @@ public class GroupAccountTests(ITestOutputHelper testOutputHelper)
         var faker = new Faker();
         var groupAccountId = Guid.NewGuid();
 
+        var existingFinancialPeriodEntity = new FinancialPeriodEntity
+        {
+            FinancialPeriodTitle = faker.Finance.AccountName(),
+            StartDate = DateTime.UtcNow.AddDays(-100),
+            EndDate = DateTime.UtcNow.AddDays(100)
+        };
+        unitOfWork.FinancialPeriodRepository
+            .GetActiveFinancialPeriodAsync(Arg.Any<CancellationToken>())
+            .Returns(existingFinancialPeriodEntity);
+
         var existingGroupAccount = new GroupAccountEntity
         {
             AccountTitle = faker.Finance.AccountName(),
@@ -402,6 +446,16 @@ public class GroupAccountTests(ITestOutputHelper testOutputHelper)
         var unitOfWork = Substitute.For<IUnitOfWork>();
         var faker = new Faker();
         var groupAccountId = Guid.NewGuid();
+
+        var existingFinancialPeriodEntity = new FinancialPeriodEntity
+        {
+            FinancialPeriodTitle = faker.Finance.AccountName(),
+            StartDate = DateTime.UtcNow.AddDays(-100),
+            EndDate = DateTime.UtcNow.AddDays(100)
+        };
+        unitOfWork.FinancialPeriodRepository
+            .GetActiveFinancialPeriodAsync(Arg.Any<CancellationToken>())
+            .Returns(existingFinancialPeriodEntity);
 
         var existingGroupAccount = new GroupAccountEntity
         {
