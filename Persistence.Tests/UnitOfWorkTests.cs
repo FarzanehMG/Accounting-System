@@ -33,13 +33,13 @@ public class UnitOfWorkTests : IClassFixture<PersistenceTestSetup>
         await _unitOfWork.GroupAccountRepository.CreateAsync(groupAccount);
         await _unitOfWork.CommitAsync();
 
-        var savedAccount = await _unitOfWork.GroupAccountRepository.FindActiveAccountByTitleAndTypeAsync(groupAccount.AccountTitle, groupAccount.JournalEntryType);
+        var savedAccounts = await _unitOfWork.GroupAccountRepository
+            .FindAccountByTitleAndTypeAsync(groupAccount.AccountTitle, groupAccount.JournalEntryType);
 
-        // Assert
-        savedAccount.Should().NotBeNull();
-        savedAccount.AccountTitle.Should().Be("Test Group Account");
-        savedAccount.IsActive.Should().BeTrue();
-        savedAccount.JournalEntryType.Should().Be(JournalEntryType.Debit);
+        savedAccounts.Should().ContainSingle(a =>
+            a.AccountTitle == "Test Group Account" &&
+            a.IsActive &&
+            a.JournalEntryType == JournalEntryType.Debit);
     }
 
     [Fact]

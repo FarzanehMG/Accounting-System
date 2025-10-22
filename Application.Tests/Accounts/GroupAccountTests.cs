@@ -147,15 +147,26 @@ public class GroupAccountTests(ITestOutputHelper testOutputHelper)
         var faker = new Faker();
         var title = faker.Finance.AccountName();
 
-        var existingGroupAccount = new GroupAccountEntity
+        var existingGroupAccount = new List<GroupAccountEntity>
         {
-            AccountTitle = title,
-            AccountCode = faker.Finance.AccountName(),
-            IsActive = true,
-            JournalEntryType = JournalEntryType.Debit
+            new()
+            {
+                AccountTitle = title,
+                AccountCode = faker.Finance.AccountName(),
+                IsActive = true,
+                JournalEntryType = JournalEntryType.Debit
+            },
+            new()
+            {
+                AccountTitle = title,
+                AccountCode = faker.Finance.AccountName(),
+                IsActive = true,
+                JournalEntryType = JournalEntryType.Credit
+            }
         };
+
         unitOfWork.GroupAccountRepository
-            .FindActiveAccountByTitleAndTypeAsync(title, JournalEntryType.Debit, Arg.Any<CancellationToken>())
+            .FindAccountByTitleAndTypeAsync(title, JournalEntryType.Debit, Arg.Any<CancellationToken>())
             .Returns(existingGroupAccount);
 
         var createGroupAccountCommand = new CreateGroupAccountCommand
@@ -187,15 +198,25 @@ public class GroupAccountTests(ITestOutputHelper testOutputHelper)
         var faker = new Faker();
         var title = faker.Finance.AccountName();
 
-        var existingGroupAccount = new GroupAccountEntity
+        var existingGroupAccount = new List<GroupAccountEntity>
         {
-            AccountTitle = title,
-            AccountCode = faker.Finance.AccountName(),
-            IsActive = true,
-            JournalEntryType = JournalEntryType.Debit
+            new()
+            {
+                AccountTitle = title,
+                AccountCode = faker.Finance.AccountName(),
+                IsActive = true,
+                JournalEntryType = JournalEntryType.Debit
+            },
+            new()
+            {
+                AccountTitle = title,
+                AccountCode = faker.Finance.AccountName(),
+                IsActive = true,
+                JournalEntryType = JournalEntryType.Credit
+            }
         };
         unitOfWork.GroupAccountRepository
-            .FindActiveAccountByTitleAndTypeAsync(title, JournalEntryType.Debit, Arg.Any<CancellationToken>())
+            .FindAccountByTitleAndTypeAsync(title, JournalEntryType.Debit, Arg.Any<CancellationToken>())
             .Returns(existingGroupAccount);
 
         var createGroupAccountCommand = new CreateGroupAccountCommand

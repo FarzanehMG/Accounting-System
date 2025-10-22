@@ -649,7 +649,7 @@ public class GeneralLedgerAccountTests(ITestOutputHelper testOutputHelper)
         unitOfWork.GeneralLedgerAccountRepository.GetByIdAsync(generalLegerAccountId, CancellationToken.None)
             .Returns(existingGeneralLedgerAccountEntity);
 
-        unitOfWork.GeneralLedgerAccountRepository.FindActiveAccountByTitleAndGroupAsync(title, groupAccountId, CancellationToken.None)
+        unitOfWork.GeneralLedgerAccountRepository.FindAccountByTitleAndGroupAccountAsync(title, groupAccountId, CancellationToken.None)
             .Returns(Task.FromResult<IReadOnlyList<GeneralLedgerAccountEntity>>(new List<GeneralLedgerAccountEntity> { existingGeneralLedgerAccountEntity }));
 
         var duplicateGeneralLedgerAccountEntity = new GeneralLedgerAccountEntity
@@ -661,7 +661,7 @@ public class GeneralLedgerAccountTests(ITestOutputHelper testOutputHelper)
             IsActive = true
         };
 
-        unitOfWork.GeneralLedgerAccountRepository.FindActiveAccountByTitleAndGroupAsync(title, groupAccountId, CancellationToken.None)
+        unitOfWork.GeneralLedgerAccountRepository.FindAccountByTitleAndGroupAccountAsync(title, groupAccountId, CancellationToken.None)
             .Returns(Task.FromResult<IReadOnlyList<GeneralLedgerAccountEntity>>(new List<GeneralLedgerAccountEntity> { duplicateGeneralLedgerAccountEntity }));
 
         var updateGeneralLedgerAccountCommand = new UpdateGeneralLedgerAccountCommand
