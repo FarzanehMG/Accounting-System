@@ -15,10 +15,6 @@ public class CreateGeneralLedgerAccountCommandValidator : AbstractValidator<Crea
         RuleFor(x => x.Code)
             .NotEmpty();
 
-        RuleFor(x => x.IsActive)
-            .NotEmpty();
-
-
         RuleFor(x => x.GroupAccountId)
             .NotEmpty();
     }
