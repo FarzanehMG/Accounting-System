@@ -23,8 +23,7 @@ internal sealed class GroupAccountRepository(AccountingDbContext dbContext) : Ba
     {
         return await TableNoTracking.Where(x =>
             x.AccountTitle.Equals(accountTitle) &&
-            x.JournalEntryType == journalEntryType &&
-            x.IsActive)
+            x.JournalEntryType == journalEntryType)
             .ToListAsync(cancellationToken);
     }
 
