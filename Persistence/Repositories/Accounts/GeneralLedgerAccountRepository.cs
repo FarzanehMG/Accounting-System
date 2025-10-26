@@ -24,14 +24,21 @@ internal sealed class GeneralLedgerAccountRepository(AccountingDbContext dbConte
         return await TableNoTracking.Where(x =>
                 x.AccountTitle.Equals(title) &&
                 x.JournalEntryType == journalEntryType &&
-                x.GroupAccountId == groupAccountId &&
-                x.IsActive)
+                x.GroupAccountId == groupAccountId)
             .ToListAsync(cancellationToken);
     }
 
     public async Task<GeneralLedgerAccountEntity?> FindByCodeAsync(string code, CancellationToken cancellationToken = default)
     {
         return await TableNoTracking.FirstOrDefaultAsync(x => x.AccountCode.Equals(code), cancellationToken);
+    }
+
+    public async Task<GeneralLedgerAccountEntity?> FindByCodeAndGroupAccountIdAsync(string code, Guid groupAccountId, CancellationToken cancellationToken = default)
+    {
+        return await TableNoTracking
+            .FirstOrDefaultAsync(x => x.AccountCode.Equals(code) && 
+                x.GroupAccountId == groupAccountId, 
+                cancellationToken);
     }
 
     public async Task<IReadOnlyList<GeneralLedgerAccountEntity>> FindAccountByTitleAndGroupAccountAsync(string title, Guid groupAccountId, CancellationToken cancellationToken = default)

@@ -39,9 +39,11 @@ public class CreateGeneralLedgerAccountCommandHandler(IUnitOfWork unitOfWork)
             ]);
         }
 
+        // TODO: Update this check to validate uniqueness per Company once Company feature is implemented.
+
         // Business Rule: Account code must always be unique to guarantee data integrity.
         var duplicateCode = await unitOfWork.GeneralLedgerAccountRepository
-            .FindByCodeAsync(request.Code, cancellationToken);
+            .FindByCodeAndGroupAccountIdAsync(request.Code, request.GroupAccountId, cancellationToken);
 
         if (duplicateCode is not null)
         {

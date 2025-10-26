@@ -10,6 +10,7 @@ public interface IGeneralLedgerAccountRepository
     Task<GeneralLedgerAccountEntity?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default);
     Task<IReadOnlyList<GeneralLedgerAccountEntity>> FindAccountByTitleAndGroupAndTypeAsync(string title, Guid groupAccountId, JournalEntryType journalEntryType, CancellationToken cancellationToken = default);
     Task<GeneralLedgerAccountEntity?> FindByCodeAsync(string code, CancellationToken cancellationToken = default);
+    Task<GeneralLedgerAccountEntity?> FindByCodeAndGroupAccountIdAsync(string code, Guid groupAccountId, CancellationToken cancellationToken = default);
     Task<IReadOnlyList<GeneralLedgerAccountEntity>> FindAccountByTitleAndGroupAccountAsync(string title, Guid groupAccountId, CancellationToken cancellationToken = default);
     Task<IReadOnlyList<GeneralLedgerAccountEntity>> GetAllAsync(GeneralLedgerAccountFilter filter, CancellationToken cancellationToken = default);
 }
