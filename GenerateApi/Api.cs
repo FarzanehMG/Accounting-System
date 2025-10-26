@@ -4,6 +4,8 @@
 // </auto-generated>
 //----------------------
 
+#nullable enable
+
 #pragma warning disable 108 // Disable "CS0108 '{derivedDto}.ToJson()' hides inherited member '{dtoBase}.ToJson()'. Use the new keyword if hiding was intended."
 #pragma warning disable 114 // Disable "CS0114 '{derivedDto}.RaisePropertyChanged(String)' hides inherited member 'dtoBase.RaisePropertyChanged(String)'. To make the current member override that implementation, add the override keyword. Otherwise add the new keyword."
 #pragma warning disable 472 // Disable "CS0472 The result of the expression is always 'false' since a value of type 'Int32' is never equal to 'null' of type 'Int32?'
@@ -286,7 +288,7 @@ namespace GenerateApi
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<ApiResultOfListOfGetJournalEntriesQueryResult> GetAllAsync(string journalEntryNumber = null, JournalEntryType? journalEntryType = null, decimal? amount = null, System.Guid? detailedAccountId = null, System.Guid? subLedgerAccountId = null, System.Guid? journalVoucherId = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        public virtual async System.Threading.Tasks.Task<ApiResultOfListOfGetJournalEntriesQueryResult> GetAllAsync(string? journalEntryNumber = null, JournalEntryType? journalEntryType = null, decimal? amount = null, System.Guid? detailedAccountId = null, System.Guid? subLedgerAccountId = null, System.Guid? journalVoucherId = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             var client_ = _httpClient;
             var disposeClient_ = false;
@@ -399,7 +401,7 @@ namespace GenerateApi
         {
             if (response == null || response.Content == null)
             {
-                return new ObjectResponseResult<T>(default(T), string.Empty);
+                return new ObjectResponseResult<T>(default(T)!, string.Empty);
             }
 
             if (ReadResponseAsString)
@@ -408,7 +410,7 @@ namespace GenerateApi
                 try
                 {
                     var typedBody = Newtonsoft.Json.JsonConvert.DeserializeObject<T>(responseText, JsonSerializerSettings);
-                    return new ObjectResponseResult<T>(typedBody, responseText);
+                    return new ObjectResponseResult<T>(typedBody!, responseText);
                 }
                 catch (Newtonsoft.Json.JsonException exception)
                 {
@@ -426,7 +428,7 @@ namespace GenerateApi
                     {
                         var serializer = Newtonsoft.Json.JsonSerializer.Create(JsonSerializerSettings);
                         var typedBody = serializer.Deserialize<T>(jsonTextReader);
-                        return new ObjectResponseResult<T>(typedBody, string.Empty);
+                        return new ObjectResponseResult<T>(typedBody!, string.Empty);
                     }
                 }
                 catch (Newtonsoft.Json.JsonException exception)
@@ -437,7 +439,7 @@ namespace GenerateApi
             }
         }
 
-        private string ConvertToString(object value, System.Globalization.CultureInfo cultureInfo)
+        private string ConvertToString(object? value, System.Globalization.CultureInfo cultureInfo)
         {
             if (value == null)
             {
@@ -756,7 +758,7 @@ namespace GenerateApi
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<ApiResultOfListOfGetJournalVouchersQueryResult> GetAllAsync(string journalVoucherTitle = null, string journalVoucherNumber = null, string referenceNumber = null, System.DateTime? transactionTime = null, JournalVoucherState? journalVoucherState = null, System.Guid? createdByUserId = null, System.Guid? approvedByUserId = null, System.DateTime? approvedTime = null, System.Guid? financialPeriodId = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        public virtual async System.Threading.Tasks.Task<ApiResultOfListOfGetJournalVouchersQueryResult> GetAllAsync(string? journalVoucherTitle = null, string? journalVoucherNumber = null, string? referenceNumber = null, System.DateTime? transactionTime = null, JournalVoucherState? journalVoucherState = null, System.Guid? createdByUserId = null, System.Guid? approvedByUserId = null, System.DateTime? approvedTime = null, System.Guid? financialPeriodId = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             var client_ = _httpClient;
             var disposeClient_ = false;
@@ -881,7 +883,7 @@ namespace GenerateApi
         {
             if (response == null || response.Content == null)
             {
-                return new ObjectResponseResult<T>(default(T), string.Empty);
+                return new ObjectResponseResult<T>(default(T)!, string.Empty);
             }
 
             if (ReadResponseAsString)
@@ -890,7 +892,7 @@ namespace GenerateApi
                 try
                 {
                     var typedBody = Newtonsoft.Json.JsonConvert.DeserializeObject<T>(responseText, JsonSerializerSettings);
-                    return new ObjectResponseResult<T>(typedBody, responseText);
+                    return new ObjectResponseResult<T>(typedBody!, responseText);
                 }
                 catch (Newtonsoft.Json.JsonException exception)
                 {
@@ -908,7 +910,7 @@ namespace GenerateApi
                     {
                         var serializer = Newtonsoft.Json.JsonSerializer.Create(JsonSerializerSettings);
                         var typedBody = serializer.Deserialize<T>(jsonTextReader);
-                        return new ObjectResponseResult<T>(typedBody, string.Empty);
+                        return new ObjectResponseResult<T>(typedBody!, string.Empty);
                     }
                 }
                 catch (Newtonsoft.Json.JsonException exception)
@@ -919,7 +921,7 @@ namespace GenerateApi
             }
         }
 
-        private string ConvertToString(object value, System.Globalization.CultureInfo cultureInfo)
+        private string ConvertToString(object? value, System.Globalization.CultureInfo cultureInfo)
         {
             if (value == null)
             {
@@ -1238,7 +1240,7 @@ namespace GenerateApi
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<ApiResultOfListOfGetFinancialPeriodsQueryResult> GetAllAsync(string title = null, bool? isActive = null, System.DateTime? startDate = null, System.DateTime? endDate = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        public virtual async System.Threading.Tasks.Task<ApiResultOfListOfGetFinancialPeriodsQueryResult> GetAllAsync(string? title = null, bool? isActive = null, System.DateTime? startDate = null, System.DateTime? endDate = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             var client_ = _httpClient;
             var disposeClient_ = false;
@@ -1343,7 +1345,7 @@ namespace GenerateApi
         {
             if (response == null || response.Content == null)
             {
-                return new ObjectResponseResult<T>(default(T), string.Empty);
+                return new ObjectResponseResult<T>(default(T)!, string.Empty);
             }
 
             if (ReadResponseAsString)
@@ -1352,7 +1354,7 @@ namespace GenerateApi
                 try
                 {
                     var typedBody = Newtonsoft.Json.JsonConvert.DeserializeObject<T>(responseText, JsonSerializerSettings);
-                    return new ObjectResponseResult<T>(typedBody, responseText);
+                    return new ObjectResponseResult<T>(typedBody!, responseText);
                 }
                 catch (Newtonsoft.Json.JsonException exception)
                 {
@@ -1370,7 +1372,7 @@ namespace GenerateApi
                     {
                         var serializer = Newtonsoft.Json.JsonSerializer.Create(JsonSerializerSettings);
                         var typedBody = serializer.Deserialize<T>(jsonTextReader);
-                        return new ObjectResponseResult<T>(typedBody, string.Empty);
+                        return new ObjectResponseResult<T>(typedBody!, string.Empty);
                     }
                 }
                 catch (Newtonsoft.Json.JsonException exception)
@@ -1381,7 +1383,7 @@ namespace GenerateApi
             }
         }
 
-        private string ConvertToString(object value, System.Globalization.CultureInfo cultureInfo)
+        private string ConvertToString(object? value, System.Globalization.CultureInfo cultureInfo)
         {
             if (value == null)
             {
@@ -1700,7 +1702,7 @@ namespace GenerateApi
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<ApiResultOfListOfGetDetailedAccountsQueryResult> GetAllAsync(string title = null, string code = null, bool? isActive = null, JournalEntryType? journalEntryType = null, System.Guid? subLedgerAccountId = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        public virtual async System.Threading.Tasks.Task<ApiResultOfListOfGetDetailedAccountsQueryResult> GetAllAsync(string? title = null, string? code = null, bool? isActive = null, JournalEntryType? journalEntryType = null, System.Guid? subLedgerAccountId = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             var client_ = _httpClient;
             var disposeClient_ = false;
@@ -1809,7 +1811,7 @@ namespace GenerateApi
         {
             if (response == null || response.Content == null)
             {
-                return new ObjectResponseResult<T>(default(T), string.Empty);
+                return new ObjectResponseResult<T>(default(T)!, string.Empty);
             }
 
             if (ReadResponseAsString)
@@ -1818,7 +1820,7 @@ namespace GenerateApi
                 try
                 {
                     var typedBody = Newtonsoft.Json.JsonConvert.DeserializeObject<T>(responseText, JsonSerializerSettings);
-                    return new ObjectResponseResult<T>(typedBody, responseText);
+                    return new ObjectResponseResult<T>(typedBody!, responseText);
                 }
                 catch (Newtonsoft.Json.JsonException exception)
                 {
@@ -1836,7 +1838,7 @@ namespace GenerateApi
                     {
                         var serializer = Newtonsoft.Json.JsonSerializer.Create(JsonSerializerSettings);
                         var typedBody = serializer.Deserialize<T>(jsonTextReader);
-                        return new ObjectResponseResult<T>(typedBody, string.Empty);
+                        return new ObjectResponseResult<T>(typedBody!, string.Empty);
                     }
                 }
                 catch (Newtonsoft.Json.JsonException exception)
@@ -1847,7 +1849,7 @@ namespace GenerateApi
             }
         }
 
-        private string ConvertToString(object value, System.Globalization.CultureInfo cultureInfo)
+        private string ConvertToString(object? value, System.Globalization.CultureInfo cultureInfo)
         {
             if (value == null)
             {
@@ -2166,7 +2168,7 @@ namespace GenerateApi
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<ApiResultOfListOfGetGeneralLedgerAccountsQueryResult> GetAllAsync(string title = null, string code = null, bool? isActive = null, JournalEntryType? journalEntryType = null, System.Guid? groupAccountId = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        public virtual async System.Threading.Tasks.Task<ApiResultOfListOfGetGeneralLedgerAccountsQueryResult> GetAllAsync(string? title = null, string? code = null, bool? isActive = null, JournalEntryType? journalEntryType = null, System.Guid? groupAccountId = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             var client_ = _httpClient;
             var disposeClient_ = false;
@@ -2275,7 +2277,7 @@ namespace GenerateApi
         {
             if (response == null || response.Content == null)
             {
-                return new ObjectResponseResult<T>(default(T), string.Empty);
+                return new ObjectResponseResult<T>(default(T)!, string.Empty);
             }
 
             if (ReadResponseAsString)
@@ -2284,7 +2286,7 @@ namespace GenerateApi
                 try
                 {
                     var typedBody = Newtonsoft.Json.JsonConvert.DeserializeObject<T>(responseText, JsonSerializerSettings);
-                    return new ObjectResponseResult<T>(typedBody, responseText);
+                    return new ObjectResponseResult<T>(typedBody!, responseText);
                 }
                 catch (Newtonsoft.Json.JsonException exception)
                 {
@@ -2302,7 +2304,7 @@ namespace GenerateApi
                     {
                         var serializer = Newtonsoft.Json.JsonSerializer.Create(JsonSerializerSettings);
                         var typedBody = serializer.Deserialize<T>(jsonTextReader);
-                        return new ObjectResponseResult<T>(typedBody, string.Empty);
+                        return new ObjectResponseResult<T>(typedBody!, string.Empty);
                     }
                 }
                 catch (Newtonsoft.Json.JsonException exception)
@@ -2313,7 +2315,7 @@ namespace GenerateApi
             }
         }
 
-        private string ConvertToString(object value, System.Globalization.CultureInfo cultureInfo)
+        private string ConvertToString(object? value, System.Globalization.CultureInfo cultureInfo)
         {
             if (value == null)
             {
@@ -2632,7 +2634,7 @@ namespace GenerateApi
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<ApiResultOfListOfGetGroupAccountsQueryResult> GetAllAsync(string title = null, string code = null, bool? isActive = null, JournalEntryType? journalEntryType = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        public virtual async System.Threading.Tasks.Task<ApiResultOfListOfGetGroupAccountsQueryResult> GetAllAsync(string? title = null, string? code = null, bool? isActive = null, JournalEntryType? journalEntryType = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             var client_ = _httpClient;
             var disposeClient_ = false;
@@ -2737,7 +2739,7 @@ namespace GenerateApi
         {
             if (response == null || response.Content == null)
             {
-                return new ObjectResponseResult<T>(default(T), string.Empty);
+                return new ObjectResponseResult<T>(default(T)!, string.Empty);
             }
 
             if (ReadResponseAsString)
@@ -2746,7 +2748,7 @@ namespace GenerateApi
                 try
                 {
                     var typedBody = Newtonsoft.Json.JsonConvert.DeserializeObject<T>(responseText, JsonSerializerSettings);
-                    return new ObjectResponseResult<T>(typedBody, responseText);
+                    return new ObjectResponseResult<T>(typedBody!, responseText);
                 }
                 catch (Newtonsoft.Json.JsonException exception)
                 {
@@ -2764,7 +2766,7 @@ namespace GenerateApi
                     {
                         var serializer = Newtonsoft.Json.JsonSerializer.Create(JsonSerializerSettings);
                         var typedBody = serializer.Deserialize<T>(jsonTextReader);
-                        return new ObjectResponseResult<T>(typedBody, string.Empty);
+                        return new ObjectResponseResult<T>(typedBody!, string.Empty);
                     }
                 }
                 catch (Newtonsoft.Json.JsonException exception)
@@ -2775,7 +2777,7 @@ namespace GenerateApi
             }
         }
 
-        private string ConvertToString(object value, System.Globalization.CultureInfo cultureInfo)
+        private string ConvertToString(object? value, System.Globalization.CultureInfo cultureInfo)
         {
             if (value == null)
             {
@@ -3094,7 +3096,7 @@ namespace GenerateApi
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<ApiResultOfListOfGetSubLedgerAccountsQueryResult> GetAllAsync(string title = null, string code = null, bool? isActive = null, JournalEntryType? journalEntryType = null, System.Guid? generalLedgerAccountId = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        public virtual async System.Threading.Tasks.Task<ApiResultOfListOfGetSubLedgerAccountsQueryResult> GetAllAsync(string? title = null, string? code = null, bool? isActive = null, JournalEntryType? journalEntryType = null, System.Guid? generalLedgerAccountId = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             var client_ = _httpClient;
             var disposeClient_ = false;
@@ -3203,7 +3205,7 @@ namespace GenerateApi
         {
             if (response == null || response.Content == null)
             {
-                return new ObjectResponseResult<T>(default(T), string.Empty);
+                return new ObjectResponseResult<T>(default(T)!, string.Empty);
             }
 
             if (ReadResponseAsString)
@@ -3212,7 +3214,7 @@ namespace GenerateApi
                 try
                 {
                     var typedBody = Newtonsoft.Json.JsonConvert.DeserializeObject<T>(responseText, JsonSerializerSettings);
-                    return new ObjectResponseResult<T>(typedBody, responseText);
+                    return new ObjectResponseResult<T>(typedBody!, responseText);
                 }
                 catch (Newtonsoft.Json.JsonException exception)
                 {
@@ -3230,7 +3232,7 @@ namespace GenerateApi
                     {
                         var serializer = Newtonsoft.Json.JsonSerializer.Create(JsonSerializerSettings);
                         var typedBody = serializer.Deserialize<T>(jsonTextReader);
-                        return new ObjectResponseResult<T>(typedBody, string.Empty);
+                        return new ObjectResponseResult<T>(typedBody!, string.Empty);
                     }
                 }
                 catch (Newtonsoft.Json.JsonException exception)
@@ -3241,7 +3243,7 @@ namespace GenerateApi
             }
         }
 
-        private string ConvertToString(object value, System.Globalization.CultureInfo cultureInfo)
+        private string ConvertToString(object? value, System.Globalization.CultureInfo cultureInfo)
         {
             if (value == null)
             {
@@ -3300,16 +3302,16 @@ namespace GenerateApi
     public partial class ApiResult
     {
         [Newtonsoft.Json.JsonProperty("isSuccess", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public bool IsSuccess { get; set; }
+        public bool IsSuccess { get; set; } = default!;
 
         [Newtonsoft.Json.JsonProperty("message", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public string Message { get; set; }
+        public string Message { get; set; } = default!;
 
         [Newtonsoft.Json.JsonProperty("statusCode", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public ApiResultStatusCode StatusCode { get; set; }
+        public ApiResultStatusCode StatusCode { get; set; } = default!;
 
         [Newtonsoft.Json.JsonProperty("requestId", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public string RequestId { get; set; }
+        public string RequestId { get; set; } = default!;
 
     }
 
@@ -3335,7 +3337,7 @@ namespace GenerateApi
     public partial class CreateJournalEntryApiModel
     {
         [Newtonsoft.Json.JsonProperty("entries", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public System.Collections.Generic.ICollection<JournalEntryApiModel> Entries { get; set; }
+        public System.Collections.Generic.ICollection<JournalEntryApiModel> Entries { get; set; } = default!;
 
     }
 
@@ -3344,25 +3346,25 @@ namespace GenerateApi
     {
         [Newtonsoft.Json.JsonProperty("journalEntryType", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         [Newtonsoft.Json.JsonConverter(typeof(Newtonsoft.Json.Converters.StringEnumConverter))]
-        public JournalEntryType JournalEntryType { get; set; }
+        public JournalEntryType JournalEntryType { get; set; } = default!;
 
         [Newtonsoft.Json.JsonProperty("amount", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public decimal Amount { get; set; }
+        public decimal Amount { get; set; } = default!;
 
         [Newtonsoft.Json.JsonProperty("description", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public string Description { get; set; }
+        public string? Description { get; set; } = default!;
 
         [Newtonsoft.Json.JsonProperty("subLedgerAccountId", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public System.Guid SubLedgerAccountId { get; set; }
+        public System.Guid SubLedgerAccountId { get; set; } = default!;
 
         [Newtonsoft.Json.JsonProperty("detailedAccountId", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public System.Guid? DetailedAccountId { get; set; }
+        public System.Guid? DetailedAccountId { get; set; } = default!;
 
         [Newtonsoft.Json.JsonProperty("journalVoucherId", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public System.Guid JournalVoucherId { get; set; }
+        public System.Guid JournalVoucherId { get; set; } = default!;
 
         [Newtonsoft.Json.JsonProperty("attachments", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public System.Collections.Generic.ICollection<SaveFileModel> Attachments { get; set; }
+        public System.Collections.Generic.ICollection<SaveFileModel> Attachments { get; set; } = default!;
 
     }
 
@@ -3382,10 +3384,10 @@ namespace GenerateApi
     public partial class SaveFileModel
     {
         [Newtonsoft.Json.JsonProperty("base64File", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public string Base64File { get; set; }
+        public string Base64File { get; set; } = default!;
 
         [Newtonsoft.Json.JsonProperty("fileContent", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public string FileContent { get; set; }
+        public string FileContent { get; set; } = default!;
 
     }
 
@@ -3393,25 +3395,25 @@ namespace GenerateApi
     public partial class UpdateJournalEntryCommand
     {
         [Newtonsoft.Json.JsonProperty("journalEntryId", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public System.Guid JournalEntryId { get; set; }
+        public System.Guid JournalEntryId { get; set; } = default!;
 
         [Newtonsoft.Json.JsonProperty("amount", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public PatchOfDecimal Amount { get; set; }
+        public PatchOfDecimal? Amount { get; set; } = default!;
 
         [Newtonsoft.Json.JsonProperty("description", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public PatchOfString Description { get; set; }
+        public PatchOfString? Description { get; set; } = default!;
 
         [Newtonsoft.Json.JsonProperty("subLedgerAccountId", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public PatchOfGuid SubLedgerAccountId { get; set; }
+        public PatchOfGuid? SubLedgerAccountId { get; set; } = default!;
 
         [Newtonsoft.Json.JsonProperty("detailedAccountId", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public PatchOfGuid DetailedAccountId { get; set; }
+        public PatchOfGuid? DetailedAccountId { get; set; } = default!;
 
         [Newtonsoft.Json.JsonProperty("removeAttachments", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public PatchOfListOfSaveFileModel RemoveAttachments { get; set; }
+        public PatchOfListOfSaveFileModel? RemoveAttachments { get; set; } = default!;
 
         [Newtonsoft.Json.JsonProperty("newAttachments", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public PatchOfListOfSaveFileModel NewAttachments { get; set; }
+        public PatchOfListOfSaveFileModel? NewAttachments { get; set; } = default!;
 
     }
 
@@ -3419,7 +3421,7 @@ namespace GenerateApi
     public partial class PatchOfDecimal
     {
         [Newtonsoft.Json.JsonProperty("value", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public decimal Value { get; set; }
+        public decimal Value { get; set; } = default!;
 
     }
 
@@ -3427,7 +3429,7 @@ namespace GenerateApi
     public partial class PatchOfString
     {
         [Newtonsoft.Json.JsonProperty("value", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public string Value { get; set; }
+        public string? Value { get; set; } = default!;
 
     }
 
@@ -3435,7 +3437,7 @@ namespace GenerateApi
     public partial class PatchOfGuid
     {
         [Newtonsoft.Json.JsonProperty("value", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public System.Guid Value { get; set; }
+        public System.Guid Value { get; set; } = default!;
 
     }
 
@@ -3443,7 +3445,7 @@ namespace GenerateApi
     public partial class PatchOfListOfSaveFileModel
     {
         [Newtonsoft.Json.JsonProperty("value", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public System.Collections.Generic.ICollection<SaveFileModel> Value { get; set; }
+        public System.Collections.Generic.ICollection<SaveFileModel>? Value { get; set; } = default!;
 
     }
 
@@ -3451,7 +3453,7 @@ namespace GenerateApi
     public partial class ApiResultOfGetJournalEntryByIdQueryResult : ApiResult
     {
         [Newtonsoft.Json.JsonProperty("data", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public GetJournalEntryByIdQueryResult Data { get; set; }
+        public GetJournalEntryByIdQueryResult? Data { get; set; } = default!;
 
     }
 
@@ -3459,29 +3461,29 @@ namespace GenerateApi
     public partial class GetJournalEntryByIdQueryResult
     {
         [Newtonsoft.Json.JsonProperty("id", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public System.Guid Id { get; set; }
+        public System.Guid Id { get; set; } = default!;
 
         [Newtonsoft.Json.JsonProperty("journalEntryNumber", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public string JournalEntryNumber { get; set; }
+        public string JournalEntryNumber { get; set; } = default!;
 
         [Newtonsoft.Json.JsonProperty("journalEntryType", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         [Newtonsoft.Json.JsonConverter(typeof(Newtonsoft.Json.Converters.StringEnumConverter))]
-        public JournalEntryType JournalEntryType { get; set; }
+        public JournalEntryType JournalEntryType { get; set; } = default!;
 
         [Newtonsoft.Json.JsonProperty("amount", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public decimal Amount { get; set; }
+        public decimal Amount { get; set; } = default!;
 
         [Newtonsoft.Json.JsonProperty("description", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public string Description { get; set; }
+        public string? Description { get; set; } = default!;
 
         [Newtonsoft.Json.JsonProperty("detailedAccountId", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public System.Guid? DetailedAccountId { get; set; }
+        public System.Guid? DetailedAccountId { get; set; } = default!;
 
         [Newtonsoft.Json.JsonProperty("subLedgerAccountId", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public System.Guid SubLedgerAccountId { get; set; }
+        public System.Guid SubLedgerAccountId { get; set; } = default!;
 
         [Newtonsoft.Json.JsonProperty("journalVoucherId", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public System.Guid JournalVoucherId { get; set; }
+        public System.Guid JournalVoucherId { get; set; } = default!;
 
     }
 
@@ -3489,7 +3491,7 @@ namespace GenerateApi
     public partial class ApiResultOfListOfGetJournalEntriesQueryResult : ApiResult
     {
         [Newtonsoft.Json.JsonProperty("data", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public System.Collections.Generic.ICollection<GetJournalEntriesQueryResult> Data { get; set; }
+        public System.Collections.Generic.ICollection<GetJournalEntriesQueryResult>? Data { get; set; } = default!;
 
     }
 
@@ -3497,29 +3499,29 @@ namespace GenerateApi
     public partial class GetJournalEntriesQueryResult
     {
         [Newtonsoft.Json.JsonProperty("id", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public System.Guid Id { get; set; }
+        public System.Guid Id { get; set; } = default!;
 
         [Newtonsoft.Json.JsonProperty("journalEntryNumber", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public string JournalEntryNumber { get; set; }
+        public string JournalEntryNumber { get; set; } = default!;
 
         [Newtonsoft.Json.JsonProperty("journalEntryType", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         [Newtonsoft.Json.JsonConverter(typeof(Newtonsoft.Json.Converters.StringEnumConverter))]
-        public JournalEntryType JournalEntryType { get; set; }
+        public JournalEntryType JournalEntryType { get; set; } = default!;
 
         [Newtonsoft.Json.JsonProperty("amount", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public decimal Amount { get; set; }
+        public decimal Amount { get; set; } = default!;
 
         [Newtonsoft.Json.JsonProperty("description", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public string Description { get; set; }
+        public string? Description { get; set; } = default!;
 
         [Newtonsoft.Json.JsonProperty("detailedAccountId", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public System.Guid? DetailedAccountId { get; set; }
+        public System.Guid? DetailedAccountId { get; set; } = default!;
 
         [Newtonsoft.Json.JsonProperty("subLedgerAccountId", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public System.Guid SubLedgerAccountId { get; set; }
+        public System.Guid SubLedgerAccountId { get; set; } = default!;
 
         [Newtonsoft.Json.JsonProperty("journalVoucherId", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public System.Guid JournalVoucherId { get; set; }
+        public System.Guid JournalVoucherId { get; set; } = default!;
 
     }
 
@@ -3527,22 +3529,22 @@ namespace GenerateApi
     public partial class CreateJournalVoucherApiModel
     {
         [Newtonsoft.Json.JsonProperty("journalVoucherTitle", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public string JournalVoucherTitle { get; set; }
+        public string JournalVoucherTitle { get; set; } = default!;
 
         [Newtonsoft.Json.JsonProperty("referenceNumber", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public string ReferenceNumber { get; set; }
+        public string ReferenceNumber { get; set; } = default!;
 
         [Newtonsoft.Json.JsonProperty("transactionTime", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public System.DateTime TransactionTime { get; set; }
+        public System.DateTime TransactionTime { get; set; } = default!;
 
         [Newtonsoft.Json.JsonProperty("description", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public string Description { get; set; }
+        public string? Description { get; set; } = default!;
 
         [Newtonsoft.Json.JsonProperty("createdByUserId", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public System.Guid CreatedByUserId { get; set; }
+        public System.Guid CreatedByUserId { get; set; } = default!;
 
         [Newtonsoft.Json.JsonProperty("financialPeriodId", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public System.Guid FinancialPeriodId { get; set; }
+        public System.Guid FinancialPeriodId { get; set; } = default!;
 
     }
 
@@ -3550,19 +3552,19 @@ namespace GenerateApi
     public partial class UpdateJournalVoucherCommand
     {
         [Newtonsoft.Json.JsonProperty("journalVoucherId", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public System.Guid JournalVoucherId { get; set; }
+        public System.Guid JournalVoucherId { get; set; } = default!;
 
         [Newtonsoft.Json.JsonProperty("journalVoucherTitle", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public PatchOfString JournalVoucherTitle { get; set; }
+        public PatchOfString? JournalVoucherTitle { get; set; } = default!;
 
         [Newtonsoft.Json.JsonProperty("referenceNumber", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public PatchOfString ReferenceNumber { get; set; }
+        public PatchOfString? ReferenceNumber { get; set; } = default!;
 
         [Newtonsoft.Json.JsonProperty("transactionTime", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public PatchOfDateTime TransactionTime { get; set; }
+        public PatchOfDateTime? TransactionTime { get; set; } = default!;
 
         [Newtonsoft.Json.JsonProperty("description", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public PatchOfString Description { get; set; }
+        public PatchOfString? Description { get; set; } = default!;
 
     }
 
@@ -3570,7 +3572,7 @@ namespace GenerateApi
     public partial class PatchOfDateTime
     {
         [Newtonsoft.Json.JsonProperty("value", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public System.DateTime Value { get; set; }
+        public System.DateTime Value { get; set; } = default!;
 
     }
 
@@ -3578,7 +3580,7 @@ namespace GenerateApi
     public partial class ApiResultOfGetJournalVoucherByIdQueryResult : ApiResult
     {
         [Newtonsoft.Json.JsonProperty("data", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public GetJournalVoucherByIdQueryResult Data { get; set; }
+        public GetJournalVoucherByIdQueryResult? Data { get; set; } = default!;
 
     }
 
@@ -3586,38 +3588,38 @@ namespace GenerateApi
     public partial class GetJournalVoucherByIdQueryResult
     {
         [Newtonsoft.Json.JsonProperty("id", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public System.Guid Id { get; set; }
+        public System.Guid Id { get; set; } = default!;
 
         [Newtonsoft.Json.JsonProperty("journalVoucherTitle", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public string JournalVoucherTitle { get; set; }
+        public string JournalVoucherTitle { get; set; } = default!;
 
         [Newtonsoft.Json.JsonProperty("journalVoucherNumber", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public string JournalVoucherNumber { get; set; }
+        public string JournalVoucherNumber { get; set; } = default!;
 
         [Newtonsoft.Json.JsonProperty("referenceNumber", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public string ReferenceNumber { get; set; }
+        public string ReferenceNumber { get; set; } = default!;
 
         [Newtonsoft.Json.JsonProperty("transactionTime", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public System.DateTime TransactionTime { get; set; }
+        public System.DateTime TransactionTime { get; set; } = default!;
 
         [Newtonsoft.Json.JsonProperty("description", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public string Description { get; set; }
+        public string? Description { get; set; } = default!;
 
         [Newtonsoft.Json.JsonProperty("journalVoucherState", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         [Newtonsoft.Json.JsonConverter(typeof(Newtonsoft.Json.Converters.StringEnumConverter))]
-        public JournalVoucherState JournalVoucherState { get; set; }
+        public JournalVoucherState JournalVoucherState { get; set; } = default!;
 
         [Newtonsoft.Json.JsonProperty("createdByUserId", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public System.Guid CreatedByUserId { get; set; }
+        public System.Guid CreatedByUserId { get; set; } = default!;
 
         [Newtonsoft.Json.JsonProperty("approvedByUserId", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public System.Guid? ApprovedByUserId { get; set; }
+        public System.Guid? ApprovedByUserId { get; set; } = default!;
 
         [Newtonsoft.Json.JsonProperty("approvedTime", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public System.DateTime? ApprovedTime { get; set; }
+        public System.DateTime? ApprovedTime { get; set; } = default!;
 
         [Newtonsoft.Json.JsonProperty("financialPeriodId", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public System.Guid FinancialPeriodId { get; set; }
+        public System.Guid FinancialPeriodId { get; set; } = default!;
 
     }
 
@@ -3640,7 +3642,7 @@ namespace GenerateApi
     public partial class ApiResultOfListOfGetJournalVouchersQueryResult : ApiResult
     {
         [Newtonsoft.Json.JsonProperty("data", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public System.Collections.Generic.ICollection<GetJournalVouchersQueryResult> Data { get; set; }
+        public System.Collections.Generic.ICollection<GetJournalVouchersQueryResult>? Data { get; set; } = default!;
 
     }
 
@@ -3648,38 +3650,38 @@ namespace GenerateApi
     public partial class GetJournalVouchersQueryResult
     {
         [Newtonsoft.Json.JsonProperty("id", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public System.Guid Id { get; set; }
+        public System.Guid Id { get; set; } = default!;
 
         [Newtonsoft.Json.JsonProperty("journalVoucherTitle", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public string JournalVoucherTitle { get; set; }
+        public string JournalVoucherTitle { get; set; } = default!;
 
         [Newtonsoft.Json.JsonProperty("journalVoucherNumber", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public string JournalVoucherNumber { get; set; }
+        public string? JournalVoucherNumber { get; set; } = default!;
 
         [Newtonsoft.Json.JsonProperty("referenceNumber", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public string ReferenceNumber { get; set; }
+        public string ReferenceNumber { get; set; } = default!;
 
         [Newtonsoft.Json.JsonProperty("transactionTime", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public System.DateTime TransactionTime { get; set; }
+        public System.DateTime TransactionTime { get; set; } = default!;
 
         [Newtonsoft.Json.JsonProperty("description", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public string Description { get; set; }
+        public string? Description { get; set; } = default!;
 
         [Newtonsoft.Json.JsonProperty("journalVoucherState", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         [Newtonsoft.Json.JsonConverter(typeof(Newtonsoft.Json.Converters.StringEnumConverter))]
-        public JournalVoucherState JournalVoucherState { get; set; }
+        public JournalVoucherState JournalVoucherState { get; set; } = default!;
 
         [Newtonsoft.Json.JsonProperty("createdByUserId", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public System.Guid CreatedByUserId { get; set; }
+        public System.Guid CreatedByUserId { get; set; } = default!;
 
         [Newtonsoft.Json.JsonProperty("approvedByUserId", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public System.Guid? ApprovedByUserId { get; set; }
+        public System.Guid? ApprovedByUserId { get; set; } = default!;
 
         [Newtonsoft.Json.JsonProperty("approvedTime", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public System.DateTime? ApprovedTime { get; set; }
+        public System.DateTime? ApprovedTime { get; set; } = default!;
 
         [Newtonsoft.Json.JsonProperty("financialPeriodId", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public System.Guid FinancialPeriodId { get; set; }
+        public System.Guid FinancialPeriodId { get; set; } = default!;
 
     }
 
@@ -3687,13 +3689,13 @@ namespace GenerateApi
     public partial class CreateFinancialPeriodApiModel
     {
         [Newtonsoft.Json.JsonProperty("financialPeriodTitle", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public string FinancialPeriodTitle { get; set; }
+        public string FinancialPeriodTitle { get; set; } = default!;
 
         [Newtonsoft.Json.JsonProperty("startDate", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public System.DateTime StartDate { get; set; }
+        public System.DateTime StartDate { get; set; } = default!;
 
         [Newtonsoft.Json.JsonProperty("endDate", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public System.DateTime EndDate { get; set; }
+        public System.DateTime EndDate { get; set; } = default!;
 
     }
 
@@ -3701,16 +3703,16 @@ namespace GenerateApi
     public partial class UpdateFinancialPeriodCommand
     {
         [Newtonsoft.Json.JsonProperty("financialPeriodId", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public System.Guid FinancialPeriodId { get; set; }
+        public System.Guid FinancialPeriodId { get; set; } = default!;
 
         [Newtonsoft.Json.JsonProperty("financialPeriodTitle", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public PatchOfString FinancialPeriodTitle { get; set; }
+        public PatchOfString? FinancialPeriodTitle { get; set; } = default!;
 
         [Newtonsoft.Json.JsonProperty("startDate", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public PatchOfDateTime StartDate { get; set; }
+        public PatchOfDateTime? StartDate { get; set; } = default!;
 
         [Newtonsoft.Json.JsonProperty("endDate", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public PatchOfDateTime EndDate { get; set; }
+        public PatchOfDateTime? EndDate { get; set; } = default!;
 
     }
 
@@ -3718,7 +3720,7 @@ namespace GenerateApi
     public partial class ApiResultOfGetFinancialPeriodByIdQueryResult : ApiResult
     {
         [Newtonsoft.Json.JsonProperty("data", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public GetFinancialPeriodByIdQueryResult Data { get; set; }
+        public GetFinancialPeriodByIdQueryResult? Data { get; set; } = default!;
 
     }
 
@@ -3726,19 +3728,19 @@ namespace GenerateApi
     public partial class GetFinancialPeriodByIdQueryResult
     {
         [Newtonsoft.Json.JsonProperty("id", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public System.Guid Id { get; set; }
+        public System.Guid Id { get; set; } = default!;
 
         [Newtonsoft.Json.JsonProperty("title", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public string Title { get; set; }
+        public string Title { get; set; } = default!;
 
         [Newtonsoft.Json.JsonProperty("startDate", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public System.DateTime StartDate { get; set; }
+        public System.DateTime StartDate { get; set; } = default!;
 
         [Newtonsoft.Json.JsonProperty("endDate", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public System.DateTime EndDate { get; set; }
+        public System.DateTime EndDate { get; set; } = default!;
 
         [Newtonsoft.Json.JsonProperty("isActive", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public bool IsActive { get; set; }
+        public bool IsActive { get; set; } = default!;
 
     }
 
@@ -3746,7 +3748,7 @@ namespace GenerateApi
     public partial class ApiResultOfListOfGetFinancialPeriodsQueryResult : ApiResult
     {
         [Newtonsoft.Json.JsonProperty("data", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public System.Collections.Generic.ICollection<GetFinancialPeriodsQueryResult> Data { get; set; }
+        public System.Collections.Generic.ICollection<GetFinancialPeriodsQueryResult>? Data { get; set; } = default!;
 
     }
 
@@ -3754,16 +3756,16 @@ namespace GenerateApi
     public partial class GetFinancialPeriodsQueryResult
     {
         [Newtonsoft.Json.JsonProperty("title", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public string Title { get; set; }
+        public string Title { get; set; } = default!;
 
         [Newtonsoft.Json.JsonProperty("isActive", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public bool IsActive { get; set; }
+        public bool IsActive { get; set; } = default!;
 
         [Newtonsoft.Json.JsonProperty("startDate", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public System.DateTime StartDate { get; set; }
+        public System.DateTime StartDate { get; set; } = default!;
 
         [Newtonsoft.Json.JsonProperty("endDate", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public System.DateTime EndDate { get; set; }
+        public System.DateTime EndDate { get; set; } = default!;
 
     }
 
@@ -3771,23 +3773,23 @@ namespace GenerateApi
     public partial class CreateDetailedAccountApiModel
     {
         [Newtonsoft.Json.JsonProperty("title", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public string Title { get; set; }
+        public string Title { get; set; } = default!;
 
         [Newtonsoft.Json.JsonProperty("code", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public string Code { get; set; }
+        public string Code { get; set; } = default!;
 
         [Newtonsoft.Json.JsonProperty("description", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public string Description { get; set; }
+        public string? Description { get; set; } = default!;
 
         [Newtonsoft.Json.JsonProperty("journalEntryType", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         [Newtonsoft.Json.JsonConverter(typeof(Newtonsoft.Json.Converters.StringEnumConverter))]
-        public JournalEntryType JournalEntryType { get; set; }
+        public JournalEntryType JournalEntryType { get; set; } = default!;
 
         [Newtonsoft.Json.JsonProperty("isActive", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public bool IsActive { get; set; }
+        public bool IsActive { get; set; } = default!;
 
         [Newtonsoft.Json.JsonProperty("subLedgerAccountId", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public System.Guid SubLedgerAccountId { get; set; }
+        public System.Guid SubLedgerAccountId { get; set; } = default!;
 
     }
 
@@ -3795,19 +3797,19 @@ namespace GenerateApi
     public partial class UpdateDetailedAccountCommand
     {
         [Newtonsoft.Json.JsonProperty("detailedAccountId", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public System.Guid DetailedAccountId { get; set; }
+        public System.Guid DetailedAccountId { get; set; } = default!;
 
         [Newtonsoft.Json.JsonProperty("title", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public PatchOfString Title { get; set; }
+        public PatchOfString? Title { get; set; } = default!;
 
         [Newtonsoft.Json.JsonProperty("description", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public PatchOfString Description { get; set; }
+        public PatchOfString? Description { get; set; } = default!;
 
         [Newtonsoft.Json.JsonProperty("isActive", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public PatchOfBoolean IsActive { get; set; }
+        public PatchOfBoolean? IsActive { get; set; } = default!;
 
         [Newtonsoft.Json.JsonProperty("code", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public PatchOfString Code { get; set; }
+        public PatchOfString? Code { get; set; } = default!;
 
     }
 
@@ -3815,7 +3817,7 @@ namespace GenerateApi
     public partial class PatchOfBoolean
     {
         [Newtonsoft.Json.JsonProperty("value", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public bool Value { get; set; }
+        public bool Value { get; set; } = default!;
 
     }
 
@@ -3823,7 +3825,7 @@ namespace GenerateApi
     public partial class ApiResultOfGetDetailedAccountByIdQueryResult : ApiResult
     {
         [Newtonsoft.Json.JsonProperty("data", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public GetDetailedAccountByIdQueryResult Data { get; set; }
+        public GetDetailedAccountByIdQueryResult? Data { get; set; } = default!;
 
     }
 
@@ -3831,10 +3833,10 @@ namespace GenerateApi
     public partial class GetDetailedAccountByIdQueryResult
     {
         [Newtonsoft.Json.JsonProperty("id", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public System.Guid Id { get; set; }
+        public System.Guid Id { get; set; } = default!;
 
         [Newtonsoft.Json.JsonProperty("accountTitle", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public string AccountTitle { get; set; }
+        public string AccountTitle { get; set; } = default!;
 
     }
 
@@ -3842,7 +3844,7 @@ namespace GenerateApi
     public partial class ApiResultOfListOfGetDetailedAccountsQueryResult : ApiResult
     {
         [Newtonsoft.Json.JsonProperty("data", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public System.Collections.Generic.ICollection<GetDetailedAccountsQueryResult> Data { get; set; }
+        public System.Collections.Generic.ICollection<GetDetailedAccountsQueryResult>? Data { get; set; } = default!;
 
     }
 
@@ -3850,20 +3852,20 @@ namespace GenerateApi
     public partial class GetDetailedAccountsQueryResult
     {
         [Newtonsoft.Json.JsonProperty("accountTitle", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public string AccountTitle { get; set; }
+        public string AccountTitle { get; set; } = default!;
 
         [Newtonsoft.Json.JsonProperty("accountCode", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public string AccountCode { get; set; }
+        public string AccountCode { get; set; } = default!;
 
         [Newtonsoft.Json.JsonProperty("isActive", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public bool IsActive { get; set; }
+        public bool IsActive { get; set; } = default!;
 
         [Newtonsoft.Json.JsonProperty("journalEntryType", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         [Newtonsoft.Json.JsonConverter(typeof(Newtonsoft.Json.Converters.StringEnumConverter))]
-        public JournalEntryType JournalEntryType { get; set; }
+        public JournalEntryType JournalEntryType { get; set; } = default!;
 
         [Newtonsoft.Json.JsonProperty("subLedgerAccountId", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public System.Guid SubLedgerAccountId { get; set; }
+        public System.Guid SubLedgerAccountId { get; set; } = default!;
 
     }
 
@@ -3871,23 +3873,23 @@ namespace GenerateApi
     public partial class CreateGeneralLedgerAccountApiModel
     {
         [Newtonsoft.Json.JsonProperty("groupAccountId", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public System.Guid GroupAccountId { get; set; }
+        public System.Guid GroupAccountId { get; set; } = default!;
 
         [Newtonsoft.Json.JsonProperty("title", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public string Title { get; set; }
+        public string Title { get; set; } = default!;
 
         [Newtonsoft.Json.JsonProperty("code", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public string Code { get; set; }
+        public string Code { get; set; } = default!;
 
         [Newtonsoft.Json.JsonProperty("description", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public string Description { get; set; }
+        public string? Description { get; set; } = default!;
 
         [Newtonsoft.Json.JsonProperty("journalEntryType", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         [Newtonsoft.Json.JsonConverter(typeof(Newtonsoft.Json.Converters.StringEnumConverter))]
-        public JournalEntryType JournalEntryType { get; set; }
+        public JournalEntryType JournalEntryType { get; set; } = default!;
 
         [Newtonsoft.Json.JsonProperty("isActive", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public bool IsActive { get; set; }
+        public bool IsActive { get; set; } = default!;
 
     }
 
@@ -3895,25 +3897,25 @@ namespace GenerateApi
     public partial class UpdateGeneralLedgerAccountCommand
     {
         [Newtonsoft.Json.JsonProperty("generalLedgerAccountId", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public System.Guid GeneralLedgerAccountId { get; set; }
+        public System.Guid GeneralLedgerAccountId { get; set; } = default!;
 
         [Newtonsoft.Json.JsonProperty("title", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public PatchOfString Title { get; set; }
+        public PatchOfString? Title { get; set; } = default!;
 
         [Newtonsoft.Json.JsonProperty("description", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public PatchOfString Description { get; set; }
+        public PatchOfString? Description { get; set; } = default!;
 
         [Newtonsoft.Json.JsonProperty("journalEntryType", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public PatchOfJournalEntryType JournalEntryType { get; set; }
+        public PatchOfJournalEntryType? JournalEntryType { get; set; } = default!;
 
         [Newtonsoft.Json.JsonProperty("isActive", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public PatchOfBoolean IsActive { get; set; }
+        public PatchOfBoolean? IsActive { get; set; } = default!;
 
         [Newtonsoft.Json.JsonProperty("code", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public PatchOfString Code { get; set; }
+        public PatchOfString? Code { get; set; } = default!;
 
         [Newtonsoft.Json.JsonProperty("groupAccountId", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public PatchOfGuid GroupAccountId { get; set; }
+        public PatchOfGuid? GroupAccountId { get; set; } = default!;
 
     }
 
@@ -3922,7 +3924,7 @@ namespace GenerateApi
     {
         [Newtonsoft.Json.JsonProperty("value", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         [Newtonsoft.Json.JsonConverter(typeof(Newtonsoft.Json.Converters.StringEnumConverter))]
-        public JournalEntryType Value { get; set; }
+        public JournalEntryType Value { get; set; } = default!;
 
     }
 
@@ -3930,7 +3932,7 @@ namespace GenerateApi
     public partial class ApiResultOfGetGeneralLedgerAccountByIdQueryResult : ApiResult
     {
         [Newtonsoft.Json.JsonProperty("data", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public GetGeneralLedgerAccountByIdQueryResult Data { get; set; }
+        public GetGeneralLedgerAccountByIdQueryResult? Data { get; set; } = default!;
 
     }
 
@@ -3938,10 +3940,10 @@ namespace GenerateApi
     public partial class GetGeneralLedgerAccountByIdQueryResult
     {
         [Newtonsoft.Json.JsonProperty("id", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public System.Guid Id { get; set; }
+        public System.Guid Id { get; set; } = default!;
 
         [Newtonsoft.Json.JsonProperty("accountTitle", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public string AccountTitle { get; set; }
+        public string AccountTitle { get; set; } = default!;
 
     }
 
@@ -3949,7 +3951,7 @@ namespace GenerateApi
     public partial class ApiResultOfListOfGetGeneralLedgerAccountsQueryResult : ApiResult
     {
         [Newtonsoft.Json.JsonProperty("data", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public System.Collections.Generic.ICollection<GetGeneralLedgerAccountsQueryResult> Data { get; set; }
+        public System.Collections.Generic.ICollection<GetGeneralLedgerAccountsQueryResult>? Data { get; set; } = default!;
 
     }
 
@@ -3957,20 +3959,20 @@ namespace GenerateApi
     public partial class GetGeneralLedgerAccountsQueryResult
     {
         [Newtonsoft.Json.JsonProperty("accountTitle", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public string AccountTitle { get; set; }
+        public string AccountTitle { get; set; } = default!;
 
         [Newtonsoft.Json.JsonProperty("accountCode", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public string AccountCode { get; set; }
+        public string AccountCode { get; set; } = default!;
 
         [Newtonsoft.Json.JsonProperty("isActive", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public bool IsActive { get; set; }
+        public bool IsActive { get; set; } = default!;
 
         [Newtonsoft.Json.JsonProperty("journalEntryType", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         [Newtonsoft.Json.JsonConverter(typeof(Newtonsoft.Json.Converters.StringEnumConverter))]
-        public JournalEntryType JournalEntryType { get; set; }
+        public JournalEntryType JournalEntryType { get; set; } = default!;
 
         [Newtonsoft.Json.JsonProperty("groupAccountId", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public System.Guid GroupAccountId { get; set; }
+        public System.Guid GroupAccountId { get; set; } = default!;
 
     }
 
@@ -3978,20 +3980,20 @@ namespace GenerateApi
     public partial class CreateGroupAccountApiModel
     {
         [Newtonsoft.Json.JsonProperty("title", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public string Title { get; set; }
+        public string Title { get; set; } = default!;
 
         [Newtonsoft.Json.JsonProperty("code", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public string Code { get; set; }
+        public string Code { get; set; } = default!;
 
         [Newtonsoft.Json.JsonProperty("description", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public string Description { get; set; }
+        public string? Description { get; set; } = default!;
 
         [Newtonsoft.Json.JsonProperty("journalEntryType", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         [Newtonsoft.Json.JsonConverter(typeof(Newtonsoft.Json.Converters.StringEnumConverter))]
-        public JournalEntryType JournalEntryType { get; set; }
+        public JournalEntryType JournalEntryType { get; set; } = default!;
 
         [Newtonsoft.Json.JsonProperty("isActive", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public bool IsActive { get; set; }
+        public bool IsActive { get; set; } = default!;
 
     }
 
@@ -3999,22 +4001,22 @@ namespace GenerateApi
     public partial class UpdateGroupAccountCommand
     {
         [Newtonsoft.Json.JsonProperty("groupAccountId", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public System.Guid GroupAccountId { get; set; }
+        public System.Guid GroupAccountId { get; set; } = default!;
 
         [Newtonsoft.Json.JsonProperty("title", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public PatchOfString Title { get; set; }
+        public PatchOfString? Title { get; set; } = default!;
 
         [Newtonsoft.Json.JsonProperty("description", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public PatchOfString Description { get; set; }
+        public PatchOfString? Description { get; set; } = default!;
 
         [Newtonsoft.Json.JsonProperty("code", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public PatchOfString Code { get; set; }
+        public PatchOfString? Code { get; set; } = default!;
 
         [Newtonsoft.Json.JsonProperty("journalEntryType", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public PatchOfJournalEntryType JournalEntryType { get; set; }
+        public PatchOfJournalEntryType? JournalEntryType { get; set; } = default!;
 
         [Newtonsoft.Json.JsonProperty("isActive", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public PatchOfBoolean IsActive { get; set; }
+        public PatchOfBoolean? IsActive { get; set; } = default!;
 
     }
 
@@ -4022,7 +4024,7 @@ namespace GenerateApi
     public partial class ApiResultOfGetGroupAccountByIdQueryResult : ApiResult
     {
         [Newtonsoft.Json.JsonProperty("data", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public GetGroupAccountByIdQueryResult Data { get; set; }
+        public GetGroupAccountByIdQueryResult? Data { get; set; } = default!;
 
     }
 
@@ -4030,10 +4032,10 @@ namespace GenerateApi
     public partial class GetGroupAccountByIdQueryResult
     {
         [Newtonsoft.Json.JsonProperty("id", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public System.Guid Id { get; set; }
+        public System.Guid Id { get; set; } = default!;
 
         [Newtonsoft.Json.JsonProperty("accountTitle", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public string AccountTitle { get; set; }
+        public string AccountTitle { get; set; } = default!;
 
     }
 
@@ -4041,7 +4043,7 @@ namespace GenerateApi
     public partial class ApiResultOfListOfGetGroupAccountsQueryResult : ApiResult
     {
         [Newtonsoft.Json.JsonProperty("data", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public System.Collections.Generic.ICollection<GetGroupAccountsQueryResult> Data { get; set; }
+        public System.Collections.Generic.ICollection<GetGroupAccountsQueryResult>? Data { get; set; } = default!;
 
     }
 
@@ -4049,20 +4051,20 @@ namespace GenerateApi
     public partial class GetGroupAccountsQueryResult
     {
         [Newtonsoft.Json.JsonProperty("accountTitle", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public string AccountTitle { get; set; }
+        public string AccountTitle { get; set; } = default!;
 
         [Newtonsoft.Json.JsonProperty("accountCode", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public string AccountCode { get; set; }
+        public string AccountCode { get; set; } = default!;
 
         [Newtonsoft.Json.JsonProperty("accountDescription", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public string AccountDescription { get; set; }
+        public string? AccountDescription { get; set; } = default!;
 
         [Newtonsoft.Json.JsonProperty("isActive", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public bool IsActive { get; set; }
+        public bool IsActive { get; set; } = default!;
 
         [Newtonsoft.Json.JsonProperty("journalEntryType", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         [Newtonsoft.Json.JsonConverter(typeof(Newtonsoft.Json.Converters.StringEnumConverter))]
-        public JournalEntryType JournalEntryType { get; set; }
+        public JournalEntryType JournalEntryType { get; set; } = default!;
 
     }
 
@@ -4070,23 +4072,23 @@ namespace GenerateApi
     public partial class CreateSubLedgerAccountApiModel
     {
         [Newtonsoft.Json.JsonProperty("title", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public string Title { get; set; }
+        public string Title { get; set; } = default!;
 
         [Newtonsoft.Json.JsonProperty("code", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public string Code { get; set; }
+        public string Code { get; set; } = default!;
 
         [Newtonsoft.Json.JsonProperty("description", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public string Description { get; set; }
+        public string? Description { get; set; } = default!;
 
         [Newtonsoft.Json.JsonProperty("journalEntryType", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         [Newtonsoft.Json.JsonConverter(typeof(Newtonsoft.Json.Converters.StringEnumConverter))]
-        public JournalEntryType JournalEntryType { get; set; }
+        public JournalEntryType JournalEntryType { get; set; } = default!;
 
         [Newtonsoft.Json.JsonProperty("isActive", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public bool IsActive { get; set; }
+        public bool IsActive { get; set; } = default!;
 
         [Newtonsoft.Json.JsonProperty("generalLedgerAccountId", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public System.Guid GeneralLedgerAccountId { get; set; }
+        public System.Guid GeneralLedgerAccountId { get; set; } = default!;
 
     }
 
@@ -4094,19 +4096,19 @@ namespace GenerateApi
     public partial class UpdateSubLedgerAccountCommand
     {
         [Newtonsoft.Json.JsonProperty("subLegerAccountId", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public System.Guid SubLegerAccountId { get; set; }
+        public System.Guid SubLegerAccountId { get; set; } = default!;
 
         [Newtonsoft.Json.JsonProperty("title", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public PatchOfString Title { get; set; }
+        public PatchOfString? Title { get; set; } = default!;
 
         [Newtonsoft.Json.JsonProperty("description", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public PatchOfString Description { get; set; }
+        public PatchOfString? Description { get; set; } = default!;
 
         [Newtonsoft.Json.JsonProperty("isActive", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public PatchOfBoolean IsActive { get; set; }
+        public PatchOfBoolean? IsActive { get; set; } = default!;
 
         [Newtonsoft.Json.JsonProperty("code", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public PatchOfString Code { get; set; }
+        public PatchOfString? Code { get; set; } = default!;
 
     }
 
@@ -4114,7 +4116,7 @@ namespace GenerateApi
     public partial class ApiResultOfGetSubLedgerAccountByIdQueryResult : ApiResult
     {
         [Newtonsoft.Json.JsonProperty("data", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public GetSubLedgerAccountByIdQueryResult Data { get; set; }
+        public GetSubLedgerAccountByIdQueryResult? Data { get; set; } = default!;
 
     }
 
@@ -4122,10 +4124,10 @@ namespace GenerateApi
     public partial class GetSubLedgerAccountByIdQueryResult
     {
         [Newtonsoft.Json.JsonProperty("id", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public System.Guid Id { get; set; }
+        public System.Guid Id { get; set; } = default!;
 
         [Newtonsoft.Json.JsonProperty("accountTitle", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public string AccountTitle { get; set; }
+        public string AccountTitle { get; set; } = default!;
 
     }
 
@@ -4133,7 +4135,7 @@ namespace GenerateApi
     public partial class ApiResultOfListOfGetSubLedgerAccountsQueryResult : ApiResult
     {
         [Newtonsoft.Json.JsonProperty("data", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public System.Collections.Generic.ICollection<GetSubLedgerAccountsQueryResult> Data { get; set; }
+        public System.Collections.Generic.ICollection<GetSubLedgerAccountsQueryResult>? Data { get; set; } = default!;
 
     }
 
@@ -4141,20 +4143,20 @@ namespace GenerateApi
     public partial class GetSubLedgerAccountsQueryResult
     {
         [Newtonsoft.Json.JsonProperty("accountTitle", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public string AccountTitle { get; set; }
+        public string AccountTitle { get; set; } = default!;
 
         [Newtonsoft.Json.JsonProperty("accountCode", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public string AccountCode { get; set; }
+        public string AccountCode { get; set; } = default!;
 
         [Newtonsoft.Json.JsonProperty("isActive", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public bool IsActive { get; set; }
+        public bool IsActive { get; set; } = default!;
 
         [Newtonsoft.Json.JsonProperty("journalEntryType", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         [Newtonsoft.Json.JsonConverter(typeof(Newtonsoft.Json.Converters.StringEnumConverter))]
-        public JournalEntryType JournalEntryType { get; set; }
+        public JournalEntryType JournalEntryType { get; set; } = default!;
 
         [Newtonsoft.Json.JsonProperty("generalLedgerAccountId", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public System.Guid GeneralLedgerAccountId { get; set; }
+        public System.Guid GeneralLedgerAccountId { get; set; } = default!;
 
     }
 
@@ -4165,11 +4167,11 @@ namespace GenerateApi
     {
         public int StatusCode { get; private set; }
 
-        public string Response { get; private set; }
+        public string? Response { get; private set; }
 
         public System.Collections.Generic.IReadOnlyDictionary<string, System.Collections.Generic.IEnumerable<string>> Headers { get; private set; }
 
-        public ApiException(string message, int statusCode, string response, System.Collections.Generic.IReadOnlyDictionary<string, System.Collections.Generic.IEnumerable<string>> headers, System.Exception innerException)
+        public ApiException(string message, int statusCode, string? response, System.Collections.Generic.IReadOnlyDictionary<string, System.Collections.Generic.IEnumerable<string>> headers, System.Exception? innerException)
             : base(message + "\n\nStatus: " + statusCode + "\nResponse: \n" + ((response == null) ? "(null)" : response.Substring(0, response.Length >= 512 ? 512 : response.Length)), innerException)
         {
             StatusCode = statusCode;
@@ -4188,7 +4190,7 @@ namespace GenerateApi
     {
         public TResult Result { get; private set; }
 
-        public ApiException(string message, int statusCode, string response, System.Collections.Generic.IReadOnlyDictionary<string, System.Collections.Generic.IEnumerable<string>> headers, TResult result, System.Exception innerException)
+        public ApiException(string message, int statusCode, string? response, System.Collections.Generic.IReadOnlyDictionary<string, System.Collections.Generic.IEnumerable<string>> headers, TResult result, System.Exception? innerException)
             : base(message, statusCode, response, headers, innerException)
         {
             Result = result;

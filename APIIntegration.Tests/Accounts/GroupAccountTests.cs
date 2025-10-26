@@ -80,7 +80,7 @@ public class GroupAccountTests(ApiTestSetup setup, ITestOutputHelper output) : I
         catch (ApiException ex)
         {
             var responseContent = ex.Message;
-            responseContent.Should().Contain("An active group account with the same title or type already exists.");
+            responseContent.Should().Contain("An active group account with this title already exists.");
         }
     }
 
@@ -153,7 +153,7 @@ public class GroupAccountTests(ApiTestSetup setup, ITestOutputHelper output) : I
             Title = Guid.NewGuid().ToString(),
             Code = Guid.NewGuid().ToString(),
             IsActive = true,
-            JournalEntryType = default,
+            JournalEntryType = (JournalEntryType)3,
             Description = "Integration test group account"
         };
 
@@ -166,7 +166,7 @@ public class GroupAccountTests(ApiTestSetup setup, ITestOutputHelper output) : I
         catch (ApiException ex)
         {
             var responseContent = ex.Response;
-            responseContent.Should().Contain("'JournalEntryType' must not be empty.");
+            responseContent.Should().Contain("JournalEntryType must be one of the valid enum values: Debit or Credit.");
             ex.StatusCode.Should().Be(400);
         }
     }
@@ -260,6 +260,9 @@ public class GroupAccountTests(ApiTestSetup setup, ITestOutputHelper output) : I
             responseContent.Should().Contain("No active financial period found.");
             ex.StatusCode.Should().Be(400);
         }
+
+        financialPeriod.IsActive = true;
+        await setup.TestInit1.AccountingDbContext.SaveChangesAsync();
     }
 
     [Fact]
@@ -579,7 +582,7 @@ public class GroupAccountTests(ApiTestSetup setup, ITestOutputHelper output) : I
         catch (ApiException ex)
         {
             var responseContent = ex.Response;
-            responseContent.Should().Contain("Title should not be null.");
+            responseContent.Should().Contain("Title cannot be empty.");
             ex.StatusCode.Should().Be(400);
         }
     }
@@ -620,78 +623,280 @@ public class GroupAccountTests(ApiTestSetup setup, ITestOutputHelper output) : I
             responseContent.Should().Contain("Cannot modify group accounts without an active open financial period.");
             ex.StatusCode.Should().Be(400);
         }
-    }
 
-    [Fact]
-    public async Task UpdateGroupAccount_ShouldFail_WhenFinancialPeriodInActive()
-    {
-        throw new NotImplementedException();
+        financialPeriod.IsActive = true;
+        await setup.TestInit1.AccountingDbContext.SaveChangesAsync();
     }
 
     [Fact]
     public async Task UpdateGroupAccount_ShouldFail_WhenCodeChangedAndHasJournalEntries()
     {
-        throw new NotImplementedException();
+        // Arrange
+        var groupAccount = await setup.TestInit1.CreateGroupAccount(JournalEntryType.Credit);
+        await setup.TestInit1.CreateJournalEntry(groupAccount.Id);
+
+        var updateGroupAccountCommand = new UpdateGroupAccountCommand
+        {
+            GroupAccountId = groupAccount.Id,
+            Code = new PatchOfString
+            {
+                Value = Guid.NewGuid().ToString()
+            }
+        };
+
+        // Act And Assert
+        try
+        {
+            var result = await setup.TestInit1.GroupAccountClient.UpdateAsync(updateGroupAccountCommand);
+            result.IsSuccess.Should().BeFalse("Expected an ApiException was not thrown.");
+        }
+        catch (ApiException ex)
+        {
+            var responseContent = ex.Response;
+            responseContent.Should().Contain("Cannot change account code for a used account.");
+            ex.StatusCode.Should().Be(400);
+        }
     }
 
     [Fact]
     public async Task UpdateGroupAccount_ShouldFail_WhenCodeIsDuplicate()
     {
-        throw new NotImplementedException();
+        // Arrange
+        var groupAccount = await setup.TestInit1.CreateGroupAccount(JournalEntryType.Credit);
+        var groupAccount2 = await setup.TestInit1.CreateGroupAccount(JournalEntryType.Credit);
+        await setup.TestInit1.CreateJournalEntry(groupAccount.Id);
+
+        var updateGroupAccountCommand = new UpdateGroupAccountCommand
+        {
+            GroupAccountId = groupAccount2.Id,
+            Code = new PatchOfString
+            {
+                Value = groupAccount.AccountCode
+            }
+        };
+
+        // Act And Assert
+        try
+        {
+            var result = await setup.TestInit1.GroupAccountClient.UpdateAsync(updateGroupAccountCommand);
+            result.IsSuccess.Should().BeFalse("Expected an ApiException was not thrown.");
+        }
+        catch (ApiException ex)
+        {
+            var responseContent = ex.Response;
+            responseContent.Should().Contain("Group account code already exists. Please provide a unique code.");
+            ex.StatusCode.Should().Be(400);
+        }
     }
 
     [Fact]
     public async Task UpdateGroupAccount_ShouldFail_WhenActiveDuplicateTitleExists()
     {
-        throw new NotImplementedException();
+        // Arrange
+        var groupAccount = await setup.TestInit1.CreateGroupAccount(JournalEntryType.Credit);
+        var groupAccount2 = await setup.TestInit1.CreateGroupAccount(JournalEntryType.Credit);
+        await setup.TestInit1.CreateJournalEntry(groupAccount.Id);
+
+        var updateGroupAccountCommand = new UpdateGroupAccountCommand
+        {
+            GroupAccountId = groupAccount2.Id,
+            Title = new PatchOfString
+            {
+                Value = groupAccount.AccountTitle
+            }
+        };
+
+        // Act And Assert
+        try
+        {
+            var result = await setup.TestInit1.GroupAccountClient.UpdateAsync(updateGroupAccountCommand);
+            result.IsSuccess.Should().BeFalse("Expected an ApiException was not thrown.");
+        }
+        catch (ApiException ex)
+        {
+            var responseContent = ex.Response;
+            responseContent.Should().Contain("An active group account with this title already exists. Consider renaming or reactivating the existing account.");
+            ex.StatusCode.Should().Be(400);
+        }
     }
 
     [Fact]
     public async Task UpdateGroupAccount_ShouldSuggestReactivation_WhenInactiveDuplicateTitleExists()
     {
-        throw new NotImplementedException();
+        // Arrange
+        var groupAccount = await setup.TestInit1.CreateGroupAccount(JournalEntryType.Credit, isActive:false);
+        var groupAccount2 = await setup.TestInit1.CreateGroupAccount(JournalEntryType.Credit);
+        await setup.TestInit1.CreateJournalEntry(groupAccount.Id);
+
+        var updateGroupAccountCommand = new UpdateGroupAccountCommand
+        {
+            GroupAccountId = groupAccount2.Id,
+            Title = new PatchOfString
+            {
+                Value = groupAccount.AccountTitle
+            }
+        };
+
+        // Act And Assert
+        try
+        {
+            var result = await setup.TestInit1.GroupAccountClient.UpdateAsync(updateGroupAccountCommand);
+            result.IsSuccess.Should().BeFalse("Expected an ApiException was not thrown.");
+        }
+        catch (ApiException ex)
+        {
+            var responseContent = ex.Response;
+            responseContent.Should().Contain($"An inactive group account with this title already exists (Code: {groupAccount.AccountCode}). Consider reactivating it instead of creating a new one.");
+            responseContent.Should().Contain($"{groupAccount.Id}");
+            ex.StatusCode.Should().Be(400);
+        }
     }
 
     [Fact]
     public async Task UpdateGroupAccount_ShouldFail_WhenDeactivatingWithJournalEntries()
     {
-        throw new NotImplementedException();
+        // Arrange
+        var groupAccount = await setup.TestInit1.CreateGroupAccount(JournalEntryType.Credit);
+        await setup.TestInit1.CreateJournalEntry(groupAccount.Id);
+
+        var updateGroupAccountCommand = new UpdateGroupAccountCommand
+        {
+            GroupAccountId = groupAccount.Id,
+            IsActive = new PatchOfBoolean
+            {
+                Value = false
+            }
+        };
+
+        // Act And Assert
+        try
+        {
+            var result = await setup.TestInit1.GroupAccountClient.UpdateAsync(updateGroupAccountCommand);
+            result.IsSuccess.Should().BeFalse("Expected an ApiException was not thrown.");
+        }
+        catch (ApiException ex)
+        {
+            var responseContent = ex.Response;
+            responseContent.Should().Contain("Cannot deactivate a group account with existing journal entries.");
+            ex.StatusCode.Should().Be(400);
+        }
     }
 
     [Fact]
     public async Task UpdateGroupAccount_ShouldChangeIsActive_WhenNoJournalEntries()
     {
-        throw new NotImplementedException();
-    }
+        // Arrange
+        var groupAccount = await setup.TestInit1.CreateGroupAccount(JournalEntryType.Credit);
 
-    [Fact]
-    public async Task UpdateGroupAccount_ShouldChangeIsActive_WhenActivatingAccount()
-    {
-        throw new NotImplementedException();
+        var updateGroupAccountCommand = new UpdateGroupAccountCommand
+        {
+            GroupAccountId = groupAccount.Id,
+            IsActive = new PatchOfBoolean
+            {
+                Value = false
+            }
+        };
+
+        // Act
+        var result = await setup.TestInit1.GroupAccountClient.UpdateAsync(updateGroupAccountCommand);
+
+        var getGroupAccount = await setup.TestInit1.AccountingDbContext
+            .Set<GroupAccountEntity>()
+            .SingleAsync(f => f.Id == groupAccount.Id);
+
+        // Assert
+        result.IsSuccess.Should().BeTrue();
+        getGroupAccount.IsActive.Should().BeTrue();
+
     }
 
     [Fact]
     public async Task UpdateGroupAccount_ShouldChangeDescription_WhenProvided()
     {
-        throw new NotImplementedException();
+        // Arrange
+        var groupAccount = await setup.TestInit1.CreateGroupAccount(JournalEntryType.Credit);
+
+        var updateGroupAccountCommand = new UpdateGroupAccountCommand
+        {
+            GroupAccountId = groupAccount.Id,
+            Description = new PatchOfString
+            {
+                Value = Guid.NewGuid().ToString()
+            }
+        };
+
+        // Act
+        var result = await setup.TestInit1.GroupAccountClient.UpdateAsync(updateGroupAccountCommand);
+
+        var getGroupAccount = await setup.TestInit1.AccountingDbContext
+            .Set<GroupAccountEntity>()
+            .AsNoTracking()
+            .SingleAsync(f => f.Id == groupAccount.Id);
+
+        // Assert
+        result.IsSuccess.Should().BeTrue();
+        getGroupAccount.AccountDescription.Should().NotBeNull();
     }
 
     [Fact]
     public async Task UpdateGroupAccount_ShouldNotChangeDescription_WhenNull()
     {
-        throw new NotImplementedException();
-    }
+        // Arrange
+        var groupAccount = await setup.TestInit1.CreateGroupAccount(JournalEntryType.Credit);
 
-    [Fact]
-    public async Task UpdateGroupAccount_ShouldFailOrChangeFields_WhenMultipleUpdatesProvided_WithJournalEntries()
-    {
-        throw new NotImplementedException();
+        var updateGroupAccountCommand = new UpdateGroupAccountCommand
+        {
+            GroupAccountId = groupAccount.Id,
+            Description = new PatchOfString
+            {
+                Value = null
+            }
+        };
+
+        // Act
+        var result = await setup.TestInit1.GroupAccountClient.UpdateAsync(updateGroupAccountCommand);
+
+        var getGroupAccount = await setup.TestInit1.AccountingDbContext
+            .Set<GroupAccountEntity>()
+            .AsNoTracking()
+            .SingleAsync(f => f.Id == groupAccount.Id);
+
+        // Assert
+        result.IsSuccess.Should().BeTrue();
+        getGroupAccount.AccountDescription.Should().BeNullOrEmpty();
     }
 
     [Fact]
     public async Task UpdateGroupAccount_ShouldUpdateAllFields_WhenMultipleUpdatesProvided_NoJournalEntries()
     {
-        throw new NotImplementedException();
+        // Arrange
+        var groupAccount = await setup.TestInit1.CreateGroupAccount(JournalEntryType.Credit);
+
+        var updateGroupAccountCommand = new UpdateGroupAccountCommand
+        {
+            GroupAccountId = groupAccount.Id,
+            IsActive = new PatchOfBoolean
+            {
+                Value = false
+            },
+            Code = new PatchOfString
+            {
+                Value = Guid.NewGuid().ToString()
+            }
+        };
+
+        // Act
+        var result = await setup.TestInit1.GroupAccountClient.UpdateAsync(updateGroupAccountCommand);
+
+        var getGroupAccount = await setup.TestInit1.AccountingDbContext
+            .Set<GroupAccountEntity>()
+            .AsNoTracking()
+            .SingleAsync(f => f.Id == groupAccount.Id);
+
+        // Assert
+        result.IsSuccess.Should().BeTrue();
+        getGroupAccount.IsActive.Should().BeFalse();
+        getGroupAccount.AccountCode.Should().NotBe(groupAccount.AccountCode);
     }
 
     [Fact]

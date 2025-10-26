@@ -22,7 +22,9 @@
         "generateBaseUrlProperty": true,
         "generateOptionalPropertiesAsNullable": false,
         "generateDateTimeOffset": false,
-        "dateTimeType": "System.DateTime"
+        "dateTimeType": "System.DateTime",
+        "generateNullableReferenceTypes": true
+
       },
       "openApiToTypeScriptClient": {
         "className": "{controller}Client",
