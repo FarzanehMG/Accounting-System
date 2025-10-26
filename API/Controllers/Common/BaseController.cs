@@ -35,14 +35,16 @@ public class BaseController : ControllerBase
         }
 
         // For validation or other errors
-        var errorMessage = result.ErrorMessages.FirstOrDefault().Value ?? "Validation failed";
-
         var badRequestResult = new ApiResult<TModel>(
             IsSuccess: false,
-            Message: errorMessage,
+            Message: "Validation failed",
             StatusCode: ApiResultStatusCode.BadRequest,
             Data: default!
-        );
+        )
+        {
+            Errors = result.ErrorMessages.ToDictionary(e => e.Key, e => e.Value)
+        };
+
 
         return BadRequest(badRequestResult);
     }

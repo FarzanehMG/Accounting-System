@@ -8,7 +8,15 @@ public record ApiResult(bool IsSuccess, string Message, ApiResultStatusCode Stat
     public string RequestId => Activity.Current?.TraceId.ToHexString() ?? string.Empty;
 }
 
-public record ApiResult<TResult>(bool IsSuccess, string Message, ApiResultStatusCode StatusCode, TResult Data) : ApiResult(IsSuccess, Message, StatusCode);
+public record ApiResult<TResult>(
+    bool IsSuccess,
+    string Message,
+    ApiResultStatusCode StatusCode,
+    TResult Data
+) : ApiResult(IsSuccess, Message, StatusCode)
+{
+    public Dictionary<string, string>? Errors { get; init; }
+}
 
 
 public enum ApiResultStatusCode
