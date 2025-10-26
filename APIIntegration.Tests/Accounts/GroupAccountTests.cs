@@ -342,16 +342,22 @@ public class GroupAccountTests(ApiTestSetup setup, ITestOutputHelper output) : I
     [Fact]
     public async Task UpdateGroupAccount_ShouldFail_WhenGroupAccountDoesNotExist()
     {
+        // Arrange
+        var updateGroupAccountCommand = new UpdateGroupAccountCommand
+        {
+            GroupAccountId = Guid.NewGuid()
+        };
+
         // Act and Assert
         try
         {
-            var result = await setup.TestInit1.GroupAccountClient.GetByIdAsync(Guid.NewGuid());
+            var result = await setup.TestInit1.GroupAccountClient.UpdateAsync(updateGroupAccountCommand);
             result.IsSuccess.Should().BeFalse("Expected an ApiException was not thrown.");
         }
         catch (ApiException ex)
         {
             var responseContent = ex.Response;
-            responseContent.Should().Contain("Group account not found.");
+            responseContent.Should().Contain("Group Account Not Found.");
             ex.StatusCode.Should().Be(404);
         }
     }

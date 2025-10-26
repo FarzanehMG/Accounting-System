@@ -111,6 +111,51 @@ public class TestInit
         journalEntries.Should().ContainSingle(x => x.SubLedgerAccountId == subLedgerAccount2.Id && x.JournalEntryType == Domain.Enums.JournalEntryType.Debit);
     }
 
+    internal async Task CreateJournalEntry(Guid groupAccountId, Guid creditGeneralLedgerAccountId, Guid debitGeneralLedgerAccountId)
+    {
+        // Create SubLedger account
+        var subLedgerAccount = await CreateSubLedgerAccount(creditGeneralLedgerAccountId, JournalEntryType.Credit);
+        var subLedgerAccount2 = await CreateSubLedgerAccount(debitGeneralLedgerAccountId, JournalEntryType.Debit);
+
+        // Create JournalVoucher
+        var journalVoucher = await CreateJournalVoucher();
+
+        // Create JournalEntry
+        var createJournalEntry = new CreateJournalEntryApiModel
+        {
+            Entries = new List<JournalEntryApiModel>
+            {
+                new()
+                {
+                    Amount = 2,
+                    JournalEntryType = JournalEntryType.Credit,
+                    JournalVoucherId = journalVoucher.Id,
+                    SubLedgerAccountId = subLedgerAccount.Id,
+                    Attachments = []
+                },
+                new()
+                {
+
+                    Amount = 2,
+                    JournalEntryType = JournalEntryType.Debit,
+                    JournalVoucherId = journalVoucher.Id,
+                    SubLedgerAccountId = subLedgerAccount2.Id,
+                    Attachments = []
+                }
+            }
+        };
+        await JournalEntryClient.CreateAsync(createJournalEntry);
+
+        // Assert JournalEntries exist
+        var journalEntries = await AccountingDbContext.Set<JournalEntryEntity>()
+            .Where(x => x.JournalVoucherId == journalVoucher.Id)
+            .ToListAsync();
+
+        journalEntries.Should().HaveCount(2);
+        journalEntries.Should().ContainSingle(x => x.SubLedgerAccountId == subLedgerAccount.Id && x.JournalEntryType == Domain.Enums.JournalEntryType.Credit);
+        journalEntries.Should().ContainSingle(x => x.SubLedgerAccountId == subLedgerAccount2.Id && x.JournalEntryType == Domain.Enums.JournalEntryType.Debit);
+    }
+
     internal async Task<GroupAccountEntity> CreateGroupAccount(JournalEntryType journalEntryType, bool isActive = true)
     {
         var createGroupAccount = new CreateGroupAccountApiModel
@@ -134,13 +179,13 @@ public class TestInit
         return groupAccount;
     }
 
-    private async Task<GeneralLedgerAccountEntity> CreateGeneralLedgerAccount(Guid groupAccountId, JournalEntryType journalEntryType)
+    internal async Task<GeneralLedgerAccountEntity> CreateGeneralLedgerAccount(Guid groupAccountId, JournalEntryType journalEntryType, bool isActive = true)
     {
         var createGeneralLedgerAccount = new CreateGeneralLedgerAccountApiModel
         {
             Title = Guid.NewGuid().ToString(),
             Code = Guid.NewGuid().ToString(),
-            IsActive = true,
+            IsActive = isActive,
             JournalEntryType = journalEntryType,
             GroupAccountId = groupAccountId
         };
@@ -148,12 +193,12 @@ public class TestInit
 
         // Assert
         var generalLedgerAccount = await AccountingDbContext.Set<GeneralLedgerAccountEntity>()
+            .AsNoTracking()
             .SingleAsync(x => x.AccountTitle == createGeneralLedgerAccount.Title && x.AccountCode == createGeneralLedgerAccount.Code);
 
         generalLedgerAccount.Should().NotBeNull();
         generalLedgerAccount.AccountTitle.Should().Be(createGeneralLedgerAccount.Title);
         generalLedgerAccount.AccountCode.Should().Be(createGeneralLedgerAccount.Code);
-        generalLedgerAccount.IsActive.Should().BeTrue();
         generalLedgerAccount.GroupAccountId.Should().Be(groupAccountId);
 
         // Return GeneralLedger account
