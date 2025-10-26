@@ -59,7 +59,8 @@ public class UpdateGroupAccountCommandHandler(IUnitOfWork unitOfWork)
 
     private static OperationResult<bool> UpdateJournalEntryType(GroupAccountEntity groupAccount, UpdateGroupAccountCommand request, bool hasJournalEntries)
     {
-        if (request.JournalEntryType?.Value == null) return OperationResult<bool>.SuccessResult(true);
+        if (request.JournalEntryType?.Value == null) return 
+            OperationResult<bool>.SuccessResult(true);
 
         if (hasJournalEntries && request.JournalEntryType.Value != groupAccount.JournalEntryType)
             return OperationResult<bool>.FailureResult(nameof(request.JournalEntryType), "Cannot change Journal Entry Type for a used account.");
@@ -70,8 +71,11 @@ public class UpdateGroupAccountCommandHandler(IUnitOfWork unitOfWork)
 
     private async Task<OperationResult<bool>> UpdateAccountCode(GroupAccountEntity groupAccount, UpdateGroupAccountCommand request, bool hasJournalEntries, CancellationToken cancellationToken)
     {
-        if (string.IsNullOrWhiteSpace(request.Code?.Value))
+        if (request.Code is null)
             return OperationResult<bool>.SuccessResult(true);
+
+        if (string.IsNullOrWhiteSpace(request.Code.Value))
+            return OperationResult<bool>.FailureResult(nameof(request.Code), "Code cannot be empty.");
 
         if (hasJournalEntries && request.Code.Value != groupAccount.AccountCode)
             return OperationResult<bool>.FailureResult(nameof(request.Code), "Cannot change account code for a used account.");
@@ -90,7 +94,11 @@ public class UpdateGroupAccountCommandHandler(IUnitOfWork unitOfWork)
 
     private async Task<OperationResult<bool>> UpdateAccountTitle(GroupAccountEntity groupAccount, UpdateGroupAccountCommand request, CancellationToken cancellationToken)
     {
-        if (string.IsNullOrWhiteSpace(request.Title?.Value)) return OperationResult<bool>.SuccessResult(true);
+        if (request.Title is null)
+            return OperationResult<bool>.SuccessResult(true);
+
+        if (string.IsNullOrWhiteSpace(request.Title.Value))
+            return OperationResult<bool>.FailureResult(nameof(request.Title), "Title cannot be empty.");
 
         var titleToCheck = request.Title.Value;
         var journalEntryTypeToCheck = request.JournalEntryType?.Value ?? groupAccount.JournalEntryType;
