@@ -59,8 +59,8 @@ public class UpdateGroupAccountCommandHandler(IUnitOfWork unitOfWork)
 
     private static OperationResult<bool> UpdateJournalEntryType(GroupAccountEntity groupAccount, UpdateGroupAccountCommand request, bool hasJournalEntries)
     {
-        if (request.JournalEntryType?.Value == null) return 
-            OperationResult<bool>.SuccessResult(true);
+        if (request.JournalEntryType?.Value == null)
+            return OperationResult<bool>.SuccessResult(true);
 
         if (hasJournalEntries && request.JournalEntryType.Value != groupAccount.JournalEntryType)
             return OperationResult<bool>.FailureResult(nameof(request.JournalEntryType), "Cannot change Journal Entry Type for a used account.");

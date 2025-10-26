@@ -18,28 +18,31 @@ public class UpdateGeneralLedgerAccountCommandHandler(IUnitOfWork unitOfWork)
         // Retrieve the existing general ledger account
         var generalAccount = await unitOfWork.GeneralLedgerAccountRepository.GetByIdAsync(request.GeneralLedgerAccountId, cancellationToken);
         if (generalAccount is null)
-            return OperationResult<bool>.NotFoundResult(nameof(UpdateGeneralLedgerAccountCommand.GeneralLedgerAccountId), "General Account Not Found.");
+            return OperationResult<bool>.NotFoundResult(nameof(UpdateGeneralLedgerAccountCommand.GeneralLedgerAccountId), "GeneralLedger Account Not Found.");
 
         // Ensure there is an active financial period
         var activePeriod = await unitOfWork.FinancialPeriodRepository.GetActiveFinancialPeriodAsync(cancellationToken);
         if (activePeriod is null || !activePeriod.IsActive)
-            return OperationResult<bool>.FailureResult("FinancialPeriod", "Cannot modify accounts without an active open financial period.");
+            return OperationResult<bool>.FailureResult("FinancialPeriod", "Cannot modify generalLedger accounts without an active open financial period.");
 
         // Check if the account has journal entries
         var hasJournalEntries = await unitOfWork.JournalEntryRepository
-            .AnyJournalEntryByGroupAccountIdAsync(generalAccount.Id, cancellationToken);
+            .AnyJournalEntryByGroupAccountIdAsync(generalAccount.GroupAccountId, cancellationToken);
 
         // Update title with duplicate check
         var titleResult = await UpdateAccountTitle(generalAccount, request, cancellationToken);
-        if (!titleResult.IsSuccess) return titleResult;
+        if (!titleResult.IsSuccess) 
+            return titleResult;
 
         // Update account code
         var codeResult = await UpdateAccountCode(generalAccount, request, hasJournalEntries, cancellationToken);
-        if (!codeResult.IsSuccess) return codeResult;
+        if (!codeResult.IsSuccess) 
+            return codeResult;
 
         // Update journal type
         var journalTypeResult = UpdateJournalEntryType(generalAccount, request, hasJournalEntries);
-        if (!journalTypeResult.IsSuccess) return journalTypeResult;
+        if (!journalTypeResult.IsSuccess) 
+            return journalTypeResult;
 
         // Update group account if provided
         if (request.GroupAccountId?.Value != null)
@@ -73,7 +76,8 @@ public class UpdateGeneralLedgerAccountCommandHandler(IUnitOfWork unitOfWork)
 
     private static OperationResult<bool> UpdateJournalEntryType(GeneralLedgerAccountEntity generalLedgerAccount, UpdateGeneralLedgerAccountCommand request, bool hasJournalEntries)
     {
-        if (request.JournalEntryType?.Value == null) return OperationResult<bool>.SuccessResult(true);
+        if (request.JournalEntryType?.Value == null) 
+            return OperationResult<bool>.SuccessResult(true);
 
         if (hasJournalEntries && request.JournalEntryType.Value != generalLedgerAccount.JournalEntryType)
             return OperationResult<bool>.FailureResult(nameof(request.JournalEntryType), "Cannot change Journal Entry Type for an account with existing journal entries.");
@@ -84,8 +88,11 @@ public class UpdateGeneralLedgerAccountCommandHandler(IUnitOfWork unitOfWork)
 
     private async Task<OperationResult<bool>> UpdateAccountCode(GeneralLedgerAccountEntity generalLedgerAccount, UpdateGeneralLedgerAccountCommand request, bool hasJournalEntries, CancellationToken cancellationToken)
     {
-        if (string.IsNullOrWhiteSpace(request.Code?.Value))
+        if (request.Code is null)
             return OperationResult<bool>.SuccessResult(true);
+
+        if (string.IsNullOrWhiteSpace(request.Code.Value))
+            return OperationResult<bool>.FailureResult(nameof(request.Code), "Code cannot be empty.");
 
         if (hasJournalEntries && request.Code.Value != generalLedgerAccount.AccountCode)
             return OperationResult<bool>.FailureResult(nameof(request.Code), "Cannot change account code for an account with journal entries.");
@@ -106,8 +113,11 @@ public class UpdateGeneralLedgerAccountCommandHandler(IUnitOfWork unitOfWork)
 
     private async Task<OperationResult<bool>> UpdateAccountTitle(GeneralLedgerAccountEntity generalLedgerAccount, UpdateGeneralLedgerAccountCommand request, CancellationToken cancellationToken)
     {
-        if (string.IsNullOrWhiteSpace(request.Title?.Value) && request.GroupAccountId?.Value == null)
+        if (request.Title is null)
             return OperationResult<bool>.SuccessResult(true);
+
+        if (string.IsNullOrWhiteSpace(request.Title.Value))
+            return OperationResult<bool>.FailureResult(nameof(request.Title), "Title cannot be empty.");
 
         var titleToCheck = request.Title?.Value ?? generalLedgerAccount.AccountTitle;
         var groupToCheck = request.GroupAccountId?.Value ?? generalLedgerAccount.GroupAccountId;
@@ -120,7 +130,7 @@ public class UpdateGeneralLedgerAccountCommandHandler(IUnitOfWork unitOfWork)
             return OperationResult<bool>.FailureResult([
 
                 new KeyValuePair<string, string>("Title", "An active account with this title already exists in the selected group.")
-                ]);
+            ]);
         }
 
         var inactiveAccount = existingAccounts.FirstOrDefault(a => !a.IsActive && a.Id != generalLedgerAccount.Id);
