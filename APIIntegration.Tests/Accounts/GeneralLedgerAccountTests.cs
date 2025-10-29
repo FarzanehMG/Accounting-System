@@ -1,4 +1,5 @@
-﻿using APIIntegration.Tests.Helper;
+﻿using API.Controllers.Models.Accounts;
+using APIIntegration.Tests.Helper;
 using Domain.Entities.Accounts;
 using Domain.Entities.FinancialPeriod;
 using FluentAssertions;
@@ -6,6 +7,7 @@ using GenerateApi;
 using Microsoft.EntityFrameworkCore;
 using Xunit.Abstractions;
 using CreateGeneralLedgerAccountApiModel = GenerateApi.CreateGeneralLedgerAccountApiModel;
+using JournalEntryType = GenerateApi.JournalEntryType;
 
 namespace APIIntegration.Tests.Accounts;
 
@@ -1000,24 +1002,133 @@ public class GeneralLedgerAccountTests(ApiTestSetup setup, ITestOutputHelper out
     [Fact]
     public async Task GetAllGeneralLedgerAccounts_ShouldSucceed_WhenNoFiltersApplied()
     {
-        throw new NotImplementedException();
+        // Arrange
+        var groupAccount = await setup.TestInit1.CreateGroupAccount(JournalEntryType.Credit);
+        await setup.TestInit1.CreateGeneralLedgerAccount(groupAccount.Id, JournalEntryType.Credit);
+
+        // Get created group account
+        var original = await setup.TestInit1.AccountingDbContext
+            .Set<GeneralLedgerAccountEntity>()
+            .AsNoTracking()
+            .ToListAsync();
+
+        // Act
+        var result = await setup.TestInit1.GeneralLedgerAccountClient.GetAllAsync();
+
+        // Assert
+        result.Data.Should().NotBeNull();
+        result.Data.Count.Should().Be(original.Count);
+        result.IsSuccess.Should().BeTrue();
     }
 
     [Fact]
     public async Task GetAllGeneralLedgerAccounts_ShouldSucceed_WhenFilteredByTitle()
     {
-        throw new NotImplementedException();
+        // Arrange
+        var title = Guid.NewGuid().ToString();
+        var groupAccount = await setup.TestInit1.CreateGroupAccount(JournalEntryType.Credit);
+
+        var createGeneralLedgerAccount = new CreateGeneralLedgerAccountApiModel
+        {
+            Title = title,
+            Code = Guid.NewGuid().ToString(),
+            IsActive = true,
+            JournalEntryType = JournalEntryType.Credit,
+            GroupAccountId = groupAccount.Id
+        };
+        await setup.TestInit1.GeneralLedgerAccountClient.CreateAsync(createGeneralLedgerAccount);
+
+        // Get expected results from DB
+        var original = await setup.TestInit1.AccountingDbContext
+            .Set<GeneralLedgerAccountEntity>()
+            .AsNoTracking()
+            .Where(x => x.AccountTitle == title)
+            .ToListAsync();
+
+        // Act
+        var filter = new FilterGeneralLedgerAccountApiModel
+        {
+            Title = title
+        };
+        var result = await setup.TestInit1.GeneralLedgerAccountClient.GetAllAsync(title: filter.Title);
+
+        // Assert
+        result.Data.Should().NotBeNull();
+        result.Data.Count.Should().Be(original.Count);
+        result.IsSuccess.Should().BeTrue();
     }
 
     [Fact]
     public async Task GetAllGeneralLedgerAccounts_ShouldSucceed_WhenFilteredByActiveFlag()
     {
-        throw new NotImplementedException();
+        // Arrange
+        var isActive = true;
+        var groupAccount = await setup.TestInit1.CreateGroupAccount(JournalEntryType.Credit);
+
+        var createGeneralLedgerAccount = new CreateGeneralLedgerAccountApiModel
+        {
+            Title = Guid.NewGuid().ToString(),
+            Code = Guid.NewGuid().ToString(),
+            IsActive = isActive,
+            JournalEntryType = JournalEntryType.Credit,
+            GroupAccountId = groupAccount.Id
+        };
+        await setup.TestInit1.GeneralLedgerAccountClient.CreateAsync(createGeneralLedgerAccount);
+
+        // Get expected results from DB
+        var original = await setup.TestInit1.AccountingDbContext
+            .Set<GeneralLedgerAccountEntity>()
+            .AsNoTracking()
+            .Where(x => x.IsActive == isActive)
+            .ToListAsync();
+
+        // Act
+        var filter = new FilterGeneralLedgerAccountApiModel
+        {
+            IsActive = isActive
+        };
+        var result = await setup.TestInit1.GeneralLedgerAccountClient.GetAllAsync(isActive: filter.IsActive);
+
+        // Assert
+        result.Data.Should().NotBeNull();
+        result.Data.Count.Should().Be(original.Count);
+        result.IsSuccess.Should().BeTrue();
     }
 
     [Fact]
     public async Task GetAllGeneralLedgerAccounts_ShouldSucceed_WhenFilteredByJournalEntryType()
     {
-        throw new NotImplementedException();
+        // Arrange
+        var journalEntryType = JournalEntryType.Credit;
+        var groupAccount = await setup.TestInit1.CreateGroupAccount(JournalEntryType.Credit);
+
+        var createGeneralLedgerAccount = new CreateGeneralLedgerAccountApiModel
+        {
+            Title = Guid.NewGuid().ToString(),
+            Code = Guid.NewGuid().ToString(),
+            IsActive = true,
+            JournalEntryType = journalEntryType,
+            GroupAccountId = groupAccount.Id
+        };
+        await setup.TestInit1.GeneralLedgerAccountClient.CreateAsync(createGeneralLedgerAccount);
+
+        // Get expected results from DB
+        var original = await setup.TestInit1.AccountingDbContext
+            .Set<GeneralLedgerAccountEntity>()
+            .AsNoTracking()
+            .Where(x => x.JournalEntryType == Domain.Enums.JournalEntryType.Credit)
+            .ToListAsync();
+
+        // Act
+        var filter = new FilterGeneralLedgerAccountApiModel
+        {
+            JournalEntryType = (Domain.Enums.JournalEntryType?)journalEntryType
+        };
+        var result = await setup.TestInit1.GeneralLedgerAccountClient.GetAllAsync(journalEntryType: (JournalEntryType?)filter.JournalEntryType);
+
+        // Assert
+        result.Data.Should().NotBeNull();
+        result.Data.Count.Should().Be(original.Count);
+        result.IsSuccess.Should().BeTrue();
     }
 }
