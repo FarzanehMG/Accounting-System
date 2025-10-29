@@ -22,19 +22,19 @@ public class CreateSubLedgerAccountCommandHandler(IUnitOfWork unitOfWork)
             .GetByIdAsync(request.GeneralLedgerAccountId, cancellationToken);
 
         if (generalLedger == null)
-            return OperationResult<bool>.NotFoundResult(nameof(request.GeneralLedgerAccountId), "General ledger not found.");
+            return OperationResult<bool>.NotFoundResult(nameof(request.GeneralLedgerAccountId), "GeneralLedger not found.");
 
         if (generalLedger.JournalEntryType != request.JournalEntryType)
         {
             return OperationResult<bool>.FailureResult([
                 new KeyValuePair<string, string>(nameof(request.JournalEntryType),
-                    "Sub Ledger account must have the same nature (JournalEntryType) as its General Ledger account.")]);
+                    "SubLedger account must have the same nature (JournalEntryType) as its GeneralLedger account.")]);
         }
 
         if (!generalLedger.IsActive)
         {
             return OperationResult<bool>.FailureResult([new KeyValuePair<string, string>(nameof(request.GeneralLedgerAccountId),
-                "The General Ledger account must be active.")]);
+                "The GeneralLedger account must be active.")]);
         }
 
         // Business Rule: Each active account within the same generalLedger must have a unique title.
@@ -61,7 +61,9 @@ public class CreateSubLedgerAccountCommandHandler(IUnitOfWork unitOfWork)
             ]);
         }
 
-        // Technical Rule: Account code must always be unique to guarantee data integrity.
+        // TODO: Update this check to validate uniqueness per Company once Company feature is implemented.
+
+        // Business Rule: Account code must always be unique to guarantee data integrity.
         var duplicateCode = await unitOfWork.SubLedgerAccountRepository
             .FindByCodeAsync(request.Code, cancellationToken);
 
@@ -70,6 +72,13 @@ public class CreateSubLedgerAccountCommandHandler(IUnitOfWork unitOfWork)
             return OperationResult<bool>.FailureResult([new KeyValuePair<string, string>(
                 "Code", "Account code already exists.")]);
         }
+
+        // Business Rule: GeneralLedger account should be active
+        var activePeriod = await unitOfWork.FinancialPeriodRepository.GetActiveFinancialPeriodAsync(cancellationToken);
+        if (activePeriod is null)
+            return OperationResult<bool>.FailureResult([
+                new KeyValuePair<string, string>("FinancialPeriod", "No active financial period found.")
+            ]);
 
         // Create new sub ledger account entity
         var createSubLegerAccount = new SubLedgerAccountEntity
