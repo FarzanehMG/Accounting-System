@@ -205,13 +205,13 @@ public class TestInit
         return generalLedgerAccount;
     }
 
-    private async Task<SubLedgerAccountEntity> CreateSubLedgerAccount(Guid generalLedgerAccountId, JournalEntryType journalEntryType)
+    internal async Task<SubLedgerAccountEntity> CreateSubLedgerAccount(Guid generalLedgerAccountId, JournalEntryType journalEntryType, bool isActive = true)
     {
         var createSubLedgerAccount = new CreateSubLedgerAccountApiModel
         {
             Title = Guid.NewGuid().ToString(),
             Code = Guid.NewGuid().ToString(),
-            IsActive = true,
+            IsActive = isActive,
             JournalEntryType = journalEntryType,
             GeneralLedgerAccountId = generalLedgerAccountId
         };
@@ -224,7 +224,6 @@ public class TestInit
         subLedgerAccount.Should().NotBeNull();
         subLedgerAccount.AccountTitle.Should().Be(createSubLedgerAccount.Title);
         subLedgerAccount.AccountCode.Should().Be(createSubLedgerAccount.Code);
-        subLedgerAccount.IsActive.Should().BeTrue();
         subLedgerAccount.GeneralLedgerAccountId.Should().Be(generalLedgerAccountId);
 
         // Return SubLedger account

@@ -233,7 +233,7 @@ public class GeneralLedgerAccountTests(ApiTestSetup setup, ITestOutputHelper out
     }
 
     [Fact]
-    public async Task CreateGroupAccount_ShouldFail_WhenTitleIsNull()
+    public async Task CreateGeneralLedgerAccount_ShouldFail_WhenTitleIsNull()
     {
         // Arrange
         var groupAccount = await setup.TestInit1.CreateGroupAccount(JournalEntryType.Credit);
@@ -263,7 +263,7 @@ public class GeneralLedgerAccountTests(ApiTestSetup setup, ITestOutputHelper out
     }
 
     [Fact]
-    public async Task CreateGroupAccount_ShouldFail_WhenJournalEntryTypeIsNull()
+    public async Task CreateGeneralLedgerAccount_ShouldFail_WhenJournalEntryTypeIsNull()
     {
         // Arrange
         var groupAccount = await setup.TestInit1.CreateGroupAccount(JournalEntryType.Credit);
