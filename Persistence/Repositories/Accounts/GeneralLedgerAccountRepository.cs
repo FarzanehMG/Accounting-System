@@ -51,24 +51,21 @@ internal sealed class GeneralLedgerAccountRepository(AccountingDbContext dbConte
 
     public async Task<IReadOnlyList<GeneralLedgerAccountEntity>> GetAllAsync(GeneralLedgerAccountFilter filter, CancellationToken cancellationToken = default)
     {
-        var query = TableNoTracking;
-
-        if (!string.IsNullOrEmpty(filter.Title))
-            query = query.Where(x => x.AccountTitle.Equals(filter.Title));
-
-        if (!string.IsNullOrEmpty(filter.Code))
-            query = query.Where(x => x.AccountCode.Equals(filter.Code));
-
-        if (filter.JournalEntryType.HasValue)
-            query = query.Where(x => x.JournalEntryType == filter.JournalEntryType.Value);
+        var query = TableNoTracking.AsQueryable();
 
         if (filter.IsActive.HasValue)
             query = query.Where(x => x.IsActive == filter.IsActive.Value);
 
-        if (filter.GroupAccountId.HasValue)
-            query = query.Where(x => x.GroupAccountId == filter.GroupAccountId.Value);
+        if (!string.IsNullOrEmpty(filter.Title))
+            query = query.Where(x => x.AccountTitle.Contains(filter.Title));
+
+        if (!string.IsNullOrEmpty(filter.Code))
+            query = query.Where(x => x.AccountCode.Contains(filter.Code));
+
+        if (filter.JournalEntryType.HasValue)
+            query = query.Where(x => x.JournalEntryType == filter.JournalEntryType.Value);
 
         // TODO: Apply pagination
-        return await query.ToListAsync(cancellationToken);
+        return await query.OrderBy(x => x.Id).ToListAsync(cancellationToken);
     }
 }

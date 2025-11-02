@@ -1298,4 +1298,71 @@ public class GeneralLedgerAccountTests(ApiTestSetup setup, ITestOutputHelper out
         result.Data.Count.Should().Be(original.Count);
         result.IsSuccess.Should().BeTrue();
     }
+
+    [Fact]
+    public async Task GetAllGeneralLedgerAccounts_ShouldSucceed_WhenFilteredByCode()
+    {
+        var code = "100";
+
+        // Create financial period
+        await setup.TestInit1.GetOrCreateFinancialPeriod();
+
+        // Create group account
+        var groupAccount = await setup.TestInit1.CreateGroupAccount(JournalEntryType.Credit);
+
+        // Create generalLedger account
+        var createdAccount = new CreateGeneralLedgerAccountApiModel
+        {
+            Title = Guid.NewGuid().ToString(),
+            Code = $"100{Guid.NewGuid()}",
+            JournalEntryType = JournalEntryType.Credit,
+            IsActive = true,
+            Description = "Integration test",
+            GroupAccountId = groupAccount.Id
+        };
+        await setup.TestInit1.GeneralLedgerAccountClient.CreateAsync(createdAccount);
+
+        // Create generalLedger account 2
+        var createdAccount2 = new CreateGeneralLedgerAccountApiModel
+        {
+            Title = Guid.NewGuid().ToString(),
+            Code = $"{Guid.NewGuid()}1001",
+            JournalEntryType = JournalEntryType.Credit,
+            IsActive = true,
+            Description = "Integration test",
+            GroupAccountId = groupAccount.Id
+        };
+        await setup.TestInit1.GeneralLedgerAccountClient.CreateAsync(createdAccount2);
+
+        // Create generalLedger account 3
+        var createdAccount3 = new CreateGeneralLedgerAccountApiModel
+        {
+            Title = Guid.NewGuid().ToString(),
+            Code = Guid.NewGuid().ToString(),
+            JournalEntryType = JournalEntryType.Credit,
+            IsActive = true,
+            Description = "Integration test",
+            GroupAccountId = groupAccount.Id
+        };
+        await setup.TestInit1.GeneralLedgerAccountClient.CreateAsync(createdAccount3);
+
+        // get all group account
+        var filter = new FilterGeneralLedgerAccountApiModel
+        {
+            Code = code
+        };
+        var result = await setup.TestInit1.GeneralLedgerAccountClient.GetAllAsync(code: filter.Code);
+
+        // Get expected results from DB
+        var expected = await setup.TestInit1.AccountingDbContext
+            .Set<GeneralLedgerAccountEntity>()
+            .AsNoTracking()
+            .Where(x => x.AccountCode.Contains(code))
+            .ToListAsync();
+
+        // Assert
+        result.Data.Should().NotBeNull();
+        result.Data.Count.Should().Be(expected.Count);
+        result.IsSuccess.Should().BeTrue();
+    }
 }
