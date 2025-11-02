@@ -1,7 +1,6 @@
 ﻿using API.Controllers.Models.Accounts;
 using APIIntegration.Tests.Helper;
 using Domain.Entities.Accounts;
-using Domain.Entities.FinancialPeriod;
 using FluentAssertions;
 using GenerateApi;
 using Microsoft.EntityFrameworkCore;
@@ -16,9 +15,13 @@ public class GeneralLedgerAccountTests(ApiTestSetup setup, ITestOutputHelper out
     [Fact]
     public async Task CreateGeneralLedgerAccount_ShouldSuccess_WhenRequestIsValid()
     {
-        // Arrange
+        // Create financial period
+        await setup.TestInit1.GetOrCreateFinancialPeriod();
+
+        // Create group account
         var groupAccount = await setup.TestInit1.CreateGroupAccount(JournalEntryType.Credit);
 
+        // Create generalLedger account
         var model = new CreateGeneralLedgerAccountApiModel
         {
             Title = Guid.NewGuid().ToString(),
@@ -28,18 +31,17 @@ public class GeneralLedgerAccountTests(ApiTestSetup setup, ITestOutputHelper out
             Description = "Integration test generalLedger account",
             GroupAccountId = groupAccount.Id
         };
-
-        // Act
         await setup.TestInit1.GeneralLedgerAccountClient.CreateAsync(model, CancellationToken.None);
 
         // Assert API response
         output.WriteLine($"Created generalLedgerAccount via API: {model.Title}");
 
-        // Verify in database
+        // Get generalLedger account
         var createdGeneralAccount = await setup.TestInit1.AccountingDbContext
             .Set<GeneralLedgerAccountEntity>()
             .SingleOrDefaultAsync(g => g.AccountCode == model.Code && g.AccountTitle == model.Title);
 
+        // Assert
         Assert.NotNull(createdGeneralAccount);
         Assert.Equal(model.Code, createdGeneralAccount.AccountCode);
         Assert.Equal(model.Title, createdGeneralAccount.AccountTitle);
@@ -49,10 +51,16 @@ public class GeneralLedgerAccountTests(ApiTestSetup setup, ITestOutputHelper out
     [Fact]
     public async Task CreateGeneralLedgerAccount_ShouldFail_WhenActiveGeneralLedgerAccountWithSameGroupAccountAndJournalEntryTypeAndTitleExists()
     {
-        // Arrange
+        // Create financial period
+        await setup.TestInit1.GetOrCreateFinancialPeriod();
+
+        // Create group account
         var groupAccount = await setup.TestInit1.CreateGroupAccount(JournalEntryType.Credit);
+
+        // Create generalLedger account
         var generalLedgerAccount = await setup.TestInit1.CreateGeneralLedgerAccount(groupAccount.Id, JournalEntryType.Credit);
 
+        // Create generalLedger account
         var model = new CreateGeneralLedgerAccountApiModel
         {
             Title = generalLedgerAccount.AccountTitle,
@@ -80,8 +88,13 @@ public class GeneralLedgerAccountTests(ApiTestSetup setup, ITestOutputHelper out
     [Fact]
     public async Task CreateGeneralLedgerAccount_ShouldSuccess_WhenInActiveGeneralLedgerAccountWithSameGroupAccountAndJournalEntryTypeExists()
     {
-        // Arrange
+        // Create financial period
+        await setup.TestInit1.GetOrCreateFinancialPeriod();
+
+        // Create group account
         var groupAccount = await setup.TestInit1.CreateGroupAccount(JournalEntryType.Credit);
+
+        // Create generalLedger account
         await setup.TestInit1.CreateGeneralLedgerAccount(groupAccount.Id, JournalEntryType.Credit, false);
 
         var model = new CreateGeneralLedgerAccountApiModel
@@ -93,8 +106,6 @@ public class GeneralLedgerAccountTests(ApiTestSetup setup, ITestOutputHelper out
             Description = "Integration test generalLedger account",
             GroupAccountId = groupAccount.Id
         };
-
-        // Act
         var result = await setup.TestInit1.GeneralLedgerAccountClient.CreateAsync(model, CancellationToken.None);
 
         //Assert
@@ -105,8 +116,13 @@ public class GeneralLedgerAccountTests(ApiTestSetup setup, ITestOutputHelper out
     [Fact]
     public async Task CreateGeneralLedgerAccount_ShouldFail_WhenDuplicateCodeExists()
     {
-        // Arrange
+        // Create financial period
+        await setup.TestInit1.GetOrCreateFinancialPeriod();
+
+        // Create group account
         var groupAccount = await setup.TestInit1.CreateGroupAccount(JournalEntryType.Credit);
+
+        // Create generalLedger account
         var generalLedgerAccount = await setup.TestInit1.CreateGeneralLedgerAccount(groupAccount.Id, JournalEntryType.Credit);
 
         var model = new CreateGeneralLedgerAccountApiModel
@@ -136,16 +152,17 @@ public class GeneralLedgerAccountTests(ApiTestSetup setup, ITestOutputHelper out
     [Fact]
     public async Task CreateGeneralLedgerAccount_ShouldFail_WhenNoActiveFinancialPeriodExists()
     {
-        // Arrange
+        // Create financial period
+        var financialPeriod = await setup.TestInit1.GetOrCreateFinancialPeriod();
+
+        // Create group account
         var groupAccount = await setup.TestInit1.CreateGroupAccount(JournalEntryType.Credit);
 
-        var financialPeriod = await setup.TestInit1.AccountingDbContext
-            .Set<FinancialPeriodEntity>()
-            .SingleAsync(f => f.Id == setup.TestInit1.FinancialPeriodId);
-
+        // Update financial period
         financialPeriod.IsActive = false;
         await setup.TestInit1.AccountingDbContext.SaveChangesAsync();
 
+        // Create generalLedger account
         var model = new CreateGeneralLedgerAccountApiModel
         {
             Title = Guid.NewGuid().ToString(),
@@ -168,18 +185,21 @@ public class GeneralLedgerAccountTests(ApiTestSetup setup, ITestOutputHelper out
             responseContent.Should().Contain("No active financial period found.");
             ex.StatusCode.Should().Be(400);
         }
-
-        financialPeriod.IsActive = true;
-        await setup.TestInit1.AccountingDbContext.SaveChangesAsync();
     }
 
     [Fact]
     public async Task CreateGeneralLedgerAccount_ShouldReturnInactiveGeneralLedgerAccountId_WhenInactiveGeneralLedgerWithSameTitleAndGroupAccountAndTypeExists()
     {
-        // Arrange
+        // Create financial period
+        await setup.TestInit1.GetOrCreateFinancialPeriod();
+
+        // Create group account
         var groupAccount = await setup.TestInit1.CreateGroupAccount(JournalEntryType.Credit);
+
+        // Create generalLedger account
         var generalLedgerAccount = await setup.TestInit1.CreateGeneralLedgerAccount(groupAccount.Id, JournalEntryType.Credit, isActive: false);
 
+        // Create generalLedger account
         var model = new CreateGeneralLedgerAccountApiModel
         {
             Title = generalLedgerAccount.AccountTitle,
@@ -208,10 +228,14 @@ public class GeneralLedgerAccountTests(ApiTestSetup setup, ITestOutputHelper out
     [Fact]
     public async Task CreateGeneralLedgerAccount_ShouldSuccess_WhenInactiveGeneralLedgerWithSameTitleAndTypeExistsInDifferentGroup()
     {
-        // Arrange
+        // Create financial period
+        await setup.TestInit1.GetOrCreateFinancialPeriod();
+
+        // Create group account
         var groupAccount = await setup.TestInit1.CreateGroupAccount(JournalEntryType.Credit);
         var groupAccount2 = await setup.TestInit1.CreateGroupAccount(JournalEntryType.Credit);
 
+        // Create generalLedger account
         var generalLedgerAccount = await setup.TestInit1.CreateGeneralLedgerAccount(groupAccount.Id, JournalEntryType.Credit, isActive: false);
 
         var model = new CreateGeneralLedgerAccountApiModel
@@ -223,8 +247,6 @@ public class GeneralLedgerAccountTests(ApiTestSetup setup, ITestOutputHelper out
             Description = "Integration test generalLedger account",
             GroupAccountId = groupAccount2.Id
         };
-
-        // Act
         var result = await setup.TestInit1.GeneralLedgerAccountClient.CreateAsync(model, CancellationToken.None);
 
         // Assert
@@ -235,9 +257,13 @@ public class GeneralLedgerAccountTests(ApiTestSetup setup, ITestOutputHelper out
     [Fact]
     public async Task CreateGeneralLedgerAccount_ShouldFail_WhenTitleIsNull()
     {
-        // Arrange
+        // Create financial period
+        await setup.TestInit1.GetOrCreateFinancialPeriod();
+
+        // Create group account
         var groupAccount = await setup.TestInit1.CreateGroupAccount(JournalEntryType.Credit);
 
+        // Create generalLedger account
         var model = new CreateGeneralLedgerAccountApiModel
         {
             Title = "",
@@ -265,9 +291,13 @@ public class GeneralLedgerAccountTests(ApiTestSetup setup, ITestOutputHelper out
     [Fact]
     public async Task CreateGeneralLedgerAccount_ShouldFail_WhenJournalEntryTypeIsNull()
     {
-        // Arrange
+        // Create financial period
+        await setup.TestInit1.GetOrCreateFinancialPeriod();
+
+        // Create group account
         var groupAccount = await setup.TestInit1.CreateGroupAccount(JournalEntryType.Credit);
 
+        // Create generalLedger account
         var model = new CreateGeneralLedgerAccountApiModel
         {
             Title = Guid.NewGuid().ToString(),
@@ -295,9 +325,13 @@ public class GeneralLedgerAccountTests(ApiTestSetup setup, ITestOutputHelper out
     [Fact]
     public async Task CreateGeneralLedgerAccount_ShouldFail_WhenCodeIsNull()
     {
-        // Arrange
+        // Create financial period
+        await setup.TestInit1.GetOrCreateFinancialPeriod();
+
+        // Create group account
         var groupAccount = await setup.TestInit1.CreateGroupAccount(JournalEntryType.Credit);
 
+        // Create generalLedger account
         var model = new CreateGeneralLedgerAccountApiModel
         {
             Title = Guid.NewGuid().ToString(),
@@ -325,7 +359,10 @@ public class GeneralLedgerAccountTests(ApiTestSetup setup, ITestOutputHelper out
     [Fact]
     public async Task UpdateGeneralLedgerAccount_ShouldFail_WhenGeneralLedgerAccountDoesNotExist()
     {
-        // Arrange
+        // Create financial period
+        await setup.TestInit1.GetOrCreateFinancialPeriod();
+
+        // Update generalLedger account
         var updateGeneralLedgerAccountCommand = new UpdateGeneralLedgerAccountCommand
         {
             GeneralLedgerAccountId = Guid.NewGuid()
@@ -348,23 +385,28 @@ public class GeneralLedgerAccountTests(ApiTestSetup setup, ITestOutputHelper out
     [Fact]
     public async Task UpdateGeneralLedgerAccount_ShouldNotChange_WhenNoFieldsProvided()
     {
-        // Arrange
+        // Create financial period
+        await setup.TestInit1.GetOrCreateFinancialPeriod();
+
+        // Create group account
         var groupAccount = await setup.TestInit1.CreateGroupAccount(JournalEntryType.Credit);
+
+        // Create generalLedger account
         var generalLedgerAccount = await setup.TestInit1.CreateGeneralLedgerAccount(groupAccount.Id, JournalEntryType.Credit);
 
+        // Update generalLedger account
         var updateGeneralLedgerAccountCommand = new UpdateGeneralLedgerAccountCommand
         {
             GeneralLedgerAccountId = generalLedgerAccount.Id
         };
-
-        // Act
         var result = await setup.TestInit1.GeneralLedgerAccountClient.UpdateAsync(updateGeneralLedgerAccountCommand);
 
-        // Assert
+        // Get generalLedger account
         var afterUpdateGeneralLedgerAccount = await setup.TestInit1.AccountingDbContext
             .Set<GeneralLedgerAccountEntity>()
             .SingleAsync(x => x.Id == generalLedgerAccount.Id);
 
+        // Assert
         result.IsSuccess.Should().BeTrue();
         afterUpdateGeneralLedgerAccount.AccountTitle.Should().Be(generalLedgerAccount.AccountTitle);
         afterUpdateGeneralLedgerAccount.AccountCode.Should().Be(generalLedgerAccount.AccountCode);
@@ -377,10 +419,16 @@ public class GeneralLedgerAccountTests(ApiTestSetup setup, ITestOutputHelper out
     [Fact]
     public async Task UpdateGeneralLedgerAccount_ShouldSucceed_WhenTitleIsProvided()
     {
-        // Arrange
+        // Create financial period
+        await setup.TestInit1.GetOrCreateFinancialPeriod();
+
+        // Create group account
         var groupAccount = await setup.TestInit1.CreateGroupAccount(JournalEntryType.Credit);
+
+        // Create generalLedger account
         var generalLedgerAccount = await setup.TestInit1.CreateGeneralLedgerAccount(groupAccount.Id, JournalEntryType.Credit);
 
+        // Update generalLedger account
         var updateGeneralLedgerAccountCommand = new UpdateGeneralLedgerAccountCommand
         {
             GeneralLedgerAccountId = generalLedgerAccount.Id,
@@ -389,15 +437,14 @@ public class GeneralLedgerAccountTests(ApiTestSetup setup, ITestOutputHelper out
                 Value = Guid.NewGuid().ToString()
             }
         };
-
-        // Act
         var result = await setup.TestInit1.GeneralLedgerAccountClient.UpdateAsync(updateGeneralLedgerAccountCommand);
 
-        // Assert
+        // Get generalLedger account
         var afterUpdateGeneralLedgerAccount = await setup.TestInit1.AccountingDbContext
             .Set<GeneralLedgerAccountEntity>()
             .SingleAsync(x => x.Id == generalLedgerAccount.Id);
 
+        // Assert
         result.IsSuccess.Should().BeTrue();
         afterUpdateGeneralLedgerAccount.AccountTitle.Should().NotBe(generalLedgerAccount.AccountTitle);
         afterUpdateGeneralLedgerAccount.AccountCode.Should().Be(generalLedgerAccount.AccountCode);
@@ -409,11 +456,17 @@ public class GeneralLedgerAccountTests(ApiTestSetup setup, ITestOutputHelper out
     [Fact]
     public async Task UpdateGeneralLedgerAccount_ShouldFail_WhenActiveGeneralLedgerAccountWithSameGroupAccountAndJournalEntryTypeAndTitleExists()
     {
-        // Arrange
+        // Create financial period
+        await setup.TestInit1.GetOrCreateFinancialPeriod();
+
+        // Create group account
         var groupAccount = await setup.TestInit1.CreateGroupAccount(JournalEntryType.Credit);
+
+        // Create generalLedger account
         var generalLedgerAccount = await setup.TestInit1.CreateGeneralLedgerAccount(groupAccount.Id, JournalEntryType.Credit);
         var generalLedgerAccount2 = await setup.TestInit1.CreateGeneralLedgerAccount(groupAccount.Id, JournalEntryType.Credit);
 
+        // Update generalLedger account
         var updateGeneralLedgerAccountCommand = new UpdateGeneralLedgerAccountCommand
         {
             GeneralLedgerAccountId = generalLedgerAccount2.Id,
@@ -438,12 +491,18 @@ public class GeneralLedgerAccountTests(ApiTestSetup setup, ITestOutputHelper out
     }
 
     [Fact]
-    public async Task UpdateGroupAccount_ShouldSucceed_WhenCodeIsProvided()
+    public async Task UpdateGeneralLedgerAccount_ShouldSucceed_WhenCodeIsProvided()
     {
-        // Arrange
+        // Create financial period
+        await setup.TestInit1.GetOrCreateFinancialPeriod();
+
+        // Create group account
         var groupAccount = await setup.TestInit1.CreateGroupAccount(JournalEntryType.Credit);
+
+        // Create generalLedger account
         var generalLedgerAccount = await setup.TestInit1.CreateGeneralLedgerAccount(groupAccount.Id, JournalEntryType.Credit);
 
+        // Update generalLedger account
         var updateGeneralLedgerAccountCommand = new UpdateGeneralLedgerAccountCommand
         {
             GeneralLedgerAccountId = generalLedgerAccount.Id,
@@ -452,15 +511,14 @@ public class GeneralLedgerAccountTests(ApiTestSetup setup, ITestOutputHelper out
                 Value = Guid.NewGuid().ToString()
             }
         };
-
-        // Act
         var result = await setup.TestInit1.GeneralLedgerAccountClient.UpdateAsync(updateGeneralLedgerAccountCommand);
 
-        // Assert
+        // Get generalLedger account
         var afterUpdateGeneralLedgerAccount = await setup.TestInit1.AccountingDbContext
             .Set<GeneralLedgerAccountEntity>()
             .SingleAsync(x => x.Id == generalLedgerAccount.Id);
 
+        // Assert
         result.IsSuccess.Should().BeTrue();
         afterUpdateGeneralLedgerAccount.AccountTitle.Should().Be(generalLedgerAccount.AccountTitle);
         afterUpdateGeneralLedgerAccount.AccountCode.Should().NotBe(generalLedgerAccount.AccountCode);
@@ -472,10 +530,16 @@ public class GeneralLedgerAccountTests(ApiTestSetup setup, ITestOutputHelper out
     [Fact]
     public async Task UpdateGeneralLedgerAccount_ShouldSucceed_WhenJournalEntryTypeIsProvided()
     {
-        // Arrange
+        // Create financial period
+        await setup.TestInit1.GetOrCreateFinancialPeriod();
+
+        // Create group account
         var groupAccount = await setup.TestInit1.CreateGroupAccount(JournalEntryType.Credit);
+
+        // Create generalLedger account
         var generalLedgerAccount = await setup.TestInit1.CreateGeneralLedgerAccount(groupAccount.Id, JournalEntryType.Credit);
 
+        // Update generalLedger account
         var updateGeneralLedgerAccountCommand = new UpdateGeneralLedgerAccountCommand
         {
             GeneralLedgerAccountId = generalLedgerAccount.Id,
@@ -484,15 +548,14 @@ public class GeneralLedgerAccountTests(ApiTestSetup setup, ITestOutputHelper out
                 Value = JournalEntryType.Debit
             }
         };
-
-        // Act
         var result = await setup.TestInit1.GeneralLedgerAccountClient.UpdateAsync(updateGeneralLedgerAccountCommand);
 
-        // Assert
+        // update generalLEdger account
         var afterUpdateGeneralLedgerAccount = await setup.TestInit1.AccountingDbContext
             .Set<GeneralLedgerAccountEntity>()
             .SingleAsync(x => x.Id == generalLedgerAccount.Id);
 
+        // Assert
         result.IsSuccess.Should().BeTrue();
         afterUpdateGeneralLedgerAccount.AccountTitle.Should().Be(generalLedgerAccount.AccountTitle);
         afterUpdateGeneralLedgerAccount.AccountCode.Should().Be(generalLedgerAccount.AccountCode);
@@ -504,13 +567,21 @@ public class GeneralLedgerAccountTests(ApiTestSetup setup, ITestOutputHelper out
     [Fact]
     public async Task UpdateGeneralLedgerAccount_ShouldFail_WhenJournalEntriesExistAndJournalEntryTypeIsChanged()
     {
-        // Arrange
-        var groupAccount = await setup.TestInit1.CreateGroupAccount(JournalEntryType.Credit);
-        var generalLedgerAccountCredit = await setup.TestInit1.CreateGeneralLedgerAccount(groupAccount.Id, JournalEntryType.Credit);
-        var generalLedgerAccountDebit = await setup.TestInit1.CreateGeneralLedgerAccount(groupAccount.Id, JournalEntryType.Debit);
+        // Create financial period
+        var financialPeriod = await setup.TestInit1.GetOrCreateFinancialPeriod();
 
-        await setup.TestInit1.CreateJournalEntry(groupAccount.Id, generalLedgerAccountCredit.Id, generalLedgerAccountDebit.Id);
+        // Create group account
+        var groupAccountCredit = await setup.TestInit1.CreateGroupAccount(JournalEntryType.Credit);
+        var groupAccountDebit = await setup.TestInit1.CreateGroupAccount(JournalEntryType.Debit);
 
+        // Create generalLedger account
+        var generalLedgerAccountCredit = await setup.TestInit1.CreateGeneralLedgerAccount(groupAccountCredit.Id, JournalEntryType.Credit);
+        var generalLedgerAccountDebit = await setup.TestInit1.CreateGeneralLedgerAccount(groupAccountDebit.Id, JournalEntryType.Debit);
+
+        // Create journal entry
+        await setup.TestInit1.CreateJournalEntry(financialPeriod.Id, groupAccountCredit.Id, groupAccountDebit.Id, generalLedgerAccountCredit.Id, generalLedgerAccountDebit.Id);
+
+        // Update generalLedger account
         var updateGeneralLedgerAccountCommand = new UpdateGeneralLedgerAccountCommand
         {
             GeneralLedgerAccountId = generalLedgerAccountCredit.Id,
@@ -537,8 +608,13 @@ public class GeneralLedgerAccountTests(ApiTestSetup setup, ITestOutputHelper out
     [Fact]
     public async Task UpdateGeneralLedgerAccount_ShouldFail_WhenValidatorFails()
     {
-        // Create group and generalLedger account
+        // Create financial period
+        await setup.TestInit1.GetOrCreateFinancialPeriod();
+
+        // Create group account
         var groupAccount = await setup.TestInit1.CreateGroupAccount(JournalEntryType.Credit);
+
+        // Create generalLedger account
         await setup.TestInit1.CreateGeneralLedgerAccount(groupAccount.Id, JournalEntryType.Credit);
 
         // Update generalLedger account
@@ -568,8 +644,13 @@ public class GeneralLedgerAccountTests(ApiTestSetup setup, ITestOutputHelper out
     [Fact]
     public async Task UpdateGeneralLedgerAccount_ShouldReturnNotFound_WhenAccountDoesNotExist()
     {
-        // Create group and generalLedger account
+        // Create financial period
+        await setup.TestInit1.GetOrCreateFinancialPeriod();
+
+        // Create group account
         var groupAccount = await setup.TestInit1.CreateGroupAccount(JournalEntryType.Credit);
+
+        // Create generalLedger account
         await setup.TestInit1.CreateGeneralLedgerAccount(groupAccount.Id, JournalEntryType.Credit);
 
         // Update generalLedger account
@@ -599,15 +680,16 @@ public class GeneralLedgerAccountTests(ApiTestSetup setup, ITestOutputHelper out
     [Fact]
     public async Task UpdateGeneralLedgerAccount_ShouldFail_WhenNoActiveFinancialPeriod()
     {
-        // Create group and generalLedger account
+        // Create financial period
+        var financialPeriod = await setup.TestInit1.GetOrCreateFinancialPeriod();
+
+        // Create group account
         var groupAccount = await setup.TestInit1.CreateGroupAccount(JournalEntryType.Credit);
+
+        // Create generalLedger account
         var generalLedgerAccount = await setup.TestInit1.CreateGeneralLedgerAccount(groupAccount.Id, JournalEntryType.Credit);
 
         // Update financial period
-        var financialPeriod = await setup.TestInit1.AccountingDbContext
-            .Set<FinancialPeriodEntity>()
-            .SingleAsync(f => f.Id == setup.TestInit1.FinancialPeriodId);
-
         financialPeriod.IsActive = false;
         await setup.TestInit1.AccountingDbContext.SaveChangesAsync();
 
@@ -641,13 +723,21 @@ public class GeneralLedgerAccountTests(ApiTestSetup setup, ITestOutputHelper out
     [Fact]
     public async Task UpdateGeneralLedgerAccount_ShouldFail_WhenCodeChangedAndHasJournalEntries()
     {
-        // Arrange
-        var groupAccount = await setup.TestInit1.CreateGroupAccount(JournalEntryType.Credit);
-        var generalLedgerAccountCredit = await setup.TestInit1.CreateGeneralLedgerAccount(groupAccount.Id, JournalEntryType.Credit);
-        var generalLedgerAccountDebit = await setup.TestInit1.CreateGeneralLedgerAccount(groupAccount.Id, JournalEntryType.Debit);
+        // Create financial period
+        var financialPeriod = await setup.TestInit1.GetOrCreateFinancialPeriod();
 
-        await setup.TestInit1.CreateJournalEntry(groupAccount.Id, generalLedgerAccountCredit.Id, generalLedgerAccountDebit.Id);
+        // Create group account
+        var groupAccountCredit = await setup.TestInit1.CreateGroupAccount(JournalEntryType.Credit);
+        var groupAccountDebit = await setup.TestInit1.CreateGroupAccount(JournalEntryType.Debit);
 
+        // Create generalLedger account
+        var generalLedgerAccountCredit = await setup.TestInit1.CreateGeneralLedgerAccount(groupAccountCredit.Id, JournalEntryType.Credit);
+        var generalLedgerAccountDebit = await setup.TestInit1.CreateGeneralLedgerAccount(groupAccountDebit.Id, JournalEntryType.Debit);
+
+        // Create journal entry
+        await setup.TestInit1.CreateJournalEntry(financialPeriod.Id, groupAccountCredit.Id, groupAccountDebit.Id, generalLedgerAccountCredit.Id, generalLedgerAccountDebit.Id);
+
+        // Update generalLedger account
         var updateGeneralLedgerAccountCommand = new UpdateGeneralLedgerAccountCommand
         {
             GeneralLedgerAccountId = generalLedgerAccountCredit.Id,
@@ -674,11 +764,18 @@ public class GeneralLedgerAccountTests(ApiTestSetup setup, ITestOutputHelper out
     [Fact]
     public async Task UpdateGeneralLedgerAccount_ShouldFail_WhenCodeIsDuplicate()
     {
-        // Arrange
-        var groupAccount = await setup.TestInit1.CreateGroupAccount(JournalEntryType.Credit);
-        var generalLedgerAccountCredit = await setup.TestInit1.CreateGeneralLedgerAccount(groupAccount.Id, JournalEntryType.Credit);
-        var generalLedgerAccountDebit = await setup.TestInit1.CreateGeneralLedgerAccount(groupAccount.Id, JournalEntryType.Debit);
+        // Create financial period
+        await setup.TestInit1.GetOrCreateFinancialPeriod();
 
+        // Create group account
+        var groupAccountCredit = await setup.TestInit1.CreateGroupAccount(JournalEntryType.Credit);
+        var groupAccountDebit = await setup.TestInit1.CreateGroupAccount(JournalEntryType.Debit);
+
+        // Create generalLedger account
+        var generalLedgerAccountCredit = await setup.TestInit1.CreateGeneralLedgerAccount(groupAccountCredit.Id, JournalEntryType.Credit);
+        var generalLedgerAccountDebit = await setup.TestInit1.CreateGeneralLedgerAccount(groupAccountDebit.Id, JournalEntryType.Debit);
+
+        // Update generalLedger account
         var updateGeneralLedgerAccountCommand = new UpdateGeneralLedgerAccountCommand
         {
             GeneralLedgerAccountId = generalLedgerAccountCredit.Id,
@@ -705,17 +802,23 @@ public class GeneralLedgerAccountTests(ApiTestSetup setup, ITestOutputHelper out
     [Fact]
     public async Task UpdateGeneralLedgerAccount_ShouldFail_WhenActiveDuplicateTitleExists()
     {
-        // Arrange
-        var groupAccount = await setup.TestInit1.CreateGroupAccount(JournalEntryType.Credit);
-        var generalLedgerAccountCredit = await setup.TestInit1.CreateGeneralLedgerAccount(groupAccount.Id, JournalEntryType.Credit);
-        var generalLedgerAccountDebit = await setup.TestInit1.CreateGeneralLedgerAccount(groupAccount.Id, JournalEntryType.Debit);
+        // Create financial period
+        await setup.TestInit1.GetOrCreateFinancialPeriod();
 
+        // Create group account
+        var groupAccountCredit = await setup.TestInit1.CreateGroupAccount(JournalEntryType.Credit);
+
+        // Create generalLedger account
+        var generalLedgerAccount = await setup.TestInit1.CreateGeneralLedgerAccount(groupAccountCredit.Id, JournalEntryType.Credit);
+        var generalLedgerAccount2 = await setup.TestInit1.CreateGeneralLedgerAccount(groupAccountCredit.Id, JournalEntryType.Credit);
+
+        // Update generalLedger account
         var updateGeneralLedgerAccountCommand = new UpdateGeneralLedgerAccountCommand
         {
-            GeneralLedgerAccountId = generalLedgerAccountCredit.Id,
+            GeneralLedgerAccountId = generalLedgerAccount.Id,
             Title = new PatchOfString
             {
-                Value = generalLedgerAccountDebit.AccountTitle
+                Value = generalLedgerAccount2.AccountTitle
             }
         };
 
@@ -736,17 +839,23 @@ public class GeneralLedgerAccountTests(ApiTestSetup setup, ITestOutputHelper out
     [Fact]
     public async Task UpdateGeneralLedgerAccount_ShouldSuggestReactivation_WhenInactiveDuplicateTitleExists()
     {
-        // Arrange
-        var groupAccount = await setup.TestInit1.CreateGroupAccount(JournalEntryType.Credit);
-        var generalLedgerAccountCredit = await setup.TestInit1.CreateGeneralLedgerAccount(groupAccount.Id, JournalEntryType.Credit);
-        var generalLedgerAccountDebit = await setup.TestInit1.CreateGeneralLedgerAccount(groupAccount.Id, JournalEntryType.Debit, isActive: false);
+        // Create financial period
+        await setup.TestInit1.GetOrCreateFinancialPeriod();
 
+        // Create generalLedger account
+        var groupAccountCredit = await setup.TestInit1.CreateGroupAccount(JournalEntryType.Credit);
+
+        // Create generalLedger account
+        var generalLedgerAccount = await setup.TestInit1.CreateGeneralLedgerAccount(groupAccountCredit.Id, JournalEntryType.Credit);
+        var generalLedgerAccount2 = await setup.TestInit1.CreateGeneralLedgerAccount(groupAccountCredit.Id, JournalEntryType.Credit, isActive: false);
+
+        // Update generalLedger account
         var updateGeneralLedgerAccountCommand = new UpdateGeneralLedgerAccountCommand
         {
-            GeneralLedgerAccountId = generalLedgerAccountCredit.Id,
+            GeneralLedgerAccountId = generalLedgerAccount.Id,
             Title = new PatchOfString
             {
-                Value = generalLedgerAccountDebit.AccountTitle
+                Value = generalLedgerAccount2.AccountTitle
             }
         };
 
@@ -759,8 +868,8 @@ public class GeneralLedgerAccountTests(ApiTestSetup setup, ITestOutputHelper out
         catch (ApiException ex)
         {
             var responseContent = ex.Response;
-            responseContent.Should().Contain($"An inactive account with this title already exists (Code: {generalLedgerAccountDebit.AccountCode}). Consider reactivating it instead of creating a new one.");
-            responseContent.Should().Contain($"{generalLedgerAccountDebit.Id}");
+            responseContent.Should().Contain($"An inactive account with this title already exists (Code: {generalLedgerAccount2.AccountCode}). Consider reactivating it instead of creating a new one.");
+            responseContent.Should().Contain($"{generalLedgerAccount2.Id}");
             ex.StatusCode.Should().Be(400);
         }
     }
@@ -768,13 +877,21 @@ public class GeneralLedgerAccountTests(ApiTestSetup setup, ITestOutputHelper out
     [Fact]
     public async Task UpdateGeneralLedgerAccount_ShouldFail_WhenDeactivatingWithJournalEntries()
     {
-        // Arrange
-        var groupAccount = await setup.TestInit1.CreateGroupAccount(JournalEntryType.Credit);
-        var generalLedgerAccountCredit = await setup.TestInit1.CreateGeneralLedgerAccount(groupAccount.Id, JournalEntryType.Credit);
-        var generalLedgerAccountDebit = await setup.TestInit1.CreateGeneralLedgerAccount(groupAccount.Id, JournalEntryType.Debit);
+        // Create financial period
+        var financialPeriod = await setup.TestInit1.GetOrCreateFinancialPeriod();
 
-        await setup.TestInit1.CreateJournalEntry(groupAccount.Id, generalLedgerAccountCredit.Id, generalLedgerAccountDebit.Id);
+        // Create group account
+        var groupAccountCredit = await setup.TestInit1.CreateGroupAccount(JournalEntryType.Credit);
+        var groupAccountDebit = await setup.TestInit1.CreateGroupAccount(JournalEntryType.Debit);
 
+        // Create generalLedger account
+        var generalLedgerAccountCredit = await setup.TestInit1.CreateGeneralLedgerAccount(groupAccountCredit.Id, JournalEntryType.Credit);
+        var generalLedgerAccountDebit = await setup.TestInit1.CreateGeneralLedgerAccount(groupAccountDebit.Id, JournalEntryType.Debit);
+
+        // Create journal entry
+        await setup.TestInit1.CreateJournalEntry(financialPeriod.Id, groupAccountCredit.Id, groupAccountDebit.Id, generalLedgerAccountCredit.Id, generalLedgerAccountDebit.Id);
+
+        // Update generalLedger account
         var updateGeneralLedgerAccountCommand = new UpdateGeneralLedgerAccountCommand
         {
             GeneralLedgerAccountId = generalLedgerAccountCredit.Id,
@@ -801,10 +918,16 @@ public class GeneralLedgerAccountTests(ApiTestSetup setup, ITestOutputHelper out
     [Fact]
     public async Task UpdateGeneralLedgerAccount_ShouldChangeIsActive_WhenNoJournalEntries()
     {
-        // Arrange
+        // Create financial period
+        await setup.TestInit1.GetOrCreateFinancialPeriod();
+
+        // group account
         var groupAccount = await setup.TestInit1.CreateGroupAccount(JournalEntryType.Credit);
+
+        // Create generalLedger account
         var generalLedgerAccount = await setup.TestInit1.CreateGeneralLedgerAccount(groupAccount.Id, JournalEntryType.Credit);
 
+        // Update generalLedger account
         var updateGeneralLedgerAccountCommand = new UpdateGeneralLedgerAccountCommand
         {
             GeneralLedgerAccountId = generalLedgerAccount.Id,
@@ -813,15 +936,14 @@ public class GeneralLedgerAccountTests(ApiTestSetup setup, ITestOutputHelper out
                 Value = false
             }
         };
-
-        // Act
         var result = await setup.TestInit1.GeneralLedgerAccountClient.UpdateAsync(updateGeneralLedgerAccountCommand);
 
-        // Assert
+        // Get generalLedger account
         var afterUpdateGeneralLedgerAccount = await setup.TestInit1.AccountingDbContext
             .Set<GeneralLedgerAccountEntity>()
             .SingleAsync(x => x.Id == generalLedgerAccount.Id);
 
+        // Assert
         result.IsSuccess.Should().BeTrue();
         afterUpdateGeneralLedgerAccount.AccountTitle.Should().Be(generalLedgerAccount.AccountTitle);
         afterUpdateGeneralLedgerAccount.AccountCode.Should().Be(generalLedgerAccount.AccountCode);
@@ -833,10 +955,16 @@ public class GeneralLedgerAccountTests(ApiTestSetup setup, ITestOutputHelper out
     [Fact]
     public async Task UpdateGeneralLedgerAccount_ShouldChangeDescription_WhenProvided()
     {
-        // Arrange
+        // Create financial period
+        await setup.TestInit1.GetOrCreateFinancialPeriod();
+
+        // Create group account
         var groupAccount = await setup.TestInit1.CreateGroupAccount(JournalEntryType.Credit);
+
+        // Create generalLedger account
         var generalLedgerAccount = await setup.TestInit1.CreateGeneralLedgerAccount(groupAccount.Id, JournalEntryType.Credit);
 
+        // Update generalLedger account
         var updateGeneralLedgerAccountCommand = new UpdateGeneralLedgerAccountCommand
         {
             GeneralLedgerAccountId = generalLedgerAccount.Id,
@@ -845,15 +973,14 @@ public class GeneralLedgerAccountTests(ApiTestSetup setup, ITestOutputHelper out
                 Value = Guid.NewGuid().ToString()
             }
         };
-
-        // Act
         var result = await setup.TestInit1.GeneralLedgerAccountClient.UpdateAsync(updateGeneralLedgerAccountCommand);
 
-        // Assert
+        // Get generalLedger account
         var afterUpdateGeneralLedgerAccount = await setup.TestInit1.AccountingDbContext
             .Set<GeneralLedgerAccountEntity>()
             .SingleAsync(x => x.Id == generalLedgerAccount.Id);
 
+        // Assert
         result.IsSuccess.Should().BeTrue();
         afterUpdateGeneralLedgerAccount.AccountDescription.Should().NotBeNull();
         afterUpdateGeneralLedgerAccount.AccountDescription.Should().NotBe(generalLedgerAccount.AccountDescription);
@@ -867,10 +994,16 @@ public class GeneralLedgerAccountTests(ApiTestSetup setup, ITestOutputHelper out
     [Fact]
     public async Task UpdateGeneralLedgerAccount_ShouldNotChangeDescription_WhenNull()
     {
-        // Arrange
+        // Create financial period
+        await setup.TestInit1.GetOrCreateFinancialPeriod();
+
+        // Create group account
         var groupAccount = await setup.TestInit1.CreateGroupAccount(JournalEntryType.Credit);
+
+        // Create generalLedger account
         var generalLedgerAccount = await setup.TestInit1.CreateGeneralLedgerAccount(groupAccount.Id, JournalEntryType.Credit);
 
+        // Update generalLedger account
         var updateGeneralLedgerAccountCommand = new UpdateGeneralLedgerAccountCommand
         {
             GeneralLedgerAccountId = generalLedgerAccount.Id,
@@ -879,15 +1012,14 @@ public class GeneralLedgerAccountTests(ApiTestSetup setup, ITestOutputHelper out
                 Value = null
             }
         };
-
-        // Act
         var result = await setup.TestInit1.GeneralLedgerAccountClient.UpdateAsync(updateGeneralLedgerAccountCommand);
 
-        // Assert
+        // Get generalLedger account
         var afterUpdateGeneralLedgerAccount = await setup.TestInit1.AccountingDbContext
             .Set<GeneralLedgerAccountEntity>()
             .SingleAsync(x => x.Id == generalLedgerAccount.Id);
 
+        // Assert
         result.IsSuccess.Should().BeTrue();
         afterUpdateGeneralLedgerAccount.AccountDescription.Should().BeNullOrEmpty();
     }
@@ -895,10 +1027,16 @@ public class GeneralLedgerAccountTests(ApiTestSetup setup, ITestOutputHelper out
     [Fact]
     public async Task UpdateGeneralLedgerAccount_ShouldFail_WhenGroupAccountInactive()
     {
-        // Arrange
+        // Create financial period
+        await setup.TestInit1.GetOrCreateFinancialPeriod();
+
+        // Create group account
         var groupAccount = await setup.TestInit1.CreateGroupAccount(JournalEntryType.Credit);
+
+        // Create generalLedger account
         var generalLedgerAccountCredit = await setup.TestInit1.CreateGeneralLedgerAccount(groupAccount.Id, JournalEntryType.Credit);
 
+        // Update generalLedger account
         var updateGeneralLedgerAccountCommand = new UpdateGeneralLedgerAccountCommand
         {
             GeneralLedgerAccountId = generalLedgerAccountCredit.Id,
@@ -908,6 +1046,7 @@ public class GeneralLedgerAccountTests(ApiTestSetup setup, ITestOutputHelper out
             }
         };
 
+        // InActive group account
         groupAccount.IsActive = false;
         await setup.TestInit1.AccountingDbContext.SaveChangesAsync();
 
@@ -928,12 +1067,17 @@ public class GeneralLedgerAccountTests(ApiTestSetup setup, ITestOutputHelper out
     [Fact]
     public async Task UpdateGeneralLedgerAccount_ShouldChangeGroupAccount_WhenActive()
     {
-        // Arrange
+        // Create financial period
+        await setup.TestInit1.GetOrCreateFinancialPeriod();
+
+        // Create group account
         var groupAccount = await setup.TestInit1.CreateGroupAccount(JournalEntryType.Credit);
         var groupAccount2 = await setup.TestInit1.CreateGroupAccount(JournalEntryType.Credit);
 
+        // Create generalLedger account
         var generalLedgerAccount = await setup.TestInit1.CreateGeneralLedgerAccount(groupAccount.Id, JournalEntryType.Credit);
 
+        // Update generalLedger account
         var updateGeneralLedgerAccountCommand = new UpdateGeneralLedgerAccountCommand
         {
             GeneralLedgerAccountId = generalLedgerAccount.Id,
@@ -942,15 +1086,14 @@ public class GeneralLedgerAccountTests(ApiTestSetup setup, ITestOutputHelper out
                 Value = groupAccount2.Id
             }
         };
-
-        // Act
         var result = await setup.TestInit1.GeneralLedgerAccountClient.UpdateAsync(updateGeneralLedgerAccountCommand);
 
-        // Assert
+        // Get generalLedger account
         var afterUpdateGeneralLedgerAccount = await setup.TestInit1.AccountingDbContext
             .Set<GeneralLedgerAccountEntity>()
             .SingleAsync(x => x.Id == generalLedgerAccount.Id);
 
+        // Assert
         result.IsSuccess.Should().BeTrue();
         afterUpdateGeneralLedgerAccount.AccountDescription.Should().Be(generalLedgerAccount.AccountDescription);
         afterUpdateGeneralLedgerAccount.AccountTitle.Should().Be(generalLedgerAccount.AccountTitle);
@@ -963,12 +1106,17 @@ public class GeneralLedgerAccountTests(ApiTestSetup setup, ITestOutputHelper out
     [Fact]
     public async Task UpdateGeneralLedgerAccount_ShouldUpdateAllFields_WhenMultipleUpdatesProvided_NoJournalEntries()
     {
-        // Arrange
+        // Create financial period
+        await setup.TestInit1.GetOrCreateFinancialPeriod();
+
+        // Create group account
         var groupAccount = await setup.TestInit1.CreateGroupAccount(JournalEntryType.Credit);
         var groupAccount2 = await setup.TestInit1.CreateGroupAccount(JournalEntryType.Credit);
 
+        // Create generalLedger account
         var generalLedgerAccount = await setup.TestInit1.CreateGeneralLedgerAccount(groupAccount.Id, JournalEntryType.Credit);
 
+        // Update generalLedger account
         var updateGeneralLedgerAccountCommand = new UpdateGeneralLedgerAccountCommand
         {
             GeneralLedgerAccountId = generalLedgerAccount.Id,
@@ -981,15 +1129,14 @@ public class GeneralLedgerAccountTests(ApiTestSetup setup, ITestOutputHelper out
                 Value = Guid.NewGuid().ToString()
             }
         };
-
-        // Act
         var result = await setup.TestInit1.GeneralLedgerAccountClient.UpdateAsync(updateGeneralLedgerAccountCommand);
 
-        // Assert
+        // Get generalLedger account
         var afterUpdateGeneralLedgerAccount = await setup.TestInit1.AccountingDbContext
             .Set<GeneralLedgerAccountEntity>()
             .SingleAsync(x => x.Id == generalLedgerAccount.Id);
 
+        // Assert
         result.IsSuccess.Should().BeTrue();
         afterUpdateGeneralLedgerAccount.AccountDescription.Should().Be(generalLedgerAccount.AccountDescription);
         afterUpdateGeneralLedgerAccount.AccountTitle.Should().Be(generalLedgerAccount.AccountTitle);
@@ -1002,17 +1149,22 @@ public class GeneralLedgerAccountTests(ApiTestSetup setup, ITestOutputHelper out
     [Fact]
     public async Task GetAllGeneralLedgerAccounts_ShouldSucceed_WhenNoFiltersApplied()
     {
-        // Arrange
+        // Create financial period
+        await setup.TestInit1.GetOrCreateFinancialPeriod();
+
+        // Create group account
         var groupAccount = await setup.TestInit1.CreateGroupAccount(JournalEntryType.Credit);
+
+        // Create generalLedger account
         await setup.TestInit1.CreateGeneralLedgerAccount(groupAccount.Id, JournalEntryType.Credit);
 
-        // Get created group account
+        // Get group account
         var original = await setup.TestInit1.AccountingDbContext
             .Set<GeneralLedgerAccountEntity>()
             .AsNoTracking()
             .ToListAsync();
 
-        // Act
+        // Get all generalLedger account
         var result = await setup.TestInit1.GeneralLedgerAccountClient.GetAllAsync();
 
         // Assert
@@ -1024,10 +1176,15 @@ public class GeneralLedgerAccountTests(ApiTestSetup setup, ITestOutputHelper out
     [Fact]
     public async Task GetAllGeneralLedgerAccounts_ShouldSucceed_WhenFilteredByTitle()
     {
-        // Arrange
         var title = Guid.NewGuid().ToString();
+
+        // Create financial period
+        await setup.TestInit1.GetOrCreateFinancialPeriod();
+
+        // Create group account
         var groupAccount = await setup.TestInit1.CreateGroupAccount(JournalEntryType.Credit);
 
+        // Create generalLedger account
         var createGeneralLedgerAccount = new CreateGeneralLedgerAccountApiModel
         {
             Title = title,
@@ -1045,7 +1202,7 @@ public class GeneralLedgerAccountTests(ApiTestSetup setup, ITestOutputHelper out
             .Where(x => x.AccountTitle == title)
             .ToListAsync();
 
-        // Act
+        // Get all generalLedger account
         var filter = new FilterGeneralLedgerAccountApiModel
         {
             Title = title
@@ -1061,10 +1218,15 @@ public class GeneralLedgerAccountTests(ApiTestSetup setup, ITestOutputHelper out
     [Fact]
     public async Task GetAllGeneralLedgerAccounts_ShouldSucceed_WhenFilteredByActiveFlag()
     {
-        // Arrange
         var isActive = true;
+
+        // Create financial period
+        await setup.TestInit1.GetOrCreateFinancialPeriod();
+
+        // Create group account
         var groupAccount = await setup.TestInit1.CreateGroupAccount(JournalEntryType.Credit);
 
+        // Create generalLedger account
         var createGeneralLedgerAccount = new CreateGeneralLedgerAccountApiModel
         {
             Title = Guid.NewGuid().ToString(),
@@ -1082,7 +1244,7 @@ public class GeneralLedgerAccountTests(ApiTestSetup setup, ITestOutputHelper out
             .Where(x => x.IsActive == isActive)
             .ToListAsync();
 
-        // Act
+        // Get all generalLedger account
         var filter = new FilterGeneralLedgerAccountApiModel
         {
             IsActive = isActive
@@ -1098,10 +1260,15 @@ public class GeneralLedgerAccountTests(ApiTestSetup setup, ITestOutputHelper out
     [Fact]
     public async Task GetAllGeneralLedgerAccounts_ShouldSucceed_WhenFilteredByJournalEntryType()
     {
-        // Arrange
         var journalEntryType = JournalEntryType.Credit;
+
+        // Create financial period
+        await setup.TestInit1.GetOrCreateFinancialPeriod();
+
+        // Create group account
         var groupAccount = await setup.TestInit1.CreateGroupAccount(JournalEntryType.Credit);
 
+        // Create generalLedger account
         var createGeneralLedgerAccount = new CreateGeneralLedgerAccountApiModel
         {
             Title = Guid.NewGuid().ToString(),
@@ -1119,7 +1286,7 @@ public class GeneralLedgerAccountTests(ApiTestSetup setup, ITestOutputHelper out
             .Where(x => x.JournalEntryType == Domain.Enums.JournalEntryType.Credit)
             .ToListAsync();
 
-        // Act
+        // Get all generalLedger account
         var filter = new FilterGeneralLedgerAccountApiModel
         {
             JournalEntryType = (Domain.Enums.JournalEntryType?)journalEntryType
