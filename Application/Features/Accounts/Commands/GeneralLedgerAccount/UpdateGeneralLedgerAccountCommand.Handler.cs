@@ -31,31 +31,23 @@ public class UpdateGeneralLedgerAccountCommandHandler(IUnitOfWork unitOfWork)
 
         // Update title with duplicate check
         var titleResult = await UpdateAccountTitle(generalAccount, request, cancellationToken);
-        if (!titleResult.IsSuccess) 
+        if (!titleResult.IsSuccess)
             return titleResult;
 
         // Update account code
         var codeResult = await UpdateAccountCode(generalAccount, request, hasJournalEntries, cancellationToken);
-        if (!codeResult.IsSuccess) 
+        if (!codeResult.IsSuccess)
             return codeResult;
 
         // Update journal type
         var journalTypeResult = UpdateJournalEntryType(generalAccount, request, hasJournalEntries);
-        if (!journalTypeResult.IsSuccess) 
+        if (!journalTypeResult.IsSuccess)
             return journalTypeResult;
 
-        // Update group account if provided
-        if (request.GroupAccountId?.Value != null)
-        {
-            if (request.GroupAccountId.Value == Guid.Empty)
-                return OperationResult<bool>.FailureResult(nameof(request.GroupAccountId), "GroupAccountId cannot be empty.");
-
-            var group = await unitOfWork.GroupAccountRepository.GetByIdAsync(request.GroupAccountId.Value, cancellationToken);
-            if (group is null || !group.IsActive)
-                return OperationResult<bool>.FailureResult(nameof(request.GroupAccountId), "Cannot assign account to an inactive or non-existent group.");
-
-            generalAccount.GroupAccountId = request.GroupAccountId.Value;
-        }
+        // Update group account
+        var groupAccountResult = await UpdateGroupAccountId(generalAccount, request, hasJournalEntries, cancellationToken);
+        if (!groupAccountResult.IsSuccess)
+            return groupAccountResult;
 
         // Update description
         if (!string.IsNullOrWhiteSpace(request.Description?.Value))
@@ -76,7 +68,7 @@ public class UpdateGeneralLedgerAccountCommandHandler(IUnitOfWork unitOfWork)
 
     private static OperationResult<bool> UpdateJournalEntryType(GeneralLedgerAccountEntity generalLedgerAccount, UpdateGeneralLedgerAccountCommand request, bool hasJournalEntries)
     {
-        if (request.JournalEntryType?.Value == null) 
+        if (request.JournalEntryType?.Value == null)
             return OperationResult<bool>.SuccessResult(true);
 
         if (hasJournalEntries && request.JournalEntryType.Value != generalLedgerAccount.JournalEntryType)
@@ -148,4 +140,27 @@ public class UpdateGeneralLedgerAccountCommandHandler(IUnitOfWork unitOfWork)
 
         return OperationResult<bool>.SuccessResult(true);
     }
+
+    private async Task<OperationResult<bool>> UpdateGroupAccountId(GeneralLedgerAccountEntity generalLedgerAccount, UpdateGeneralLedgerAccountCommand request, bool hasJournalEntries, CancellationToken cancellationToken)
+    {
+        if (request.GroupAccountId?.Value is null)
+            return OperationResult<bool>.SuccessResult(true);
+
+        if (hasJournalEntries && request.GroupAccountId.Value != generalLedgerAccount.GroupAccountId)
+            return OperationResult<bool>.FailureResult(nameof(request.GroupAccountId), "Cannot change Group Account ID for an account that already has journal entries.");
+
+        if (request.GroupAccountId.Value == Guid.Empty)
+            return OperationResult<bool>.FailureResult(nameof(request.GroupAccountId), "GroupAccountId cannot be empty.");
+
+        var groupAccount = await unitOfWork.GroupAccountRepository
+            .GetByIdAsync(request.GroupAccountId.Value, cancellationToken);
+
+        if (groupAccount is null || !groupAccount.IsActive)
+            return OperationResult<bool>.FailureResult(nameof(request.GroupAccountId), "Cannot assign account to an inactive or non-existent group.");
+
+        generalLedgerAccount.GroupAccountId = request.GroupAccountId.Value;
+
+        return OperationResult<bool>.SuccessResult(true);
+    }
+
 }

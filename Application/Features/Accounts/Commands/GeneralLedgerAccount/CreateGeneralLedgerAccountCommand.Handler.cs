@@ -15,6 +15,22 @@ public class CreateGeneralLedgerAccountCommandHandler(IUnitOfWork unitOfWork)
         if (!validateResult.IsValid)
             return OperationResult<bool>.FailureResult(validateResult.Errors.ConvertToKeyValuePair());
 
+        // Business Rule: A GeneralLedger account must always inherit the same nature (JournalEntryType) as its Group account.
+        // This ensures accurate financial reporting, prevents mismatched balances, and aligns with standard accounting practices.
+
+        var groupAccount = await unitOfWork.GroupAccountRepository
+            .GetByIdAsync(request.GroupAccountId, cancellationToken);
+
+        if (groupAccount == null)
+            return OperationResult<bool>.NotFoundResult(nameof(request.GroupAccountId), "Group account not found.");
+
+        if (groupAccount.JournalEntryType != request.JournalEntryType)
+        {
+            return OperationResult<bool>.FailureResult([
+                new KeyValuePair<string, string>(nameof(request.JournalEntryType),
+                    "GeneralLedger account must have the same nature (JournalEntryType) as its group account.")]);
+        }
+
         // Business Rule: Each active account within the same group must have a unique title.
         // Prevents confusion in reporting and ensures accurate posting of journal entries.
         var existingAccounts = await unitOfWork.GeneralLedgerAccountRepository
