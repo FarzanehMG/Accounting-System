@@ -1041,7 +1041,7 @@ public class GroupAccountTests(ApiTestSetup setup, ITestOutputHelper output) : I
     }
 
     [Fact]
-    public async Task GetAllGroupAccounts_ShouldSucceed_WhenFilteredByActiveFlag()
+    public async Task GetAllGroupAccounts_ShouldSucceed_WhenFilteredByCode()
     {
         var code = "100";
 
