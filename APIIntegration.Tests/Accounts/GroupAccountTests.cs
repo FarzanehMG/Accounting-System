@@ -1,7 +1,6 @@
 ﻿using API.Controllers.Models.Accounts;
 using APIIntegration.Tests.Helper;
 using Domain.Entities.Accounts;
-using Domain.Entities.FinancialPeriod;
 using FluentAssertions;
 using GenerateApi;
 using Microsoft.EntityFrameworkCore;
@@ -16,7 +15,10 @@ public class GroupAccountTests(ApiTestSetup setup, ITestOutputHelper output) : I
     [Fact]
     public async Task CreateGroupAccount_ShouldSuccess_WhenRequestIsValid()
     {
-        // Arrange
+        // Create financial period
+        await setup.TestInit1.GetOrCreateFinancialPeriod();
+
+        // Create group account
         var model = new CreateGroupAccountApiModel
         {
             Title = Guid.NewGuid().ToString(),
@@ -25,18 +27,17 @@ public class GroupAccountTests(ApiTestSetup setup, ITestOutputHelper output) : I
             IsActive = true,
             Description = "Integration test group account"
         };
-
-        // Act
         await setup.TestInit1.GroupAccountClient.CreateAsync(model, CancellationToken.None);
 
         // Assert API response
         output.WriteLine($"Created GroupAccount via API: {model.Title}");
 
-        // Verify in database
+        // Get group account
         var createdGroupAccount = await setup.TestInit1.AccountingDbContext
             .Set<GroupAccountEntity>()
             .SingleOrDefaultAsync(g => g.AccountCode == model.Code && g.AccountTitle == model.Title);
 
+        // Assert
         Assert.NotNull(createdGroupAccount);
         Assert.Equal(model.Code, createdGroupAccount.AccountCode);
         Assert.Equal(model.Title, createdGroupAccount.AccountTitle);
@@ -46,9 +47,12 @@ public class GroupAccountTests(ApiTestSetup setup, ITestOutputHelper output) : I
     [Fact]
     public async Task CreateGroupAccount_ShouldFail_WhenActiveGroupAccountWithSameJournalEntryTypeExists()
     {
-        // Arrange
         var title = Guid.NewGuid().ToString();
 
+        // Create financial period
+        await setup.TestInit1.GetOrCreateFinancialPeriod();
+
+        // Create group account
         var createGroupAccountCommand = new CreateGroupAccountApiModel
         {
             Title = title,
@@ -57,7 +61,10 @@ public class GroupAccountTests(ApiTestSetup setup, ITestOutputHelper output) : I
             JournalEntryType = JournalEntryType.Credit,
             Description = "Integration test group account"
         };
+        var result = await setup.TestInit1.GroupAccountClient.CreateAsync(createGroupAccountCommand);
+        result.IsSuccess.Should().BeTrue();
 
+        // Create group account 2
         var createGroupAccountCommand2 = new CreateGroupAccountApiModel
         {
             Title = title,
@@ -66,10 +73,6 @@ public class GroupAccountTests(ApiTestSetup setup, ITestOutputHelper output) : I
             JournalEntryType = JournalEntryType.Credit,
             Description = "Integration test group account"
         };
-
-        // Act and Assert
-        var result = await setup.TestInit1.GroupAccountClient.CreateAsync(createGroupAccountCommand);
-        result.IsSuccess.Should().BeTrue();
 
         // Act and Assert
         try
@@ -87,9 +90,12 @@ public class GroupAccountTests(ApiTestSetup setup, ITestOutputHelper output) : I
     [Fact]
     public async Task CreateGroupAccount_ShouldSucceed_WhenInactiveGroupAccountWithSameTitleExists()
     {
-        // Arrange
         var title = Guid.NewGuid().ToString();
 
+        // Create financial period
+        await setup.TestInit1.GetOrCreateFinancialPeriod();
+
+        // Create group account
         var createGroupAccountCommand = new CreateGroupAccountApiModel
         {
             Title = title,
@@ -98,7 +104,9 @@ public class GroupAccountTests(ApiTestSetup setup, ITestOutputHelper output) : I
             JournalEntryType = JournalEntryType.Credit,
             Description = "Integration test group account"
         };
+        var result = await setup.TestInit1.GroupAccountClient.CreateAsync(createGroupAccountCommand);
 
+        // Create group account 2
         var createGroupAccountCommand2 = new CreateGroupAccountApiModel
         {
             Title = title,
@@ -107,9 +115,6 @@ public class GroupAccountTests(ApiTestSetup setup, ITestOutputHelper output) : I
             JournalEntryType = JournalEntryType.Debit,
             Description = "Integration test group account"
         };
-
-        // Act
-        var result = await setup.TestInit1.GroupAccountClient.CreateAsync(createGroupAccountCommand);
         var result2 = await setup.TestInit1.GroupAccountClient.CreateAsync(createGroupAccountCommand2);
 
         // Assert
@@ -120,7 +125,10 @@ public class GroupAccountTests(ApiTestSetup setup, ITestOutputHelper output) : I
     [Fact]
     public async Task CreateGroupAccount_ShouldFail_WhenTitleIsNull()
     {
-        // Arrange
+        // Create financial period
+        await setup.TestInit1.GetOrCreateFinancialPeriod();
+
+        // Create group account
         var createGroupAccountCommand = new CreateGroupAccountApiModel
         {
             Title = "",
@@ -147,7 +155,10 @@ public class GroupAccountTests(ApiTestSetup setup, ITestOutputHelper output) : I
     [Fact]
     public async Task CreateGroupAccount_ShouldFail_WhenJournalEntryTypeIsNull()
     {
-        // Arrange
+        // Create financial period
+        await setup.TestInit1.GetOrCreateFinancialPeriod();
+
+        // Create group account
         var createGroupAccountCommand = new CreateGroupAccountApiModel
         {
             Title = Guid.NewGuid().ToString(),
@@ -174,7 +185,10 @@ public class GroupAccountTests(ApiTestSetup setup, ITestOutputHelper output) : I
     [Fact]
     public async Task CreateGroupAccount_ShouldFail_WhenCodeIsNull()
     {
-        // Arrange
+        // Create financial period
+        await setup.TestInit1.GetOrCreateFinancialPeriod();
+
+        // Create group account
         var createGroupAccountCommand = new CreateGroupAccountApiModel
         {
             Title = Guid.NewGuid().ToString(),
@@ -201,7 +215,10 @@ public class GroupAccountTests(ApiTestSetup setup, ITestOutputHelper output) : I
     [Fact]
     public async Task CreateGroupAccount_ShouldFail_WhenDuplicateCodeExists()
     {
-        // Arrange
+        // Create financial period
+        await setup.TestInit1.GetOrCreateFinancialPeriod();
+
+        // Create group account
         var groupAccount = await setup.TestInit1.CreateGroupAccount(JournalEntryType.Credit);
 
         var createGroupAccountCommand = new CreateGroupAccountApiModel
@@ -230,15 +247,14 @@ public class GroupAccountTests(ApiTestSetup setup, ITestOutputHelper output) : I
     [Fact]
     public async Task CreateGroupAccount_ShouldFail_WhenNoActiveFinancialPeriodExists()
     {
-        // Arrange
-        var financialPeriod = await setup.TestInit1.AccountingDbContext
-            .Set<FinancialPeriodEntity>()
-            .SingleAsync(f => f.Id == setup.TestInit1.FinancialPeriodId);
+        // Create financial period
+        var financialPeriod = await setup.TestInit1.GetOrCreateFinancialPeriod();
 
+        // Update financial period
         financialPeriod.IsActive = false;
-
         await setup.TestInit1.AccountingDbContext.SaveChangesAsync();
 
+        // Create group account
         var createGroupAccountCommand = new CreateGroupAccountApiModel
         {
             Title = Guid.NewGuid().ToString(),
@@ -268,7 +284,10 @@ public class GroupAccountTests(ApiTestSetup setup, ITestOutputHelper output) : I
     [Fact]
     public async Task CreateGroupAccount_ShouldReturnInactiveGroupAccountId_WhenInactiveGroupWithSameTitleExists()
     {
-        // Arrange
+        // Create financial period
+        await setup.TestInit1.GetOrCreateFinancialPeriod();
+
+        // Create group account
         var groupAccount = await setup.TestInit1.CreateGroupAccount(JournalEntryType.Credit, false);
 
         var createGroupAccountCommand = new CreateGroupAccountApiModel
@@ -298,6 +317,9 @@ public class GroupAccountTests(ApiTestSetup setup, ITestOutputHelper output) : I
     [Fact]
     public async Task UpdateGroupAccount_ShouldNotChange_WhenNoFieldsProvided()
     {
+        // Create financial period
+        await setup.TestInit1.GetOrCreateFinancialPeriod();
+
         // Create group account
         var model = new CreateGroupAccountApiModel
         {
@@ -342,7 +364,10 @@ public class GroupAccountTests(ApiTestSetup setup, ITestOutputHelper output) : I
     [Fact]
     public async Task UpdateGroupAccount_ShouldFail_WhenGroupAccountDoesNotExist()
     {
-        // Arrange
+        // Create financial period
+        await setup.TestInit1.GetOrCreateFinancialPeriod();
+
+        // Update group account
         var updateGroupAccountCommand = new UpdateGroupAccountCommand
         {
             GroupAccountId = Guid.NewGuid()
@@ -365,6 +390,9 @@ public class GroupAccountTests(ApiTestSetup setup, ITestOutputHelper output) : I
     [Fact]
     public async Task UpdateGroupAccount_ShouldSucceed_WhenTitleIsProvided()
     {
+        // Create financial period
+        await setup.TestInit1.GetOrCreateFinancialPeriod();
+
         // Create group account
         var model = new CreateGroupAccountApiModel
         {
@@ -413,6 +441,9 @@ public class GroupAccountTests(ApiTestSetup setup, ITestOutputHelper output) : I
     [Fact]
     public async Task UpdateGroupAccount_ShouldChangeCode_WhenValidAndNoJournalEntries()
     {
+        // Create financial period
+        await setup.TestInit1.GetOrCreateFinancialPeriod();
+
         // Create group account
         var model = new CreateGroupAccountApiModel
         {
@@ -461,6 +492,9 @@ public class GroupAccountTests(ApiTestSetup setup, ITestOutputHelper output) : I
     [Fact]
     public async Task UpdateGroupAccount_ShouldChangeJournalType_WhenNoJournalEntries()
     {
+        // Create financial period
+        await setup.TestInit1.GetOrCreateFinancialPeriod();
+
         // Create group account
         var model = new CreateGroupAccountApiModel
         {
@@ -509,30 +543,20 @@ public class GroupAccountTests(ApiTestSetup setup, ITestOutputHelper output) : I
     [Fact]
     public async Task UpdateGroupAccount_ShouldFail_WhenJournalEntriesExistAndJournalEntryTypeIsChanged()
     {
-        // Create group account
-        var model = new CreateGroupAccountApiModel
-        {
-            Title = Guid.NewGuid().ToString(),
-            Code = Guid.NewGuid().ToString(),
-            JournalEntryType = JournalEntryType.Credit,
-            IsActive = true,
-            Description = "Integration test group account"
-        };
-        await setup.TestInit1.GroupAccountClient.CreateAsync(model, CancellationToken.None);
+        // Create financial period
+        var financialPeriod = await setup.TestInit1.GetOrCreateFinancialPeriod();
 
-        // Get created group account
-        var original = await setup.TestInit1.AccountingDbContext
-            .Set<GroupAccountEntity>()
-            .AsNoTracking()
-            .SingleAsync(g => g.AccountCode == model.Code && g.AccountTitle == model.Title);
+        // Create group account
+        var creditGroupAccount = await setup.TestInit1.CreateGroupAccount(JournalEntryType.Credit);
+        var debitGroupAccount = await setup.TestInit1.CreateGroupAccount(JournalEntryType.Debit);
 
         // Create journal entry
-        await setup.TestInit1.CreateJournalEntry(original.Id);
+        await setup.TestInit1.CreateJournalEntry(creditGroupAccount.Id, debitGroupAccount.Id, financialPeriod.Id);
 
         // Update group account
         var updateGroupAccountCommand = new UpdateGroupAccountCommand
         {
-            GroupAccountId = original.Id,
+            GroupAccountId = creditGroupAccount.Id,
             JournalEntryType = new PatchOfJournalEntryType
             {
                 Value = JournalEntryType.Debit
@@ -554,19 +578,22 @@ public class GroupAccountTests(ApiTestSetup setup, ITestOutputHelper output) : I
         var updated = await setup.TestInit1.AccountingDbContext
             .Set<GroupAccountEntity>()
             .AsNoTracking()
-            .SingleAsync(g => g.Id == original.Id);
+            .SingleAsync(g => g.Id == creditGroupAccount.Id);
 
         // Assert
-        updated.AccountTitle.Should().Be(original.AccountTitle);
-        updated.AccountCode.Should().Be(original.AccountCode);
-        updated.AccountDescription.Should().Be(original.AccountDescription);
-        updated.JournalEntryType.Should().Be(original.JournalEntryType);
-        updated.IsActive.Should().Be(original.IsActive);
+        updated.AccountTitle.Should().Be(creditGroupAccount.AccountTitle);
+        updated.AccountCode.Should().Be(creditGroupAccount.AccountCode);
+        updated.AccountDescription.Should().Be(creditGroupAccount.AccountDescription);
+        updated.JournalEntryType.Should().Be(creditGroupAccount.JournalEntryType);
+        updated.IsActive.Should().Be(creditGroupAccount.IsActive);
     }
 
     [Fact]
     public async Task UpdateGroupAccount_ShouldFail_WhenValidatorFails()
     {
+        // Create financial period
+        await setup.TestInit1.GetOrCreateFinancialPeriod();
+
         // Create group account
         var groupAccount = await setup.TestInit1.CreateGroupAccount(JournalEntryType.Credit);
 
@@ -596,18 +623,17 @@ public class GroupAccountTests(ApiTestSetup setup, ITestOutputHelper output) : I
     [Fact]
     public async Task UpdateGroupAccount_ShouldFail_WhenNoActiveFinancialPeriod()
     {
+        // Create financial period
+        var financialPeriod = await setup.TestInit1.GetOrCreateFinancialPeriod();
+
         // Create group account
         var groupAccount = await setup.TestInit1.CreateGroupAccount(JournalEntryType.Credit);
 
         // Update financial period
-        var financialPeriod = await setup.TestInit1.AccountingDbContext
-            .Set<FinancialPeriodEntity>()
-            .SingleAsync(f => f.Id == setup.TestInit1.FinancialPeriodId);
-
         financialPeriod.IsActive = false;
-
         await setup.TestInit1.AccountingDbContext.SaveChangesAsync();
 
+        // Update group account
         var updateGroupAccountCommand = new UpdateGroupAccountCommand
         {
             GroupAccountId = groupAccount.Id,
@@ -637,13 +663,21 @@ public class GroupAccountTests(ApiTestSetup setup, ITestOutputHelper output) : I
     [Fact]
     public async Task UpdateGroupAccount_ShouldFail_WhenCodeChangedAndHasJournalEntries()
     {
-        // Arrange
-        var groupAccount = await setup.TestInit1.CreateGroupAccount(JournalEntryType.Credit);
-        await setup.TestInit1.CreateJournalEntry(groupAccount.Id);
+        // Create financial period
+        var financialPeriod = await setup.TestInit1.GetOrCreateFinancialPeriod();
 
+        // Create group account
+        // Create group account
+        var creditGroupAccount = await setup.TestInit1.CreateGroupAccount(JournalEntryType.Credit);
+        var debitGroupAccount = await setup.TestInit1.CreateGroupAccount(JournalEntryType.Debit);
+
+        // Create journal entry
+        await setup.TestInit1.CreateJournalEntry(creditGroupAccount.Id, debitGroupAccount.Id, financialPeriod.Id);
+
+        // Update group account
         var updateGroupAccountCommand = new UpdateGroupAccountCommand
         {
-            GroupAccountId = groupAccount.Id,
+            GroupAccountId = creditGroupAccount.Id,
             Code = new PatchOfString
             {
                 Value = Guid.NewGuid().ToString()
@@ -667,11 +701,14 @@ public class GroupAccountTests(ApiTestSetup setup, ITestOutputHelper output) : I
     [Fact]
     public async Task UpdateGroupAccount_ShouldFail_WhenCodeIsDuplicate()
     {
-        // Arrange
+        // Create financial period
+        await setup.TestInit1.GetOrCreateFinancialPeriod();
+
+        // Create group account
         var groupAccount = await setup.TestInit1.CreateGroupAccount(JournalEntryType.Credit);
         var groupAccount2 = await setup.TestInit1.CreateGroupAccount(JournalEntryType.Credit);
-        await setup.TestInit1.CreateJournalEntry(groupAccount.Id);
 
+        // Update group account
         var updateGroupAccountCommand = new UpdateGroupAccountCommand
         {
             GroupAccountId = groupAccount2.Id,
@@ -698,11 +735,14 @@ public class GroupAccountTests(ApiTestSetup setup, ITestOutputHelper output) : I
     [Fact]
     public async Task UpdateGroupAccount_ShouldFail_WhenActiveDuplicateTitleExists()
     {
-        // Arrange
+        // Create financial period
+        await setup.TestInit1.GetOrCreateFinancialPeriod();
+
+        // Create group account
         var groupAccount = await setup.TestInit1.CreateGroupAccount(JournalEntryType.Credit);
         var groupAccount2 = await setup.TestInit1.CreateGroupAccount(JournalEntryType.Credit);
-        await setup.TestInit1.CreateJournalEntry(groupAccount.Id);
 
+        // Update group account
         var updateGroupAccountCommand = new UpdateGroupAccountCommand
         {
             GroupAccountId = groupAccount2.Id,
@@ -729,11 +769,14 @@ public class GroupAccountTests(ApiTestSetup setup, ITestOutputHelper output) : I
     [Fact]
     public async Task UpdateGroupAccount_ShouldSuggestReactivation_WhenInactiveDuplicateTitleExists()
     {
-        // Arrange
+        // Create financial period
+        await setup.TestInit1.GetOrCreateFinancialPeriod();
+
+        // Create group account
         var groupAccount = await setup.TestInit1.CreateGroupAccount(JournalEntryType.Credit, isActive:false);
         var groupAccount2 = await setup.TestInit1.CreateGroupAccount(JournalEntryType.Credit);
-        await setup.TestInit1.CreateJournalEntry(groupAccount.Id);
 
+        // Update group account
         var updateGroupAccountCommand = new UpdateGroupAccountCommand
         {
             GroupAccountId = groupAccount2.Id,
@@ -761,13 +804,20 @@ public class GroupAccountTests(ApiTestSetup setup, ITestOutputHelper output) : I
     [Fact]
     public async Task UpdateGroupAccount_ShouldFail_WhenDeactivatingWithJournalEntries()
     {
-        // Arrange
-        var groupAccount = await setup.TestInit1.CreateGroupAccount(JournalEntryType.Credit);
-        await setup.TestInit1.CreateJournalEntry(groupAccount.Id);
+        // Create financial period
+        var financialPeriod = await setup.TestInit1.GetOrCreateFinancialPeriod();
 
+        // Create group account
+        var creditGroupAccount = await setup.TestInit1.CreateGroupAccount(JournalEntryType.Credit);
+        var debitGroupAccount = await setup.TestInit1.CreateGroupAccount(JournalEntryType.Debit);
+
+        // Create journal entry
+        await setup.TestInit1.CreateJournalEntry(creditGroupAccount.Id, debitGroupAccount.Id, financialPeriod.Id);
+
+        // Update group account
         var updateGroupAccountCommand = new UpdateGroupAccountCommand
         {
-            GroupAccountId = groupAccount.Id,
+            GroupAccountId = creditGroupAccount.Id,
             IsActive = new PatchOfBoolean
             {
                 Value = false
@@ -791,9 +841,13 @@ public class GroupAccountTests(ApiTestSetup setup, ITestOutputHelper output) : I
     [Fact]
     public async Task UpdateGroupAccount_ShouldChangeIsActive_WhenNoJournalEntries()
     {
-        // Arrange
+        // Create financial period
+        await setup.TestInit1.GetOrCreateFinancialPeriod();
+
+        // Create group account
         var groupAccount = await setup.TestInit1.CreateGroupAccount(JournalEntryType.Credit);
 
+        // Update group account
         var updateGroupAccountCommand = new UpdateGroupAccountCommand
         {
             GroupAccountId = groupAccount.Id,
@@ -806,6 +860,7 @@ public class GroupAccountTests(ApiTestSetup setup, ITestOutputHelper output) : I
         // Act
         var result = await setup.TestInit1.GroupAccountClient.UpdateAsync(updateGroupAccountCommand);
 
+        // Get group account
         var getGroupAccount = await setup.TestInit1.AccountingDbContext
             .Set<GroupAccountEntity>()
             .SingleAsync(f => f.Id == groupAccount.Id);
@@ -819,9 +874,13 @@ public class GroupAccountTests(ApiTestSetup setup, ITestOutputHelper output) : I
     [Fact]
     public async Task UpdateGroupAccount_ShouldChangeDescription_WhenProvided()
     {
-        // Arrange
+        // Create financial period
+        await setup.TestInit1.GetOrCreateFinancialPeriod();
+
+        // Create group account
         var groupAccount = await setup.TestInit1.CreateGroupAccount(JournalEntryType.Credit);
 
+        // Update group account
         var updateGroupAccountCommand = new UpdateGroupAccountCommand
         {
             GroupAccountId = groupAccount.Id,
@@ -830,10 +889,9 @@ public class GroupAccountTests(ApiTestSetup setup, ITestOutputHelper output) : I
                 Value = Guid.NewGuid().ToString()
             }
         };
-
-        // Act
         var result = await setup.TestInit1.GroupAccountClient.UpdateAsync(updateGroupAccountCommand);
 
+        // Get group account
         var getGroupAccount = await setup.TestInit1.AccountingDbContext
             .Set<GroupAccountEntity>()
             .AsNoTracking()
@@ -847,9 +905,13 @@ public class GroupAccountTests(ApiTestSetup setup, ITestOutputHelper output) : I
     [Fact]
     public async Task UpdateGroupAccount_ShouldNotChangeDescription_WhenNull()
     {
-        // Arrange
+        // Create financial period
+        await setup.TestInit1.GetOrCreateFinancialPeriod();
+
+        // Create group account
         var groupAccount = await setup.TestInit1.CreateGroupAccount(JournalEntryType.Credit);
 
+        // Update group account
         var updateGroupAccountCommand = new UpdateGroupAccountCommand
         {
             GroupAccountId = groupAccount.Id,
@@ -858,10 +920,9 @@ public class GroupAccountTests(ApiTestSetup setup, ITestOutputHelper output) : I
                 Value = null
             }
         };
-
-        // Act
         var result = await setup.TestInit1.GroupAccountClient.UpdateAsync(updateGroupAccountCommand);
 
+        // Get group account
         var getGroupAccount = await setup.TestInit1.AccountingDbContext
             .Set<GroupAccountEntity>()
             .AsNoTracking()
@@ -875,9 +936,13 @@ public class GroupAccountTests(ApiTestSetup setup, ITestOutputHelper output) : I
     [Fact]
     public async Task UpdateGroupAccount_ShouldUpdateAllFields_WhenMultipleUpdatesProvided_NoJournalEntries()
     {
-        // Arrange
+        // Create financial period
+        await setup.TestInit1.GetOrCreateFinancialPeriod();
+
+        // Create group account
         var groupAccount = await setup.TestInit1.CreateGroupAccount(JournalEntryType.Credit);
 
+        // Update group account
         var updateGroupAccountCommand = new UpdateGroupAccountCommand
         {
             GroupAccountId = groupAccount.Id,
@@ -890,10 +955,9 @@ public class GroupAccountTests(ApiTestSetup setup, ITestOutputHelper output) : I
                 Value = Guid.NewGuid().ToString()
             }
         };
-
-        // Act
         var result = await setup.TestInit1.GroupAccountClient.UpdateAsync(updateGroupAccountCommand);
 
+        // Get group account
         var getGroupAccount = await setup.TestInit1.AccountingDbContext
             .Set<GroupAccountEntity>()
             .AsNoTracking()
@@ -908,6 +972,9 @@ public class GroupAccountTests(ApiTestSetup setup, ITestOutputHelper output) : I
     [Fact]
     public async Task GetAllGroupAccounts_ShouldSucceed_WhenNoFiltersApplied()
     {
+        // Create financial period
+        await setup.TestInit1.GetOrCreateFinancialPeriod();
+
         // Create group account
         var createdAccount = new CreateGroupAccountApiModel
         {
@@ -925,7 +992,7 @@ public class GroupAccountTests(ApiTestSetup setup, ITestOutputHelper output) : I
             .AsNoTracking()
             .ToListAsync();
 
-        // Act
+        // Get all group account
         var result = await setup.TestInit1.GroupAccountClient.GetAllAsync();
 
         // Assert
@@ -938,6 +1005,9 @@ public class GroupAccountTests(ApiTestSetup setup, ITestOutputHelper output) : I
     public async Task GetAllGroupAccounts_ShouldSucceed_WhenFilteredByTitle()
     {
         var title = Guid.NewGuid().ToString();
+
+        // Create financial period
+        await setup.TestInit1.GetOrCreateFinancialPeriod();
 
         // Create group account
         var createdAccount = new CreateGroupAccountApiModel
@@ -957,7 +1027,7 @@ public class GroupAccountTests(ApiTestSetup setup, ITestOutputHelper output) : I
             .Where(x => x.AccountTitle == title)
             .ToListAsync();
 
-        // Act
+        // Get all group account
         var filter = new FilterGroupAccountApiModel
         {
             Title = title
@@ -975,6 +1045,9 @@ public class GroupAccountTests(ApiTestSetup setup, ITestOutputHelper output) : I
     {
         var code = "100";
 
+        // Create financial period
+        await setup.TestInit1.GetOrCreateFinancialPeriod();
+
         // Create group account
         var createdAccount = new CreateGroupAccountApiModel
         {
@@ -986,6 +1059,7 @@ public class GroupAccountTests(ApiTestSetup setup, ITestOutputHelper output) : I
         };
         await setup.TestInit1.GroupAccountClient.CreateAsync(createdAccount);
 
+        // Create group account 2
         var createdAccount2 = new CreateGroupAccountApiModel
         {
             Title = Guid.NewGuid().ToString(),
@@ -996,6 +1070,7 @@ public class GroupAccountTests(ApiTestSetup setup, ITestOutputHelper output) : I
         };
         await setup.TestInit1.GroupAccountClient.CreateAsync(createdAccount2);
 
+        // Create group account 3
         var createdAccount3 = new CreateGroupAccountApiModel
         {
             Title = Guid.NewGuid().ToString(),
@@ -1006,7 +1081,7 @@ public class GroupAccountTests(ApiTestSetup setup, ITestOutputHelper output) : I
         };
         await setup.TestInit1.GroupAccountClient.CreateAsync(createdAccount3);
 
-        // Act
+        // get all group account
         var filter = new FilterGroupAccountApiModel
         {
             Code = code
@@ -1031,6 +1106,9 @@ public class GroupAccountTests(ApiTestSetup setup, ITestOutputHelper output) : I
     {
         var journalEntryType = JournalEntryType.Credit;
 
+        // Create financial period
+        await setup.TestInit1.GetOrCreateFinancialPeriod();
+
         // Create group account
         var createdAccount = new CreateGroupAccountApiModel
         {
@@ -1042,6 +1120,7 @@ public class GroupAccountTests(ApiTestSetup setup, ITestOutputHelper output) : I
         };
         await setup.TestInit1.GroupAccountClient.CreateAsync(createdAccount);
 
+        // Create group account 2
         var createdAccount2 = new CreateGroupAccountApiModel
         {
             Title = Guid.NewGuid().ToString(),
@@ -1052,6 +1131,7 @@ public class GroupAccountTests(ApiTestSetup setup, ITestOutputHelper output) : I
         };
         await setup.TestInit1.GroupAccountClient.CreateAsync(createdAccount2);
 
+        // Create group account 3
         var createdAccount3 = new CreateGroupAccountApiModel
         {
             Title = Guid.NewGuid().ToString(),
@@ -1062,7 +1142,7 @@ public class GroupAccountTests(ApiTestSetup setup, ITestOutputHelper output) : I
         };
         await setup.TestInit1.GroupAccountClient.CreateAsync(createdAccount3);
 
-        // Act
+        // Get all group account
         var result = await setup.TestInit1.GroupAccountClient.GetAllAsync(journalEntryType: journalEntryType);
 
         // Get expected results from DB

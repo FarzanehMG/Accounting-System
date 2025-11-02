@@ -57,15 +57,15 @@ public class TestInit
         return testInit;
     }
 
-    internal async Task CreateJournalEntry(Guid groupAccountId, Guid financialPeriodId)
+    internal async Task CreateJournalEntry(Guid creditGroupAccountId, Guid debitGroupAccountId, Guid financialPeriodId)
     {
         // Create GeneralLedger account
-        var generalLedgerAccount = await CreateGeneralLedgerAccount(groupAccountId, JournalEntryType.Credit);
-        var generalLedgerAccount2 = await CreateGeneralLedgerAccount(groupAccountId, JournalEntryType.Debit);
+        var generalLedgerAccountCredit = await CreateGeneralLedgerAccount(creditGroupAccountId, JournalEntryType.Credit);
+        var generalLedgerAccountDebit = await CreateGeneralLedgerAccount(debitGroupAccountId, JournalEntryType.Debit);
 
         // Create SubLedger account
-        var subLedgerAccount = await CreateSubLedgerAccount(generalLedgerAccount.Id, JournalEntryType.Credit);
-        var subLedgerAccount2 = await CreateSubLedgerAccount(generalLedgerAccount2.Id, JournalEntryType.Debit);
+        var subLedgerAccount = await CreateSubLedgerAccount(generalLedgerAccountCredit.Id, JournalEntryType.Credit);
+        var subLedgerAccount2 = await CreateSubLedgerAccount(generalLedgerAccountDebit.Id, JournalEntryType.Debit);
 
         // Create JournalVoucher
         var journalVoucher = await CreateJournalVoucher(financialPeriodId);
