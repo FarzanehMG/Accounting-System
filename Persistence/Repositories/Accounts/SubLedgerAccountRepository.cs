@@ -16,7 +16,9 @@ internal sealed class SubLedgerAccountRepository(AccountingDbContext dbContext) 
 
     public async Task<SubLedgerAccountEntity?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
     {
-        return await Table.FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
+        return await Table
+            .Include(x=>x.GeneralLedgerAccount)
+            .FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
     }
 
     public async Task<IReadOnlyList<SubLedgerAccountEntity>> FindAccountByTitleAndGeneralLedgerAndTypeAsync(string title, Guid generalLedgerAccountId, JournalEntryType journalEntryType, CancellationToken cancellationToken = default)
@@ -25,6 +27,14 @@ internal sealed class SubLedgerAccountRepository(AccountingDbContext dbContext) 
                 x.AccountTitle.Equals(title) &&
                 x.GeneralLedgerAccountId == generalLedgerAccountId &&
                 x.JournalEntryType == journalEntryType)
+            .ToListAsync(cancellationToken);
+    }
+
+    public async Task<IReadOnlyList<SubLedgerAccountEntity>> FindAccountByTitleAndGroupAccountAsync(string title, Guid generalLedgerAccountId, CancellationToken cancellationToken = default)
+    {
+        return await TableNoTracking.Where(x =>
+                x.AccountTitle.Equals(title) &&
+                x.GeneralLedgerAccountId == generalLedgerAccountId)
             .ToListAsync(cancellationToken);
     }
 

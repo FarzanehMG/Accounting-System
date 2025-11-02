@@ -510,7 +510,7 @@ public class SubLedgerAccountTests(ITestOutputHelper testOutputHelper)
 
         var updateSubLedgerAccountCommand = new UpdateSubLedgerAccountCommand
         {
-            SubLegerAccountId = Guid.Empty
+            SubLedgerAccountId = Guid.Empty
         };
         var handler = new UpdateSubLedgerAccountCommandHandler(unitOfWork);
 
@@ -530,7 +530,7 @@ public class SubLedgerAccountTests(ITestOutputHelper testOutputHelper)
 
         var updateSubLedgerAccountCommand = new UpdateSubLedgerAccountCommand
         {
-            SubLegerAccountId = Guid.NewGuid()
+            SubLedgerAccountId = Guid.NewGuid()
         };
         var handler = new UpdateSubLedgerAccountCommandHandler(unitOfWork);
 
@@ -556,7 +556,7 @@ public class SubLedgerAccountTests(ITestOutputHelper testOutputHelper)
 
         var updateSubLedgerAccountCommand = new UpdateSubLedgerAccountCommand
         {
-            SubLegerAccountId = subLedgerAccountId,
+            SubLedgerAccountId = subLedgerAccountId,
             Title = new Patch<string>(faker.Finance.AccountName())
         };
         var handler = new UpdateSubLedgerAccountCommandHandler(unitOfWork);
@@ -593,7 +593,7 @@ public class SubLedgerAccountTests(ITestOutputHelper testOutputHelper)
 
         var updateSubLedgerAccountCommand = new UpdateSubLedgerAccountCommand
         {
-            SubLegerAccountId = subLedgerAccountId,
+            SubLedgerAccountId = subLedgerAccountId,
             IsActive = new Patch<bool>(false)
         };
         var handler = new UpdateSubLedgerAccountCommandHandler(unitOfWork);
@@ -631,7 +631,7 @@ public class SubLedgerAccountTests(ITestOutputHelper testOutputHelper)
 
         var updateSubLedgerAccountCommand = new UpdateSubLedgerAccountCommand
         {
-            SubLegerAccountId = subLedgerAccountId,
+            SubLedgerAccountId = subLedgerAccountId,
             Code = code
         };
         var handler = new UpdateSubLedgerAccountCommandHandler(unitOfWork);
@@ -672,7 +672,7 @@ public class SubLedgerAccountTests(ITestOutputHelper testOutputHelper)
 
         var updateSubLedgerAccountCommand = new UpdateSubLedgerAccountCommand
         {
-            SubLegerAccountId = subLedgerAccountId,
+            SubLedgerAccountId = subLedgerAccountId,
             Title = new Patch<string>(title)
         };
         var handler = new UpdateSubLedgerAccountCommandHandler(unitOfWork);
@@ -711,7 +711,7 @@ public class SubLedgerAccountTests(ITestOutputHelper testOutputHelper)
 
         var updateSubLedgerAccountCommand = new UpdateSubLedgerAccountCommand
         {
-            SubLegerAccountId = subLedgerAccountId,
+            SubLedgerAccountId = subLedgerAccountId,
             Code = new Patch<string>(code)
         };
         var handler = new UpdateSubLedgerAccountCommandHandler(unitOfWork);
@@ -752,7 +752,7 @@ public class SubLedgerAccountTests(ITestOutputHelper testOutputHelper)
 
         var updateSubLedgerAccountCommand = new UpdateSubLedgerAccountCommand
         {
-            SubLegerAccountId = subLedgerAccountId,
+            SubLedgerAccountId = subLedgerAccountId,
             Code = new Patch<string>(faker.Finance.Account()),
             Title = new Patch<string>(faker.Finance.AccountName())
         };

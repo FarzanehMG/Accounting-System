@@ -2032,6 +2032,7 @@ export interface IPatchOfListOfSaveFileModel {
 
 export class ApiResultOfGetJournalEntryByIdQueryResult extends ApiResult implements IApiResultOfGetJournalEntryByIdQueryResult {
     data?: GetJournalEntryByIdQueryResult | undefined;
+    errors?: { [key: string]: string; } | undefined;
 
     constructor(data?: IApiResultOfGetJournalEntryByIdQueryResult) {
         super(data);
@@ -2041,6 +2042,13 @@ export class ApiResultOfGetJournalEntryByIdQueryResult extends ApiResult impleme
         super.init(_data);
         if (_data) {
             this.data = _data["data"] ? GetJournalEntryByIdQueryResult.fromJS(_data["data"]) : <any>undefined;
+            if (_data["errors"]) {
+                this.errors = {} as any;
+                for (let key in _data["errors"]) {
+                    if (_data["errors"].hasOwnProperty(key))
+                        (<any>this.errors)![key] = _data["errors"][key];
+                }
+            }
         }
     }
 
@@ -2054,6 +2062,13 @@ export class ApiResultOfGetJournalEntryByIdQueryResult extends ApiResult impleme
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
         data["data"] = this.data ? this.data.toJSON() : <any>undefined;
+        if (this.errors) {
+            data["errors"] = {};
+            for (let key in this.errors) {
+                if (this.errors.hasOwnProperty(key))
+                    (<any>data["errors"])[key] = (<any>this.errors)[key];
+            }
+        }
         super.toJSON(data);
         return data;
     }
@@ -2061,6 +2076,7 @@ export class ApiResultOfGetJournalEntryByIdQueryResult extends ApiResult impleme
 
 export interface IApiResultOfGetJournalEntryByIdQueryResult extends IApiResult {
     data?: GetJournalEntryByIdQueryResult | undefined;
+    errors?: { [key: string]: string; } | undefined;
 }
 
 export class GetJournalEntryByIdQueryResult implements IGetJournalEntryByIdQueryResult {
@@ -2129,6 +2145,7 @@ export interface IGetJournalEntryByIdQueryResult {
 
 export class ApiResultOfListOfGetJournalEntriesQueryResult extends ApiResult implements IApiResultOfListOfGetJournalEntriesQueryResult {
     data?: GetJournalEntriesQueryResult[] | undefined;
+    errors?: { [key: string]: string; } | undefined;
 
     constructor(data?: IApiResultOfListOfGetJournalEntriesQueryResult) {
         super(data);
@@ -2141,6 +2158,13 @@ export class ApiResultOfListOfGetJournalEntriesQueryResult extends ApiResult imp
                 this.data = [] as any;
                 for (let item of _data["data"])
                     this.data!.push(GetJournalEntriesQueryResult.fromJS(item));
+            }
+            if (_data["errors"]) {
+                this.errors = {} as any;
+                for (let key in _data["errors"]) {
+                    if (_data["errors"].hasOwnProperty(key))
+                        (<any>this.errors)![key] = _data["errors"][key];
+                }
             }
         }
     }
@@ -2159,6 +2183,13 @@ export class ApiResultOfListOfGetJournalEntriesQueryResult extends ApiResult imp
             for (let item of this.data)
                 data["data"].push(item.toJSON());
         }
+        if (this.errors) {
+            data["errors"] = {};
+            for (let key in this.errors) {
+                if (this.errors.hasOwnProperty(key))
+                    (<any>data["errors"])[key] = (<any>this.errors)[key];
+            }
+        }
         super.toJSON(data);
         return data;
     }
@@ -2166,6 +2197,7 @@ export class ApiResultOfListOfGetJournalEntriesQueryResult extends ApiResult imp
 
 export interface IApiResultOfListOfGetJournalEntriesQueryResult extends IApiResult {
     data?: GetJournalEntriesQueryResult[] | undefined;
+    errors?: { [key: string]: string; } | undefined;
 }
 
 export class GetJournalEntriesQueryResult implements IGetJournalEntriesQueryResult {
@@ -2378,6 +2410,7 @@ export interface IPatchOfDateTime {
 
 export class ApiResultOfGetJournalVoucherByIdQueryResult extends ApiResult implements IApiResultOfGetJournalVoucherByIdQueryResult {
     data?: GetJournalVoucherByIdQueryResult | undefined;
+    errors?: { [key: string]: string; } | undefined;
 
     constructor(data?: IApiResultOfGetJournalVoucherByIdQueryResult) {
         super(data);
@@ -2387,6 +2420,13 @@ export class ApiResultOfGetJournalVoucherByIdQueryResult extends ApiResult imple
         super.init(_data);
         if (_data) {
             this.data = _data["data"] ? GetJournalVoucherByIdQueryResult.fromJS(_data["data"]) : <any>undefined;
+            if (_data["errors"]) {
+                this.errors = {} as any;
+                for (let key in _data["errors"]) {
+                    if (_data["errors"].hasOwnProperty(key))
+                        (<any>this.errors)![key] = _data["errors"][key];
+                }
+            }
         }
     }
 
@@ -2400,6 +2440,13 @@ export class ApiResultOfGetJournalVoucherByIdQueryResult extends ApiResult imple
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
         data["data"] = this.data ? this.data.toJSON() : <any>undefined;
+        if (this.errors) {
+            data["errors"] = {};
+            for (let key in this.errors) {
+                if (this.errors.hasOwnProperty(key))
+                    (<any>data["errors"])[key] = (<any>this.errors)[key];
+            }
+        }
         super.toJSON(data);
         return data;
     }
@@ -2407,6 +2454,7 @@ export class ApiResultOfGetJournalVoucherByIdQueryResult extends ApiResult imple
 
 export interface IApiResultOfGetJournalVoucherByIdQueryResult extends IApiResult {
     data?: GetJournalVoucherByIdQueryResult | undefined;
+    errors?: { [key: string]: string; } | undefined;
 }
 
 export class GetJournalVoucherByIdQueryResult implements IGetJournalVoucherByIdQueryResult {
@@ -2493,6 +2541,7 @@ export enum JournalVoucherState {
 
 export class ApiResultOfListOfGetJournalVouchersQueryResult extends ApiResult implements IApiResultOfListOfGetJournalVouchersQueryResult {
     data?: GetJournalVouchersQueryResult[] | undefined;
+    errors?: { [key: string]: string; } | undefined;
 
     constructor(data?: IApiResultOfListOfGetJournalVouchersQueryResult) {
         super(data);
@@ -2505,6 +2554,13 @@ export class ApiResultOfListOfGetJournalVouchersQueryResult extends ApiResult im
                 this.data = [] as any;
                 for (let item of _data["data"])
                     this.data!.push(GetJournalVouchersQueryResult.fromJS(item));
+            }
+            if (_data["errors"]) {
+                this.errors = {} as any;
+                for (let key in _data["errors"]) {
+                    if (_data["errors"].hasOwnProperty(key))
+                        (<any>this.errors)![key] = _data["errors"][key];
+                }
             }
         }
     }
@@ -2523,6 +2579,13 @@ export class ApiResultOfListOfGetJournalVouchersQueryResult extends ApiResult im
             for (let item of this.data)
                 data["data"].push(item.toJSON());
         }
+        if (this.errors) {
+            data["errors"] = {};
+            for (let key in this.errors) {
+                if (this.errors.hasOwnProperty(key))
+                    (<any>data["errors"])[key] = (<any>this.errors)[key];
+            }
+        }
         super.toJSON(data);
         return data;
     }
@@ -2530,6 +2593,7 @@ export class ApiResultOfListOfGetJournalVouchersQueryResult extends ApiResult im
 
 export interface IApiResultOfListOfGetJournalVouchersQueryResult extends IApiResult {
     data?: GetJournalVouchersQueryResult[] | undefined;
+    errors?: { [key: string]: string; } | undefined;
 }
 
 export class GetJournalVouchersQueryResult implements IGetJournalVouchersQueryResult {
@@ -2702,6 +2766,7 @@ export interface IUpdateFinancialPeriodCommand {
 
 export class ApiResultOfGetFinancialPeriodByIdQueryResult extends ApiResult implements IApiResultOfGetFinancialPeriodByIdQueryResult {
     data?: GetFinancialPeriodByIdQueryResult | undefined;
+    errors?: { [key: string]: string; } | undefined;
 
     constructor(data?: IApiResultOfGetFinancialPeriodByIdQueryResult) {
         super(data);
@@ -2711,6 +2776,13 @@ export class ApiResultOfGetFinancialPeriodByIdQueryResult extends ApiResult impl
         super.init(_data);
         if (_data) {
             this.data = _data["data"] ? GetFinancialPeriodByIdQueryResult.fromJS(_data["data"]) : <any>undefined;
+            if (_data["errors"]) {
+                this.errors = {} as any;
+                for (let key in _data["errors"]) {
+                    if (_data["errors"].hasOwnProperty(key))
+                        (<any>this.errors)![key] = _data["errors"][key];
+                }
+            }
         }
     }
 
@@ -2724,6 +2796,13 @@ export class ApiResultOfGetFinancialPeriodByIdQueryResult extends ApiResult impl
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
         data["data"] = this.data ? this.data.toJSON() : <any>undefined;
+        if (this.errors) {
+            data["errors"] = {};
+            for (let key in this.errors) {
+                if (this.errors.hasOwnProperty(key))
+                    (<any>data["errors"])[key] = (<any>this.errors)[key];
+            }
+        }
         super.toJSON(data);
         return data;
     }
@@ -2731,6 +2810,7 @@ export class ApiResultOfGetFinancialPeriodByIdQueryResult extends ApiResult impl
 
 export interface IApiResultOfGetFinancialPeriodByIdQueryResult extends IApiResult {
     data?: GetFinancialPeriodByIdQueryResult | undefined;
+    errors?: { [key: string]: string; } | undefined;
 }
 
 export class GetFinancialPeriodByIdQueryResult implements IGetFinancialPeriodByIdQueryResult {
@@ -2787,6 +2867,7 @@ export interface IGetFinancialPeriodByIdQueryResult {
 
 export class ApiResultOfListOfGetFinancialPeriodsQueryResult extends ApiResult implements IApiResultOfListOfGetFinancialPeriodsQueryResult {
     data?: GetFinancialPeriodsQueryResult[] | undefined;
+    errors?: { [key: string]: string; } | undefined;
 
     constructor(data?: IApiResultOfListOfGetFinancialPeriodsQueryResult) {
         super(data);
@@ -2799,6 +2880,13 @@ export class ApiResultOfListOfGetFinancialPeriodsQueryResult extends ApiResult i
                 this.data = [] as any;
                 for (let item of _data["data"])
                     this.data!.push(GetFinancialPeriodsQueryResult.fromJS(item));
+            }
+            if (_data["errors"]) {
+                this.errors = {} as any;
+                for (let key in _data["errors"]) {
+                    if (_data["errors"].hasOwnProperty(key))
+                        (<any>this.errors)![key] = _data["errors"][key];
+                }
             }
         }
     }
@@ -2817,6 +2905,13 @@ export class ApiResultOfListOfGetFinancialPeriodsQueryResult extends ApiResult i
             for (let item of this.data)
                 data["data"].push(item.toJSON());
         }
+        if (this.errors) {
+            data["errors"] = {};
+            for (let key in this.errors) {
+                if (this.errors.hasOwnProperty(key))
+                    (<any>data["errors"])[key] = (<any>this.errors)[key];
+            }
+        }
         super.toJSON(data);
         return data;
     }
@@ -2824,6 +2919,7 @@ export class ApiResultOfListOfGetFinancialPeriodsQueryResult extends ApiResult i
 
 export interface IApiResultOfListOfGetFinancialPeriodsQueryResult extends IApiResult {
     data?: GetFinancialPeriodsQueryResult[] | undefined;
+    errors?: { [key: string]: string; } | undefined;
 }
 
 export class GetFinancialPeriodsQueryResult implements IGetFinancialPeriodsQueryResult {
@@ -3020,6 +3116,7 @@ export interface IPatchOfBoolean {
 
 export class ApiResultOfGetDetailedAccountByIdQueryResult extends ApiResult implements IApiResultOfGetDetailedAccountByIdQueryResult {
     data?: GetDetailedAccountByIdQueryResult | undefined;
+    errors?: { [key: string]: string; } | undefined;
 
     constructor(data?: IApiResultOfGetDetailedAccountByIdQueryResult) {
         super(data);
@@ -3029,6 +3126,13 @@ export class ApiResultOfGetDetailedAccountByIdQueryResult extends ApiResult impl
         super.init(_data);
         if (_data) {
             this.data = _data["data"] ? GetDetailedAccountByIdQueryResult.fromJS(_data["data"]) : <any>undefined;
+            if (_data["errors"]) {
+                this.errors = {} as any;
+                for (let key in _data["errors"]) {
+                    if (_data["errors"].hasOwnProperty(key))
+                        (<any>this.errors)![key] = _data["errors"][key];
+                }
+            }
         }
     }
 
@@ -3042,6 +3146,13 @@ export class ApiResultOfGetDetailedAccountByIdQueryResult extends ApiResult impl
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
         data["data"] = this.data ? this.data.toJSON() : <any>undefined;
+        if (this.errors) {
+            data["errors"] = {};
+            for (let key in this.errors) {
+                if (this.errors.hasOwnProperty(key))
+                    (<any>data["errors"])[key] = (<any>this.errors)[key];
+            }
+        }
         super.toJSON(data);
         return data;
     }
@@ -3049,6 +3160,7 @@ export class ApiResultOfGetDetailedAccountByIdQueryResult extends ApiResult impl
 
 export interface IApiResultOfGetDetailedAccountByIdQueryResult extends IApiResult {
     data?: GetDetailedAccountByIdQueryResult | undefined;
+    errors?: { [key: string]: string; } | undefined;
 }
 
 export class GetDetailedAccountByIdQueryResult implements IGetDetailedAccountByIdQueryResult {
@@ -3093,6 +3205,7 @@ export interface IGetDetailedAccountByIdQueryResult {
 
 export class ApiResultOfListOfGetDetailedAccountsQueryResult extends ApiResult implements IApiResultOfListOfGetDetailedAccountsQueryResult {
     data?: GetDetailedAccountsQueryResult[] | undefined;
+    errors?: { [key: string]: string; } | undefined;
 
     constructor(data?: IApiResultOfListOfGetDetailedAccountsQueryResult) {
         super(data);
@@ -3105,6 +3218,13 @@ export class ApiResultOfListOfGetDetailedAccountsQueryResult extends ApiResult i
                 this.data = [] as any;
                 for (let item of _data["data"])
                     this.data!.push(GetDetailedAccountsQueryResult.fromJS(item));
+            }
+            if (_data["errors"]) {
+                this.errors = {} as any;
+                for (let key in _data["errors"]) {
+                    if (_data["errors"].hasOwnProperty(key))
+                        (<any>this.errors)![key] = _data["errors"][key];
+                }
             }
         }
     }
@@ -3123,6 +3243,13 @@ export class ApiResultOfListOfGetDetailedAccountsQueryResult extends ApiResult i
             for (let item of this.data)
                 data["data"].push(item.toJSON());
         }
+        if (this.errors) {
+            data["errors"] = {};
+            for (let key in this.errors) {
+                if (this.errors.hasOwnProperty(key))
+                    (<any>data["errors"])[key] = (<any>this.errors)[key];
+            }
+        }
         super.toJSON(data);
         return data;
     }
@@ -3130,6 +3257,7 @@ export class ApiResultOfListOfGetDetailedAccountsQueryResult extends ApiResult i
 
 export interface IApiResultOfListOfGetDetailedAccountsQueryResult extends IApiResult {
     data?: GetDetailedAccountsQueryResult[] | undefined;
+    errors?: { [key: string]: string; } | undefined;
 }
 
 export class GetDetailedAccountsQueryResult implements IGetDetailedAccountsQueryResult {
@@ -3338,6 +3466,7 @@ export interface IPatchOfJournalEntryType {
 
 export class ApiResultOfGetGeneralLedgerAccountByIdQueryResult extends ApiResult implements IApiResultOfGetGeneralLedgerAccountByIdQueryResult {
     data?: GetGeneralLedgerAccountByIdQueryResult | undefined;
+    errors?: { [key: string]: string; } | undefined;
 
     constructor(data?: IApiResultOfGetGeneralLedgerAccountByIdQueryResult) {
         super(data);
@@ -3347,6 +3476,13 @@ export class ApiResultOfGetGeneralLedgerAccountByIdQueryResult extends ApiResult
         super.init(_data);
         if (_data) {
             this.data = _data["data"] ? GetGeneralLedgerAccountByIdQueryResult.fromJS(_data["data"]) : <any>undefined;
+            if (_data["errors"]) {
+                this.errors = {} as any;
+                for (let key in _data["errors"]) {
+                    if (_data["errors"].hasOwnProperty(key))
+                        (<any>this.errors)![key] = _data["errors"][key];
+                }
+            }
         }
     }
 
@@ -3360,6 +3496,13 @@ export class ApiResultOfGetGeneralLedgerAccountByIdQueryResult extends ApiResult
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
         data["data"] = this.data ? this.data.toJSON() : <any>undefined;
+        if (this.errors) {
+            data["errors"] = {};
+            for (let key in this.errors) {
+                if (this.errors.hasOwnProperty(key))
+                    (<any>data["errors"])[key] = (<any>this.errors)[key];
+            }
+        }
         super.toJSON(data);
         return data;
     }
@@ -3367,6 +3510,7 @@ export class ApiResultOfGetGeneralLedgerAccountByIdQueryResult extends ApiResult
 
 export interface IApiResultOfGetGeneralLedgerAccountByIdQueryResult extends IApiResult {
     data?: GetGeneralLedgerAccountByIdQueryResult | undefined;
+    errors?: { [key: string]: string; } | undefined;
 }
 
 export class GetGeneralLedgerAccountByIdQueryResult implements IGetGeneralLedgerAccountByIdQueryResult {
@@ -3411,6 +3555,7 @@ export interface IGetGeneralLedgerAccountByIdQueryResult {
 
 export class ApiResultOfListOfGetGeneralLedgerAccountsQueryResult extends ApiResult implements IApiResultOfListOfGetGeneralLedgerAccountsQueryResult {
     data?: GetGeneralLedgerAccountsQueryResult[] | undefined;
+    errors?: { [key: string]: string; } | undefined;
 
     constructor(data?: IApiResultOfListOfGetGeneralLedgerAccountsQueryResult) {
         super(data);
@@ -3423,6 +3568,13 @@ export class ApiResultOfListOfGetGeneralLedgerAccountsQueryResult extends ApiRes
                 this.data = [] as any;
                 for (let item of _data["data"])
                     this.data!.push(GetGeneralLedgerAccountsQueryResult.fromJS(item));
+            }
+            if (_data["errors"]) {
+                this.errors = {} as any;
+                for (let key in _data["errors"]) {
+                    if (_data["errors"].hasOwnProperty(key))
+                        (<any>this.errors)![key] = _data["errors"][key];
+                }
             }
         }
     }
@@ -3441,6 +3593,13 @@ export class ApiResultOfListOfGetGeneralLedgerAccountsQueryResult extends ApiRes
             for (let item of this.data)
                 data["data"].push(item.toJSON());
         }
+        if (this.errors) {
+            data["errors"] = {};
+            for (let key in this.errors) {
+                if (this.errors.hasOwnProperty(key))
+                    (<any>data["errors"])[key] = (<any>this.errors)[key];
+            }
+        }
         super.toJSON(data);
         return data;
     }
@@ -3448,6 +3607,7 @@ export class ApiResultOfListOfGetGeneralLedgerAccountsQueryResult extends ApiRes
 
 export interface IApiResultOfListOfGetGeneralLedgerAccountsQueryResult extends IApiResult {
     data?: GetGeneralLedgerAccountsQueryResult[] | undefined;
+    errors?: { [key: string]: string; } | undefined;
 }
 
 export class GetGeneralLedgerAccountsQueryResult implements IGetGeneralLedgerAccountsQueryResult {
@@ -3612,6 +3772,7 @@ export interface IUpdateGroupAccountCommand {
 
 export class ApiResultOfGetGroupAccountByIdQueryResult extends ApiResult implements IApiResultOfGetGroupAccountByIdQueryResult {
     data?: GetGroupAccountByIdQueryResult | undefined;
+    errors?: { [key: string]: string; } | undefined;
 
     constructor(data?: IApiResultOfGetGroupAccountByIdQueryResult) {
         super(data);
@@ -3621,6 +3782,13 @@ export class ApiResultOfGetGroupAccountByIdQueryResult extends ApiResult impleme
         super.init(_data);
         if (_data) {
             this.data = _data["data"] ? GetGroupAccountByIdQueryResult.fromJS(_data["data"]) : <any>undefined;
+            if (_data["errors"]) {
+                this.errors = {} as any;
+                for (let key in _data["errors"]) {
+                    if (_data["errors"].hasOwnProperty(key))
+                        (<any>this.errors)![key] = _data["errors"][key];
+                }
+            }
         }
     }
 
@@ -3634,6 +3802,13 @@ export class ApiResultOfGetGroupAccountByIdQueryResult extends ApiResult impleme
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
         data["data"] = this.data ? this.data.toJSON() : <any>undefined;
+        if (this.errors) {
+            data["errors"] = {};
+            for (let key in this.errors) {
+                if (this.errors.hasOwnProperty(key))
+                    (<any>data["errors"])[key] = (<any>this.errors)[key];
+            }
+        }
         super.toJSON(data);
         return data;
     }
@@ -3641,6 +3816,7 @@ export class ApiResultOfGetGroupAccountByIdQueryResult extends ApiResult impleme
 
 export interface IApiResultOfGetGroupAccountByIdQueryResult extends IApiResult {
     data?: GetGroupAccountByIdQueryResult | undefined;
+    errors?: { [key: string]: string; } | undefined;
 }
 
 export class GetGroupAccountByIdQueryResult implements IGetGroupAccountByIdQueryResult {
@@ -3685,6 +3861,7 @@ export interface IGetGroupAccountByIdQueryResult {
 
 export class ApiResultOfListOfGetGroupAccountsQueryResult extends ApiResult implements IApiResultOfListOfGetGroupAccountsQueryResult {
     data?: GetGroupAccountsQueryResult[] | undefined;
+    errors?: { [key: string]: string; } | undefined;
 
     constructor(data?: IApiResultOfListOfGetGroupAccountsQueryResult) {
         super(data);
@@ -3697,6 +3874,13 @@ export class ApiResultOfListOfGetGroupAccountsQueryResult extends ApiResult impl
                 this.data = [] as any;
                 for (let item of _data["data"])
                     this.data!.push(GetGroupAccountsQueryResult.fromJS(item));
+            }
+            if (_data["errors"]) {
+                this.errors = {} as any;
+                for (let key in _data["errors"]) {
+                    if (_data["errors"].hasOwnProperty(key))
+                        (<any>this.errors)![key] = _data["errors"][key];
+                }
             }
         }
     }
@@ -3715,6 +3899,13 @@ export class ApiResultOfListOfGetGroupAccountsQueryResult extends ApiResult impl
             for (let item of this.data)
                 data["data"].push(item.toJSON());
         }
+        if (this.errors) {
+            data["errors"] = {};
+            for (let key in this.errors) {
+                if (this.errors.hasOwnProperty(key))
+                    (<any>data["errors"])[key] = (<any>this.errors)[key];
+            }
+        }
         super.toJSON(data);
         return data;
     }
@@ -3722,6 +3913,7 @@ export class ApiResultOfListOfGetGroupAccountsQueryResult extends ApiResult impl
 
 export interface IApiResultOfListOfGetGroupAccountsQueryResult extends IApiResult {
     data?: GetGroupAccountsQueryResult[] | undefined;
+    errors?: { [key: string]: string; } | undefined;
 }
 
 export class GetGroupAccountsQueryResult implements IGetGroupAccountsQueryResult {
@@ -3833,7 +4025,9 @@ export interface ICreateSubLedgerAccountApiModel {
 }
 
 export class UpdateSubLedgerAccountCommand implements IUpdateSubLedgerAccountCommand {
-    subLegerAccountId?: string;
+    subLedgerAccountId?: string;
+    generalLedgerAccountId?: PatchOfGuid | undefined;
+    journalEntryType?: PatchOfJournalEntryType | undefined;
     title?: PatchOfString | undefined;
     description?: PatchOfString | undefined;
     isActive?: PatchOfBoolean | undefined;
@@ -3850,7 +4044,9 @@ export class UpdateSubLedgerAccountCommand implements IUpdateSubLedgerAccountCom
 
     init(_data?: any) {
         if (_data) {
-            this.subLegerAccountId = _data["subLegerAccountId"];
+            this.subLedgerAccountId = _data["subLedgerAccountId"];
+            this.generalLedgerAccountId = _data["generalLedgerAccountId"] ? PatchOfGuid.fromJS(_data["generalLedgerAccountId"]) : <any>undefined;
+            this.journalEntryType = _data["journalEntryType"] ? PatchOfJournalEntryType.fromJS(_data["journalEntryType"]) : <any>undefined;
             this.title = _data["title"] ? PatchOfString.fromJS(_data["title"]) : <any>undefined;
             this.description = _data["description"] ? PatchOfString.fromJS(_data["description"]) : <any>undefined;
             this.isActive = _data["isActive"] ? PatchOfBoolean.fromJS(_data["isActive"]) : <any>undefined;
@@ -3867,7 +4063,9 @@ export class UpdateSubLedgerAccountCommand implements IUpdateSubLedgerAccountCom
 
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
-        data["subLegerAccountId"] = this.subLegerAccountId;
+        data["subLedgerAccountId"] = this.subLedgerAccountId;
+        data["generalLedgerAccountId"] = this.generalLedgerAccountId ? this.generalLedgerAccountId.toJSON() : <any>undefined;
+        data["journalEntryType"] = this.journalEntryType ? this.journalEntryType.toJSON() : <any>undefined;
         data["title"] = this.title ? this.title.toJSON() : <any>undefined;
         data["description"] = this.description ? this.description.toJSON() : <any>undefined;
         data["isActive"] = this.isActive ? this.isActive.toJSON() : <any>undefined;
@@ -3877,7 +4075,9 @@ export class UpdateSubLedgerAccountCommand implements IUpdateSubLedgerAccountCom
 }
 
 export interface IUpdateSubLedgerAccountCommand {
-    subLegerAccountId?: string;
+    subLedgerAccountId?: string;
+    generalLedgerAccountId?: PatchOfGuid | undefined;
+    journalEntryType?: PatchOfJournalEntryType | undefined;
     title?: PatchOfString | undefined;
     description?: PatchOfString | undefined;
     isActive?: PatchOfBoolean | undefined;
@@ -3886,6 +4086,7 @@ export interface IUpdateSubLedgerAccountCommand {
 
 export class ApiResultOfGetSubLedgerAccountByIdQueryResult extends ApiResult implements IApiResultOfGetSubLedgerAccountByIdQueryResult {
     data?: GetSubLedgerAccountByIdQueryResult | undefined;
+    errors?: { [key: string]: string; } | undefined;
 
     constructor(data?: IApiResultOfGetSubLedgerAccountByIdQueryResult) {
         super(data);
@@ -3895,6 +4096,13 @@ export class ApiResultOfGetSubLedgerAccountByIdQueryResult extends ApiResult imp
         super.init(_data);
         if (_data) {
             this.data = _data["data"] ? GetSubLedgerAccountByIdQueryResult.fromJS(_data["data"]) : <any>undefined;
+            if (_data["errors"]) {
+                this.errors = {} as any;
+                for (let key in _data["errors"]) {
+                    if (_data["errors"].hasOwnProperty(key))
+                        (<any>this.errors)![key] = _data["errors"][key];
+                }
+            }
         }
     }
 
@@ -3908,6 +4116,13 @@ export class ApiResultOfGetSubLedgerAccountByIdQueryResult extends ApiResult imp
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
         data["data"] = this.data ? this.data.toJSON() : <any>undefined;
+        if (this.errors) {
+            data["errors"] = {};
+            for (let key in this.errors) {
+                if (this.errors.hasOwnProperty(key))
+                    (<any>data["errors"])[key] = (<any>this.errors)[key];
+            }
+        }
         super.toJSON(data);
         return data;
     }
@@ -3915,6 +4130,7 @@ export class ApiResultOfGetSubLedgerAccountByIdQueryResult extends ApiResult imp
 
 export interface IApiResultOfGetSubLedgerAccountByIdQueryResult extends IApiResult {
     data?: GetSubLedgerAccountByIdQueryResult | undefined;
+    errors?: { [key: string]: string; } | undefined;
 }
 
 export class GetSubLedgerAccountByIdQueryResult implements IGetSubLedgerAccountByIdQueryResult {
@@ -3959,6 +4175,7 @@ export interface IGetSubLedgerAccountByIdQueryResult {
 
 export class ApiResultOfListOfGetSubLedgerAccountsQueryResult extends ApiResult implements IApiResultOfListOfGetSubLedgerAccountsQueryResult {
     data?: GetSubLedgerAccountsQueryResult[] | undefined;
+    errors?: { [key: string]: string; } | undefined;
 
     constructor(data?: IApiResultOfListOfGetSubLedgerAccountsQueryResult) {
         super(data);
@@ -3971,6 +4188,13 @@ export class ApiResultOfListOfGetSubLedgerAccountsQueryResult extends ApiResult 
                 this.data = [] as any;
                 for (let item of _data["data"])
                     this.data!.push(GetSubLedgerAccountsQueryResult.fromJS(item));
+            }
+            if (_data["errors"]) {
+                this.errors = {} as any;
+                for (let key in _data["errors"]) {
+                    if (_data["errors"].hasOwnProperty(key))
+                        (<any>this.errors)![key] = _data["errors"][key];
+                }
             }
         }
     }
@@ -3989,6 +4213,13 @@ export class ApiResultOfListOfGetSubLedgerAccountsQueryResult extends ApiResult 
             for (let item of this.data)
                 data["data"].push(item.toJSON());
         }
+        if (this.errors) {
+            data["errors"] = {};
+            for (let key in this.errors) {
+                if (this.errors.hasOwnProperty(key))
+                    (<any>data["errors"])[key] = (<any>this.errors)[key];
+            }
+        }
         super.toJSON(data);
         return data;
     }
@@ -3996,6 +4227,7 @@ export class ApiResultOfListOfGetSubLedgerAccountsQueryResult extends ApiResult 
 
 export interface IApiResultOfListOfGetSubLedgerAccountsQueryResult extends IApiResult {
     data?: GetSubLedgerAccountsQueryResult[] | undefined;
+    errors?: { [key: string]: string; } | undefined;
 }
 
 export class GetSubLedgerAccountsQueryResult implements IGetSubLedgerAccountsQueryResult {

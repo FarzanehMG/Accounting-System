@@ -26,8 +26,6 @@ public class TestInit
     public JournalVoucherClient JournalVouchClient => new(HttpClient);
     public JournalEntryClient JournalEntryClient => new(HttpClient);
 
-    public Guid FinancialPeriodId { get; set; }
-
     private TestInit(Dictionary<string, string?> appSettings, string environment)
     {
         WebApp = new WebApplicationFactory<Program>()
@@ -50,9 +48,6 @@ public class TestInit
 
     private async Task Init()
     {
-        // Get or Create Financial period
-        var financialPeriod = await GetOrCreateFinancialPeriod();
-        FinancialPeriodId = financialPeriod.Id;
     }
 
     public static async Task<TestInit> Create(Dictionary<string, string?>? appSettings = null, string environment = "Development")
@@ -62,7 +57,7 @@ public class TestInit
         return testInit;
     }
 
-    internal async Task CreateJournalEntry(Guid groupAccountId)
+    internal async Task CreateJournalEntry(Guid groupAccountId, Guid financialPeriodId)
     {
         // Create GeneralLedger account
         var generalLedgerAccount = await CreateGeneralLedgerAccount(groupAccountId, JournalEntryType.Credit);
@@ -73,7 +68,7 @@ public class TestInit
         var subLedgerAccount2 = await CreateSubLedgerAccount(generalLedgerAccount2.Id, JournalEntryType.Debit);
 
         // Create JournalVoucher
-        var journalVoucher = await CreateJournalVoucher();
+        var journalVoucher = await CreateJournalVoucher(financialPeriodId);
 
         // Create JournalEntry
         var createJournalEntry = new CreateJournalEntryApiModel
@@ -111,14 +106,14 @@ public class TestInit
         journalEntries.Should().ContainSingle(x => x.SubLedgerAccountId == subLedgerAccount2.Id && x.JournalEntryType == Domain.Enums.JournalEntryType.Debit);
     }
 
-    internal async Task CreateJournalEntry(Guid groupAccountId, Guid creditGeneralLedgerAccountId, Guid debitGeneralLedgerAccountId)
+    internal async Task CreateJournalEntry(Guid financialPeriodId, Guid creditGroupAccountId, Guid debitGroupAccountId, Guid creditGeneralLedgerAccountId, Guid debitGeneralLedgerAccountId, SubLedgerAccountEntity? creditSubLedgerAccount = null, SubLedgerAccountEntity? debitSubLedgerAccount = null)
     {
         // Create SubLedger account
-        var subLedgerAccount = await CreateSubLedgerAccount(creditGeneralLedgerAccountId, JournalEntryType.Credit);
-        var subLedgerAccount2 = await CreateSubLedgerAccount(debitGeneralLedgerAccountId, JournalEntryType.Debit);
+        var subLedgerAccount = creditSubLedgerAccount ?? await CreateSubLedgerAccount(creditGeneralLedgerAccountId, JournalEntryType.Credit);
+        var subLedgerAccount2 = debitSubLedgerAccount ?? await CreateSubLedgerAccount(debitGeneralLedgerAccountId, JournalEntryType.Debit);
 
         // Create JournalVoucher
-        var journalVoucher = await CreateJournalVoucher();
+        var journalVoucher = await CreateJournalVoucher(financialPeriodId);
 
         // Create JournalEntry
         var createJournalEntry = new CreateJournalEntryApiModel
@@ -230,7 +225,7 @@ public class TestInit
         return subLedgerAccount;
     }
 
-    private async Task<FinancialPeriodEntity> GetOrCreateFinancialPeriod()
+    internal async Task<FinancialPeriodEntity> GetOrCreateFinancialPeriod()
     {
         var financialPeriod = await AccountingDbContext.Set<FinancialPeriodEntity>()
             .SingleOrDefaultAsync(x=>x.IsActive);
@@ -260,7 +255,7 @@ public class TestInit
         return financialPeriod;
     }
 
-    private async Task<JournalVoucherEntity> CreateJournalVoucher()
+    private async Task<JournalVoucherEntity> CreateJournalVoucher(Guid financialPeriodId)
     {
         var createJournalVoucher = new CreateJournalVoucherApiModel
         {
@@ -268,7 +263,7 @@ public class TestInit
             ReferenceNumber = Guid.NewGuid().ToString(),
             TransactionTime = DateTime.UtcNow,
             CreatedByUserId = Guid.NewGuid(),
-            FinancialPeriodId = FinancialPeriodId
+            FinancialPeriodId = financialPeriodId
         };
         await JournalVouchClient.CreateAsync(createJournalVoucher);
 
