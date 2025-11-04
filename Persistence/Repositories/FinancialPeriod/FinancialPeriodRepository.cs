@@ -13,6 +13,11 @@ internal sealed class FinancialPeriodRepository(AccountingDbContext dbContext) :
         await AddAsync(entity, cancellationToken);
     }
 
+    public async Task UpdateAsync(FinancialPeriodEntity entity, CancellationToken cancellationToken = default)
+    {
+        dbContext.Set<FinancialPeriodEntity>().Update(entity);
+    }
+
     public async Task<FinancialPeriodEntity?> GetOverlappingFinancialPeriodAsync(CancellationToken cancellationToken = default, DateTime? startDate = null, DateTime? endDate = null)
     {
         return await TableNoTracking.FirstOrDefaultAsync(x =>
