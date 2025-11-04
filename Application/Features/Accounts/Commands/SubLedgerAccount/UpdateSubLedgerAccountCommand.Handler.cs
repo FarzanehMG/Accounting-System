@@ -15,16 +15,16 @@ public class UpdateSubLedgerAccountCommandHandler(IUnitOfWork unitOfWork)
         if (!validateResult.IsValid)
             return OperationResult<bool>.FailureResult(validateResult.Errors.ConvertToKeyValuePair());
 
-        // Retrieve the existing sub ledger account
-        var subLedgerAccount = await unitOfWork.SubLedgerAccountRepository.GetByIdAsync(request.SubLedgerAccountId, cancellationToken);
-
-        if (subLedgerAccount is null)
-            return OperationResult<bool>.NotFoundResult(nameof(UpdateSubLedgerAccountCommand), "SubLedger Account Not Found.");
-
         // Ensure there is an active financial period
         var activePeriod = await unitOfWork.FinancialPeriodRepository.GetActiveFinancialPeriodAsync(cancellationToken);
         if (activePeriod is null || !activePeriod.IsActive)
             return OperationResult<bool>.FailureResult("FinancialPeriod", "Cannot modify subLedger accounts without an active open financial period.");
+
+        // Retrieve the existing subLedger account
+        var subLedgerAccount = await unitOfWork.SubLedgerAccountRepository.GetByIdAsync(request.SubLedgerAccountId, cancellationToken);
+
+        if (subLedgerAccount is null)
+            return OperationResult<bool>.NotFoundResult(nameof(UpdateSubLedgerAccountCommand), "SubLedger Account Not Found.");
 
         // Check if the account has journal entries
         var hasJournalEntries = await unitOfWork.JournalEntryRepository
@@ -79,7 +79,7 @@ public class UpdateSubLedgerAccountCommandHandler(IUnitOfWork unitOfWork)
         var generalLedgerToCheck = request.GeneralLedgerAccountId?.Value ?? subLedgerAccount.GeneralLedgerAccountId;
 
         var existingAccounts = await unitOfWork.SubLedgerAccountRepository
-            .FindAccountByTitleAndGroupAccountAsync(titleToCheck, generalLedgerToCheck, cancellationToken);
+            .FindAccountByTitleAndGeneralLedgerAccountAsync(titleToCheck, generalLedgerToCheck, cancellationToken);
 
         if (request.IsActive?.Value != false && existingAccounts.Any(a => a.IsActive && a.Id != subLedgerAccount.Id))
         {
@@ -130,15 +130,15 @@ public class UpdateSubLedgerAccountCommandHandler(IUnitOfWork unitOfWork)
         return OperationResult<bool>.SuccessResult(true);
     }
 
-    private static OperationResult<bool> UpdateJournalEntryType(SubLedgerAccountEntity generalLedgerAccount, UpdateSubLedgerAccountCommand request, bool hasJournalEntries)
+    private static OperationResult<bool> UpdateJournalEntryType(SubLedgerAccountEntity subLedgerAccount, UpdateSubLedgerAccountCommand request, bool hasJournalEntries)
     {
         if (request.JournalEntryType?.Value == null)
             return OperationResult<bool>.SuccessResult(true);
 
-        if (hasJournalEntries && request.JournalEntryType.Value != generalLedgerAccount.JournalEntryType)
+        if (hasJournalEntries && request.JournalEntryType.Value != subLedgerAccount.JournalEntryType)
             return OperationResult<bool>.FailureResult(nameof(request.JournalEntryType), "Cannot change Journal Entry Type for an account with existing journal entries.");
 
-        generalLedgerAccount.JournalEntryType = request.JournalEntryType.Value;
+        subLedgerAccount.JournalEntryType = request.JournalEntryType.Value;
         return OperationResult<bool>.SuccessResult(true);
     }
 

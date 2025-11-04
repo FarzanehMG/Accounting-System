@@ -15,15 +15,22 @@ public class CreateGeneralLedgerAccountCommandHandler(IUnitOfWork unitOfWork)
         if (!validateResult.IsValid)
             return OperationResult<bool>.FailureResult(validateResult.Errors.ConvertToKeyValuePair());
 
-        // Business Rule: A GeneralLedger account must always inherit the same nature (JournalEntryType) as its Group account.
-        // This ensures accurate financial reporting, prevents mismatched balances, and aligns with standard accounting practices.
+        // Business Rule: financial period should be active
+        var activePeriod = await unitOfWork.FinancialPeriodRepository.GetActiveFinancialPeriodAsync(cancellationToken);
+        if (activePeriod is null)
+            return OperationResult<bool>.FailureResult([
+                new KeyValuePair<string, string>("FinancialPeriod", "No active financial period found.")
+            ]);
 
+        // Retrieve the existing group account
         var groupAccount = await unitOfWork.GroupAccountRepository
             .GetByIdAsync(request.GroupAccountId, cancellationToken);
 
         if (groupAccount == null)
             return OperationResult<bool>.NotFoundResult(nameof(request.GroupAccountId), "Group account not found.");
 
+        // Business Rule: A GeneralLedger account must always inherit the same nature (JournalEntryType) as its Group account.
+        // This ensures accurate financial reporting, prevents mismatched balances, and aligns with standard accounting practices.
         if (groupAccount.JournalEntryType != request.JournalEntryType)
         {
             return OperationResult<bool>.FailureResult([
@@ -66,13 +73,6 @@ public class CreateGeneralLedgerAccountCommandHandler(IUnitOfWork unitOfWork)
             return OperationResult<bool>.FailureResult([new KeyValuePair<string, string>(
                 "Code", "Account code already exists.")]);
         }
-
-        // Business Rule: GeneralLedger account should be active
-        var activePeriod = await unitOfWork.FinancialPeriodRepository.GetActiveFinancialPeriodAsync(cancellationToken);
-        if (activePeriod is null)
-            return OperationResult<bool>.FailureResult([
-                new KeyValuePair<string, string>("FinancialPeriod", "No active financial period found.")
-            ]);
 
         // Create new general ledger account entity
         var createGeneralAccount = new GeneralLedgerAccountEntity

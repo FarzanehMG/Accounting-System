@@ -15,6 +15,13 @@ public class CreateGroupAccountCommandHandler(IUnitOfWork unitOfWork)
 		if (!validateResult.IsValid)
 			return OperationResult<bool>.FailureResult(validateResult.Errors.ConvertToKeyValuePair());
 
+        // Business Rule: financial period should be active
+        var activePeriod = await unitOfWork.FinancialPeriodRepository.GetActiveFinancialPeriodAsync(cancellationToken);
+        if (activePeriod is null)
+            return OperationResult<bool>.FailureResult([
+                new KeyValuePair<string, string>("FinancialPeriod", "No active financial period found.")
+            ]);
+
         // Business Rule: Each active account must have a unique title.
         // Prevents confusion in reporting and ensures accurate posting of journal entries.
         var existingGroups = await unitOfWork.GroupAccountRepository
@@ -46,15 +53,6 @@ public class CreateGroupAccountCommandHandler(IUnitOfWork unitOfWork)
         {
             return OperationResult<bool>.FailureResult([
                 new KeyValuePair<string, string>("Code", "Group account code already exists.")
-            ]);
-        }
-
-        // Business Rule: GeneralLedger account should be active
-        var activePeriod = await unitOfWork.FinancialPeriodRepository.GetActiveFinancialPeriodAsync(cancellationToken);
-        if (activePeriod is null)
-        {
-            return OperationResult<bool>.FailureResult([
-                new KeyValuePair<string, string>("FinancialPeriod", "No active financial period found.")
             ]);
         }
 

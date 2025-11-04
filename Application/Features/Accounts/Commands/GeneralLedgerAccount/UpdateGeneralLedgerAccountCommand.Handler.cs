@@ -15,15 +15,15 @@ public class UpdateGeneralLedgerAccountCommandHandler(IUnitOfWork unitOfWork)
         if (!validateResult.IsValid)
             return OperationResult<bool>.FailureResult(validateResult.Errors.ConvertToKeyValuePair());
 
-        // Retrieve the existing general ledger account
-        var generalAccount = await unitOfWork.GeneralLedgerAccountRepository.GetByIdAsync(request.GeneralLedgerAccountId, cancellationToken);
-        if (generalAccount is null)
-            return OperationResult<bool>.NotFoundResult(nameof(UpdateGeneralLedgerAccountCommand.GeneralLedgerAccountId), "GeneralLedger Account Not Found.");
-
         // Ensure there is an active financial period
         var activePeriod = await unitOfWork.FinancialPeriodRepository.GetActiveFinancialPeriodAsync(cancellationToken);
         if (activePeriod is null || !activePeriod.IsActive)
             return OperationResult<bool>.FailureResult("FinancialPeriod", "Cannot modify generalLedger accounts without an active open financial period.");
+
+        // Retrieve the existing general ledger account
+        var generalAccount = await unitOfWork.GeneralLedgerAccountRepository.GetByIdAsync(request.GeneralLedgerAccountId, cancellationToken);
+        if (generalAccount is null)
+            return OperationResult<bool>.NotFoundResult(nameof(UpdateGeneralLedgerAccountCommand.GeneralLedgerAccountId), "GeneralLedger Account Not Found.");
 
         // Check if the account has journal entries
         var hasJournalEntries = await unitOfWork.JournalEntryRepository

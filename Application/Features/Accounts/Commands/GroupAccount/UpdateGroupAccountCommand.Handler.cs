@@ -15,14 +15,15 @@ public class UpdateGroupAccountCommandHandler(IUnitOfWork unitOfWork)
         if (!validateResult.IsValid)
             return OperationResult<bool>.FailureResult(validateResult.Errors.ConvertToKeyValuePair());
 
-        var groupAccount = await unitOfWork.GroupAccountRepository.GetByIdAsync(request.GroupAccountId, cancellationToken);
-        if (groupAccount is null)
-            return OperationResult<bool>.NotFoundResult(nameof(UpdateGroupAccountCommand.GroupAccountId), "Group Account Not Found.");
-
         // Ensure there is an active financial period
         var activePeriod = await unitOfWork.FinancialPeriodRepository.GetActiveFinancialPeriodAsync(cancellationToken);
         if (activePeriod is null || !activePeriod.IsActive)
             return OperationResult<bool>.FailureResult("FinancialPeriod", "Cannot modify group accounts without an active open financial period.");
+
+        // Retrieve the existing group account
+        var groupAccount = await unitOfWork.GroupAccountRepository.GetByIdAsync(request.GroupAccountId, cancellationToken);
+        if (groupAccount is null)
+            return OperationResult<bool>.NotFoundResult(nameof(UpdateGroupAccountCommand.GroupAccountId), "Group Account Not Found.");
 
         // Check if this group account has journal entries
         var hasJournalEntries = await unitOfWork.JournalEntryRepository

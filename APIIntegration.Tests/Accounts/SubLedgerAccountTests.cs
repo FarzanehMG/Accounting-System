@@ -409,7 +409,7 @@ public class SubLedgerAccountTests(ApiTestSetup setup, ITestOutputHelper output)
     }
 
     [Fact]
-    public async Task CreateGeneralLedgerAccount_ShouldFail_WhenCodeIsNull()
+    public async Task CreateSubLedgerAccount_ShouldFail_WhenCodeIsNull()
     {
         // Create financial period
         await setup.TestInit1.GetOrCreateFinancialPeriod();
@@ -1209,7 +1209,7 @@ public class SubLedgerAccountTests(ApiTestSetup setup, ITestOutputHelper output)
     }
 
     [Fact]
-    public async Task UpdateSubLedgerAccount_ShouldChangeGroupAccount_WhenActive()
+    public async Task UpdateSubLedgerAccount_ShouldChangeGeneralLedgerAccount_WhenActive()
     {
         // Create financial period
         await setup.TestInit1.GetOrCreateFinancialPeriod();
@@ -1356,7 +1356,7 @@ public class SubLedgerAccountTests(ApiTestSetup setup, ITestOutputHelper output)
         // Create subLedger account
         await setup.TestInit1.CreateSubLedgerAccount(generalLedgerAccount.Id, JournalEntryType.Credit);
 
-        // Get group account
+        // Get subLedger account
         var original = await setup.TestInit1.AccountingDbContext
             .Set<SubLedgerAccountEntity>()
             .AsNoTracking()
@@ -1462,7 +1462,7 @@ public class SubLedgerAccountTests(ApiTestSetup setup, ITestOutputHelper output)
     }
 
     [Fact]
-    public async Task GetAllGeneralLedgerAccounts_ShouldSucceed_WhenFilteredByJournalEntryType()
+    public async Task GetAllSubLedgerAccounts_ShouldSucceed_WhenFilteredByJournalEntryType()
     {
         var journalEntryType = JournalEntryType.Credit;
 
@@ -1507,7 +1507,7 @@ public class SubLedgerAccountTests(ApiTestSetup setup, ITestOutputHelper output)
     }
 
     [Fact]
-    public async Task GetAllGeneralLedgerAccounts_ShouldSucceed_WhenFilteredByCode()
+    public async Task GetAllSubLedgerAccounts_ShouldSucceed_WhenFilteredByCode()
     {
         var code = "100";
 

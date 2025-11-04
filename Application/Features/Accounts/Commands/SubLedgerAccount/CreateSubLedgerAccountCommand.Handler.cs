@@ -15,15 +15,22 @@ public class CreateSubLedgerAccountCommandHandler(IUnitOfWork unitOfWork)
         if (!validateResult.IsValid)
             return OperationResult<bool>.FailureResult(validateResult.Errors.ConvertToKeyValuePair());
 
-        // Business Rule: A Sub Ledger account must always inherit the same nature (JournalEntryType) as its General Ledger account.
-        // This ensures accurate financial reporting, prevents mismatched balances, and aligns with standard accounting practices.
+        // Business Rule: financial period should be active
+        var activePeriod = await unitOfWork.FinancialPeriodRepository.GetActiveFinancialPeriodAsync(cancellationToken);
+        if (activePeriod is null)
+            return OperationResult<bool>.FailureResult([
+                new KeyValuePair<string, string>("FinancialPeriod", "No active financial period found.")
+            ]);
 
+        // Retrieve the existing generalLedger account
         var generalLedger = await unitOfWork.GeneralLedgerAccountRepository
             .GetByIdAsync(request.GeneralLedgerAccountId, cancellationToken);
 
         if (generalLedger == null)
             return OperationResult<bool>.NotFoundResult(nameof(request.GeneralLedgerAccountId), "GeneralLedger not found.");
 
+        // Business Rule: A Sub Ledger account must always inherit the same nature (JournalEntryType) as its General Ledger account.
+        // This ensures accurate financial reporting, prevents mismatched balances, and aligns with standard accounting practices.
         if (generalLedger.JournalEntryType != request.JournalEntryType)
         {
             return OperationResult<bool>.FailureResult([
@@ -72,13 +79,6 @@ public class CreateSubLedgerAccountCommandHandler(IUnitOfWork unitOfWork)
             return OperationResult<bool>.FailureResult([new KeyValuePair<string, string>(
                 "Code", "Account code already exists.")]);
         }
-
-        // Business Rule: GeneralLedger account should be active
-        var activePeriod = await unitOfWork.FinancialPeriodRepository.GetActiveFinancialPeriodAsync(cancellationToken);
-        if (activePeriod is null)
-            return OperationResult<bool>.FailureResult([
-                new KeyValuePair<string, string>("FinancialPeriod", "No active financial period found.")
-            ]);
 
         // Create new sub ledger account entity
         var createSubLegerAccount = new SubLedgerAccountEntity

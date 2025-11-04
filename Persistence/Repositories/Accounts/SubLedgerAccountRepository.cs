@@ -30,7 +30,7 @@ internal sealed class SubLedgerAccountRepository(AccountingDbContext dbContext) 
             .ToListAsync(cancellationToken);
     }
 
-    public async Task<IReadOnlyList<SubLedgerAccountEntity>> FindAccountByTitleAndGroupAccountAsync(string title, Guid generalLedgerAccountId, CancellationToken cancellationToken = default)
+    public async Task<IReadOnlyList<SubLedgerAccountEntity>> FindAccountByTitleAndGeneralLedgerAccountAsync(string title, Guid generalLedgerAccountId, CancellationToken cancellationToken = default)
     {
         return await TableNoTracking.Where(x =>
                 x.AccountTitle.Equals(title) &&
