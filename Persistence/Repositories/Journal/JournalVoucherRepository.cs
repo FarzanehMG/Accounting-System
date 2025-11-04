@@ -1,6 +1,7 @@
 ﻿using Application.Features.Journal.Queries.JournalVoucher.Dtos;
 using Application.Repositories.JournalRepositories;
 using Domain.Entities.Journal;
+using Domain.Enums;
 using Microsoft.EntityFrameworkCore;
 using Persistence.Repositories.Common;
 
@@ -66,5 +67,18 @@ internal sealed class JournalVoucherRepository(AccountingDbContext dbContext) : 
 
         // TODO: Apply pagination
         return await query.ToListAsync(cancellationToken);
+    }
+
+    public async Task<bool> HasUnPostedTransactionsAsync(Guid financialPeriodId, CancellationToken cancellationToken = default)
+    {
+        return await TableNoTracking
+            .AnyAsync(j => j.FinancialPeriodId == financialPeriodId && j.JournalVoucherState == JournalVoucherState.Draft, cancellationToken);
+    }
+
+    public async Task<IReadOnlyList<JournalVoucherEntity>> GetByFinancialPeriodAsync(Guid financialPeriodId, JournalVoucherState state, CancellationToken cancellationToken)
+    {
+        return await TableNoTracking
+            .Where(x => x.FinancialPeriodId == financialPeriodId && x.JournalVoucherState == state)
+            .ToListAsync(cancellationToken);
     }
 }

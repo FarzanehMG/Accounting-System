@@ -1,5 +1,6 @@
 ﻿using Application.Features.Journal.Queries.JournalVoucher.Dtos;
 using Domain.Entities.Journal;
+using Domain.Enums;
 
 namespace Application.Repositories.JournalRepositories;
 
@@ -10,4 +11,6 @@ public interface IJournalVoucherRepository
     Task<JournalVoucherEntity?> GetByIdAsync(Guid journalVoucherId, CancellationToken cancellationToken = default);
     Task<JournalVoucherEntity?> GetByIdWithEntriesAsync(Guid journalVoucherId, CancellationToken cancellationToken = default);
     Task<IReadOnlyList<JournalVoucherEntity>> GetAllAsync(JournalVoucherFilter filter, CancellationToken cancellationToken = default);
+    Task<bool> HasUnPostedTransactionsAsync(Guid financialPeriodId, CancellationToken cancellationToken = default);
+    Task<IReadOnlyList<JournalVoucherEntity>> GetByFinancialPeriodAsync(Guid financialPeriodId, JournalVoucherState state, CancellationToken cancellationToken);
 }
