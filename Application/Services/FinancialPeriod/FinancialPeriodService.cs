@@ -8,7 +8,8 @@ public sealed class FinancialPeriodService(
     CreateFinancialPeriodCommandHandler createHandler,
     UpdateFinancialPeriodCommandHandler updateHandler,
     GetFinancialPeriodByIdQueryHandler getByIdHandler,
-    GetFinancialPeriodsQueryHandler getAllHandler)
+    GetFinancialPeriodsQueryHandler getAllHandler,
+    CloseFinancialPeriodCommandHandler closeHandler)
 {
     public Task<OperationResult<bool>> CreateAsync(CreateFinancialPeriodCommand command, CancellationToken cancellationToken = default)
     {
@@ -28,5 +29,10 @@ public sealed class FinancialPeriodService(
     public Task<OperationResult<IReadOnlyList<GetFinancialPeriodsQueryResult>>> GetAllAsync(GetFinancialPeriodsQuery query, CancellationToken cancellationToken = default)
     {
         return getAllHandler.Handle(query, cancellationToken);
+    }
+
+    public Task<OperationResult<bool>> CloseAsync(CloseFinancialPeriodCommand command, CancellationToken cancellationToken = default)
+    {
+        return closeHandler.Handle(command, cancellationToken);
     }
 }
