@@ -3028,6 +3028,8 @@ export interface ICreateDetailedAccountApiModel {
 
 export class UpdateDetailedAccountCommand implements IUpdateDetailedAccountCommand {
     detailedAccountId?: string;
+    subLedgerAccountId?: PatchOfGuid | undefined;
+    journalEntryType?: PatchOfJournalEntryType | undefined;
     title?: PatchOfString | undefined;
     description?: PatchOfString | undefined;
     isActive?: PatchOfBoolean | undefined;
@@ -3045,6 +3047,8 @@ export class UpdateDetailedAccountCommand implements IUpdateDetailedAccountComma
     init(_data?: any) {
         if (_data) {
             this.detailedAccountId = _data["detailedAccountId"];
+            this.subLedgerAccountId = _data["subLedgerAccountId"] ? PatchOfGuid.fromJS(_data["subLedgerAccountId"]) : <any>undefined;
+            this.journalEntryType = _data["journalEntryType"] ? PatchOfJournalEntryType.fromJS(_data["journalEntryType"]) : <any>undefined;
             this.title = _data["title"] ? PatchOfString.fromJS(_data["title"]) : <any>undefined;
             this.description = _data["description"] ? PatchOfString.fromJS(_data["description"]) : <any>undefined;
             this.isActive = _data["isActive"] ? PatchOfBoolean.fromJS(_data["isActive"]) : <any>undefined;
@@ -3062,6 +3066,8 @@ export class UpdateDetailedAccountCommand implements IUpdateDetailedAccountComma
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
         data["detailedAccountId"] = this.detailedAccountId;
+        data["subLedgerAccountId"] = this.subLedgerAccountId ? this.subLedgerAccountId.toJSON() : <any>undefined;
+        data["journalEntryType"] = this.journalEntryType ? this.journalEntryType.toJSON() : <any>undefined;
         data["title"] = this.title ? this.title.toJSON() : <any>undefined;
         data["description"] = this.description ? this.description.toJSON() : <any>undefined;
         data["isActive"] = this.isActive ? this.isActive.toJSON() : <any>undefined;
@@ -3072,10 +3078,48 @@ export class UpdateDetailedAccountCommand implements IUpdateDetailedAccountComma
 
 export interface IUpdateDetailedAccountCommand {
     detailedAccountId?: string;
+    subLedgerAccountId?: PatchOfGuid | undefined;
+    journalEntryType?: PatchOfJournalEntryType | undefined;
     title?: PatchOfString | undefined;
     description?: PatchOfString | undefined;
     isActive?: PatchOfBoolean | undefined;
     code?: PatchOfString | undefined;
+}
+
+export class PatchOfJournalEntryType implements IPatchOfJournalEntryType {
+    value?: JournalEntryType;
+
+    constructor(data?: IPatchOfJournalEntryType) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.value = _data["value"];
+        }
+    }
+
+    static fromJS(data: any): PatchOfJournalEntryType {
+        data = typeof data === 'object' ? data : {};
+        let result = new PatchOfJournalEntryType();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["value"] = this.value;
+        return data;
+    }
+}
+
+export interface IPatchOfJournalEntryType {
+    value?: JournalEntryType;
 }
 
 export class PatchOfBoolean implements IPatchOfBoolean {
@@ -3426,42 +3470,6 @@ export interface IUpdateGeneralLedgerAccountCommand {
     isActive?: PatchOfBoolean | undefined;
     code?: PatchOfString | undefined;
     groupAccountId?: PatchOfGuid | undefined;
-}
-
-export class PatchOfJournalEntryType implements IPatchOfJournalEntryType {
-    value?: JournalEntryType;
-
-    constructor(data?: IPatchOfJournalEntryType) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.value = _data["value"];
-        }
-    }
-
-    static fromJS(data: any): PatchOfJournalEntryType {
-        data = typeof data === 'object' ? data : {};
-        let result = new PatchOfJournalEntryType();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["value"] = this.value;
-        return data;
-    }
-}
-
-export interface IPatchOfJournalEntryType {
-    value?: JournalEntryType;
 }
 
 export class ApiResultOfGetGeneralLedgerAccountByIdQueryResult extends ApiResult implements IApiResultOfGetGeneralLedgerAccountByIdQueryResult {

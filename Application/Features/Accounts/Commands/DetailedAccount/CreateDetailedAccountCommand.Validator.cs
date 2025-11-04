@@ -1,4 +1,5 @@
-﻿using FluentValidation;
+﻿using Domain.Enums;
+using FluentValidation;
 
 namespace Application.Features.Accounts.Commands.DetailedAccount;
 
@@ -10,14 +11,11 @@ public class CreateDetailedAccountCommandValidator : AbstractValidator<CreateDet
             .NotEmpty();
 
         RuleFor(x => x.JournalEntryType)
-            .NotEmpty();
+            .Must(value => Enum.IsDefined(typeof(JournalEntryType), value))
+            .WithMessage("JournalEntryType must be one of the valid enum values: Debit or Credit.");
 
         RuleFor(x => x.Code)
             .NotEmpty();
-
-        RuleFor(x => x.IsActive)
-            .NotEmpty();
-
 
         RuleFor(x => x.SubLedgerAccountId)
             .NotEmpty();

@@ -16,7 +16,11 @@ internal sealed class DetailedAccountRepository(AccountingDbContext dbContext) :
 
     public async Task<DetailedAccountEntity?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
     {
-        return await Table.FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
+        return await Table
+            .Include(x=>x.SubLedgerAccount)
+            .Include(x=>x.SubLedgerAccount!.GeneralLedgerAccount)
+            .Include(x=>x.SubLedgerAccount!.GeneralLedgerAccount!.GroupAccount)
+            .FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
     }
 
     public async Task<IReadOnlyList<DetailedAccountEntity>> FindAccountByTitleAndSubLedgerAndTypeAsync(string title, Guid subLedgerAccountId, JournalEntryType journalEntryType, CancellationToken cancellationToken = default)
@@ -28,6 +32,14 @@ internal sealed class DetailedAccountRepository(AccountingDbContext dbContext) :
             .ToListAsync(cancellationToken);
     }
 
+    public async Task<IReadOnlyList<DetailedAccountEntity>> FindAccountByTitleAndSubLedgerAccountAsync(string title, Guid subLedgerAccountId, CancellationToken cancellationToken = default)
+    {
+        return await TableNoTracking.Where(x =>
+                x.AccountTitle.Equals(title) &&
+                x.SubLedgerAccountId == subLedgerAccountId)
+            .ToListAsync(cancellationToken);
+    }
+
     public async Task<DetailedAccountEntity?> FindByCodeAsync(string code, CancellationToken cancellationToken = default)
     {
         return await TableNoTracking.FirstOrDefaultAsync(x => x.AccountCode.Equals(code), cancellationToken);
@@ -35,24 +47,21 @@ internal sealed class DetailedAccountRepository(AccountingDbContext dbContext) :
 
     public async Task<IReadOnlyList<DetailedAccountEntity>> GetAllAsync(DetailedAccountFilter filter, CancellationToken cancellationToken = default)
     {
-        var query = TableNoTracking;
-
-        if (!string.IsNullOrEmpty(filter.Title))
-            query = query.Where(x => x.AccountTitle.Equals(filter.Title));
-
-        if (!string.IsNullOrEmpty(filter.Code))
-            query = query.Where(x => x.AccountCode.Equals(filter.Code));
-
-        if (filter.JournalEntryType.HasValue)
-            query = query.Where(x => x.JournalEntryType == filter.JournalEntryType.Value);
+        var query = TableNoTracking.AsQueryable();
 
         if (filter.IsActive.HasValue)
             query = query.Where(x => x.IsActive == filter.IsActive.Value);
 
-        if (filter.SubLedgerAccountId.HasValue)
-            query = query.Where(x => x.SubLedgerAccountId == filter.SubLedgerAccountId.Value);
+        if (!string.IsNullOrEmpty(filter.Title))
+            query = query.Where(x => x.AccountTitle.Contains(filter.Title));
+
+        if (!string.IsNullOrEmpty(filter.Code))
+            query = query.Where(x => x.AccountCode.Contains(filter.Code));
+
+        if (filter.JournalEntryType.HasValue)
+            query = query.Where(x => x.JournalEntryType == filter.JournalEntryType.Value);
 
         // TODO: Apply pagination
-        return await query.ToListAsync(cancellationToken);
+        return await query.OrderBy(x => x.Id).ToListAsync(cancellationToken);
     }
 }

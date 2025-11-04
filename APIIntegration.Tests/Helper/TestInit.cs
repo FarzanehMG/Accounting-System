@@ -106,7 +106,15 @@ public class TestInit
         journalEntries.Should().ContainSingle(x => x.SubLedgerAccountId == subLedgerAccount2.Id && x.JournalEntryType == Domain.Enums.JournalEntryType.Debit);
     }
 
-    internal async Task CreateJournalEntry(Guid financialPeriodId, Guid creditGroupAccountId, Guid debitGroupAccountId, Guid creditGeneralLedgerAccountId, Guid debitGeneralLedgerAccountId, SubLedgerAccountEntity? creditSubLedgerAccount = null, SubLedgerAccountEntity? debitSubLedgerAccount = null)
+    internal async Task CreateJournalEntry(Guid financialPeriodId, 
+        Guid creditGroupAccountId, 
+        Guid debitGroupAccountId, 
+        Guid creditGeneralLedgerAccountId, 
+        Guid debitGeneralLedgerAccountId, 
+        SubLedgerAccountEntity? creditSubLedgerAccount = null, 
+        SubLedgerAccountEntity? debitSubLedgerAccount = null,
+        DetailedAccountEntity? creditDetailedAccount = null,
+        DetailedAccountEntity? debitDetailedAccount = null)
     {
         // Create SubLedger account
         var subLedgerAccount = creditSubLedgerAccount ?? await CreateSubLedgerAccount(creditGeneralLedgerAccountId, JournalEntryType.Credit);
@@ -126,6 +134,7 @@ public class TestInit
                     JournalEntryType = JournalEntryType.Credit,
                     JournalVoucherId = journalVoucher.Id,
                     SubLedgerAccountId = subLedgerAccount.Id,
+                    DetailedAccountId = creditDetailedAccount?.Id,
                     Attachments = []
                 },
                 new()
@@ -135,6 +144,7 @@ public class TestInit
                     JournalEntryType = JournalEntryType.Debit,
                     JournalVoucherId = journalVoucher.Id,
                     SubLedgerAccountId = subLedgerAccount2.Id,
+                    DetailedAccountId = debitDetailedAccount?.Id,
                     Attachments = []
                 }
             }
@@ -223,6 +233,31 @@ public class TestInit
 
         // Return SubLedger account
         return subLedgerAccount;
+    }
+
+    internal async Task<DetailedAccountEntity> CreateDetailedAccount(Guid subLedgerAccountId, JournalEntryType journalEntryType, bool isActive = true)
+    {
+        var createDetailedAccount = new CreateDetailedAccountApiModel
+        {
+            Title = Guid.NewGuid().ToString(),
+            Code = Guid.NewGuid().ToString(),
+            IsActive = isActive,
+            JournalEntryType = journalEntryType,
+            SubLedgerAccountId = subLedgerAccountId
+        };
+        await DetailedAccountClient.CreateAsync(createDetailedAccount);
+
+        // Assert
+        var detailedAccount = await AccountingDbContext.Set<DetailedAccountEntity>()
+            .SingleAsync(x => x.AccountTitle == createDetailedAccount.Title && x.AccountCode == createDetailedAccount.Code);
+
+        detailedAccount.Should().NotBeNull();
+        detailedAccount.AccountTitle.Should().Be(createDetailedAccount.Title);
+        detailedAccount.AccountCode.Should().Be(createDetailedAccount.Code);
+        detailedAccount.SubLedgerAccountId.Should().Be(subLedgerAccountId);
+
+        // Return Detailed account
+        return detailedAccount;
     }
 
     internal async Task<FinancialPeriodEntity> GetOrCreateFinancialPeriod()

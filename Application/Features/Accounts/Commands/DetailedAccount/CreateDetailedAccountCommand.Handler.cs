@@ -15,14 +15,22 @@ public class CreateDetailedAccountCommandHandler(IUnitOfWork unitOfWork)
         if (!validateResult.IsValid)
             return OperationResult<bool>.FailureResult(validateResult.Errors.ConvertToKeyValuePair());
 
-        // Business Rule: A Detailed account must always inherit the same nature (JournalEntryType) as its Sub Ledger account.
-        // This ensures accurate financial reporting, prevents mismatched balances, and aligns with standard accounting practices.
+        // Business Rule: financial period should be active
+        var activePeriod = await unitOfWork.FinancialPeriodRepository.GetActiveFinancialPeriodAsync(cancellationToken);
+        if (activePeriod is null)
+            return OperationResult<bool>.FailureResult([
+                new KeyValuePair<string, string>("FinancialPeriod", "No active financial period found.")
+            ]);
+
+        // Retrieve the existing subLedger account
         var subLedgerAccount = await unitOfWork.SubLedgerAccountRepository
             .GetByIdAsync(request.SubLedgerAccountId, cancellationToken);
 
         if (subLedgerAccount == null)
             return OperationResult<bool>.NotFoundResult(nameof(request.SubLedgerAccountId), "SubLedger not found.");
 
+        // Business Rule: A Detailed account must always inherit the same nature (JournalEntryType) as its SubLedger account.
+        // This ensures accurate financial reporting, prevents mismatched balances, and aligns with standard accounting practices.
         if (subLedgerAccount.JournalEntryType != request.JournalEntryType)
         {
             return OperationResult<bool>.FailureResult([
@@ -33,7 +41,7 @@ public class CreateDetailedAccountCommandHandler(IUnitOfWork unitOfWork)
         if (!subLedgerAccount.IsActive)
         {
             return OperationResult<bool>.FailureResult([new KeyValuePair<string, string>(nameof(request.SubLedgerAccountId),
-                "The Sub Ledger account must be active.")]);
+                "The SubLedger account must be active.")]);
         }
 
         // Business Rule: Each active account within the same subLedger must have a unique title.
@@ -59,6 +67,8 @@ public class CreateDetailedAccountCommandHandler(IUnitOfWork unitOfWork)
                     "InactiveAccountId", inactiveAccount.Id.ToString())
             ]);
         }
+
+        // TODO: Update this check to validate uniqueness per Company once Company feature is implemented.
 
         // Technical Rule: Account code must always be unique to guarantee data integrity.
         var duplicateCode = await unitOfWork.DetailedAccountRepository
