@@ -1,9 +1,11 @@
-﻿using APIIntegration.Tests.Helper;
+﻿using API.Controllers.Models.Accounts;
+using APIIntegration.Tests.Helper;
 using Domain.Entities.Accounts;
 using FluentAssertions;
 using GenerateApi;
 using Microsoft.EntityFrameworkCore;
 using Xunit.Abstractions;
+using CreateSubLedgerAccountApiModel = GenerateApi.CreateSubLedgerAccountApiModel;
 
 namespace APIIntegration.Tests.Accounts;
 
@@ -1337,5 +1339,240 @@ public class SubLedgerAccountTests(ApiTestSetup setup, ITestOutputHelper output)
             responseContent.Should().Contain("Cannot modify subLedger accounts without an active open financial period.");
             ex.StatusCode.Should().Be(400);
         }
+    }
+
+    [Fact]
+    public async Task GetAllSubLedgerAccounts_ShouldSucceed_WhenNoFiltersApplied()
+    {
+        // Create financial period
+        await setup.TestInit1.GetOrCreateFinancialPeriod();
+
+        // Create group account
+        var groupAccount = await setup.TestInit1.CreateGroupAccount(JournalEntryType.Credit);
+
+        // Create generalLedger account
+        var generalLedgerAccount = await setup.TestInit1.CreateGeneralLedgerAccount(groupAccount.Id, JournalEntryType.Credit);
+
+        // Create subLedger account
+        await setup.TestInit1.CreateSubLedgerAccount(generalLedgerAccount.Id, JournalEntryType.Credit);
+
+        // Get group account
+        var original = await setup.TestInit1.AccountingDbContext
+            .Set<SubLedgerAccountEntity>()
+            .AsNoTracking()
+            .ToListAsync();
+
+        // Get all subLedger account
+        var result = await setup.TestInit1.SubLedgerAccountClient.GetAllAsync();
+
+        // Assert
+        result.Data.Should().NotBeNull();
+        result.Data.Count.Should().Be(original.Count);
+        result.IsSuccess.Should().BeTrue();
+    }
+
+    [Fact]
+    public async Task GetAllSubLedgerAccounts_ShouldSucceed_WhenFilteredByTitle()
+    {
+        var title = Guid.NewGuid().ToString();
+
+        // Create financial period
+        await setup.TestInit1.GetOrCreateFinancialPeriod();
+
+        // Create group account
+        var groupAccount = await setup.TestInit1.CreateGroupAccount(JournalEntryType.Credit);
+
+        // Create generalLedger account
+        var generalLedgerAccount = await setup.TestInit1.CreateGeneralLedgerAccount(groupAccount.Id, JournalEntryType.Credit);
+
+        // Create subLedger account
+        var createSubLedgerAccount = new CreateSubLedgerAccountApiModel
+        {
+            Title = title,
+            Code = Guid.NewGuid().ToString(),
+            IsActive = true,
+            JournalEntryType = JournalEntryType.Credit,
+            GeneralLedgerAccountId = generalLedgerAccount.Id
+        };
+        await setup.TestInit1.SubLedgerAccountClient.CreateAsync(createSubLedgerAccount);
+
+        // Get expected results from DB
+        var original = await setup.TestInit1.AccountingDbContext
+            .Set<SubLedgerAccountEntity>()
+            .AsNoTracking()
+            .Where(x => x.AccountTitle == title)
+            .ToListAsync();
+
+        // Get all subLedger account
+        var filter = new FilterSubLedgerAccountApiModel
+        {
+            Title = title
+        };
+        var result = await setup.TestInit1.SubLedgerAccountClient.GetAllAsync(title: filter.Title);
+
+        // Assert
+        result.Data.Should().NotBeNull();
+        result.Data.Count.Should().Be(original.Count);
+        result.IsSuccess.Should().BeTrue();
+    }
+
+    [Fact]
+    public async Task GetAllSubLedgerAccounts_ShouldSucceed_WhenFilteredByActiveFlag()
+    {
+        var isActive = true;
+
+        // Create financial period
+        await setup.TestInit1.GetOrCreateFinancialPeriod();
+
+        // Create group account
+        var groupAccount = await setup.TestInit1.CreateGroupAccount(JournalEntryType.Credit);
+
+        // Create generalLedger account
+        var generalLedgerAccount = await setup.TestInit1.CreateGeneralLedgerAccount(groupAccount.Id, JournalEntryType.Credit);
+
+        // Create subLedger account
+        var createSubLedgerAccount = new CreateSubLedgerAccountApiModel
+        {
+            Title = Guid.NewGuid().ToString(),
+            Code = Guid.NewGuid().ToString(),
+            IsActive = isActive,
+            JournalEntryType = JournalEntryType.Credit,
+            GeneralLedgerAccountId = generalLedgerAccount.Id
+        };
+        await setup.TestInit1.SubLedgerAccountClient.CreateAsync(createSubLedgerAccount);
+
+        // Get expected results from DB
+        var original = await setup.TestInit1.AccountingDbContext
+            .Set<SubLedgerAccountEntity>()
+            .AsNoTracking()
+            .Where(x => x.IsActive == isActive)
+            .ToListAsync();
+
+        // Get all subLedger account
+        var filter = new FilterSubLedgerAccountApiModel
+        {
+            IsActive = isActive
+        };
+        var result = await setup.TestInit1.SubLedgerAccountClient.GetAllAsync(isActive: filter.IsActive);
+
+        // Assert
+        result.Data.Should().NotBeNull();
+        result.Data.Count.Should().Be(original.Count);
+        result.IsSuccess.Should().BeTrue();
+    }
+
+    [Fact]
+    public async Task GetAllGeneralLedgerAccounts_ShouldSucceed_WhenFilteredByJournalEntryType()
+    {
+        var journalEntryType = JournalEntryType.Credit;
+
+        // Create financial period
+        await setup.TestInit1.GetOrCreateFinancialPeriod();
+
+        // Create group account
+        var groupAccount = await setup.TestInit1.CreateGroupAccount(JournalEntryType.Credit);
+
+        // Create generalLedger account
+        var generalLedgerAccount = await setup.TestInit1.CreateGeneralLedgerAccount(groupAccount.Id, JournalEntryType.Credit);
+
+        // Create subLedger account
+        var createSubLedgerAccount = new CreateSubLedgerAccountApiModel
+        {
+            Title = Guid.NewGuid().ToString(),
+            Code = Guid.NewGuid().ToString(),
+            IsActive = true,
+            JournalEntryType = journalEntryType,
+            GeneralLedgerAccountId = generalLedgerAccount.Id
+        };
+        await setup.TestInit1.SubLedgerAccountClient.CreateAsync(createSubLedgerAccount);
+
+        // Get expected results from DB
+        var original = await setup.TestInit1.AccountingDbContext
+            .Set<SubLedgerAccountEntity>()
+            .AsNoTracking()
+            .Where(x => x.JournalEntryType == Domain.Enums.JournalEntryType.Credit)
+            .ToListAsync();
+
+        // Get all subLedger account
+        var filter = new FilterSubLedgerAccountApiModel
+        {
+            JournalEntryType = (Domain.Enums.JournalEntryType?)journalEntryType
+        };
+        var result = await setup.TestInit1.SubLedgerAccountClient.GetAllAsync(journalEntryType: (JournalEntryType?)filter.JournalEntryType);
+
+        // Assert
+        result.Data.Should().NotBeNull();
+        result.Data.Count.Should().Be(original.Count);
+        result.IsSuccess.Should().BeTrue();
+    }
+
+    [Fact]
+    public async Task GetAllGeneralLedgerAccounts_ShouldSucceed_WhenFilteredByCode()
+    {
+        var code = "100";
+
+        // Create financial period
+        await setup.TestInit1.GetOrCreateFinancialPeriod();
+
+        // Create group account
+        var groupAccount = await setup.TestInit1.CreateGroupAccount(JournalEntryType.Credit);
+        
+        // Create generalLedger account
+        var generalLedgerAccount = await setup.TestInit1.CreateGeneralLedgerAccount(groupAccount.Id, JournalEntryType.Credit);
+
+        // Create subLedger account
+        var createdAccount = new CreateSubLedgerAccountApiModel
+        {
+            Title = Guid.NewGuid().ToString(),
+            Code = $"100{Guid.NewGuid()}",
+            JournalEntryType = JournalEntryType.Credit,
+            IsActive = true,
+            Description = "Integration test",
+            GeneralLedgerAccountId = generalLedgerAccount.Id
+        };
+        await setup.TestInit1.SubLedgerAccountClient.CreateAsync(createdAccount);
+
+        // Create subLedger account 2
+        var createdAccount2 = new CreateSubLedgerAccountApiModel
+        {
+            Title = Guid.NewGuid().ToString(),
+            Code = $"{Guid.NewGuid()}1001",
+            JournalEntryType = JournalEntryType.Credit,
+            IsActive = true,
+            Description = "Integration test",
+            GeneralLedgerAccountId = generalLedgerAccount.Id
+        };
+        await setup.TestInit1.SubLedgerAccountClient.CreateAsync(createdAccount2);
+
+        // Create subLedger account 3
+        var createdAccount3 = new CreateSubLedgerAccountApiModel
+        {
+            Title = Guid.NewGuid().ToString(),
+            Code = Guid.NewGuid().ToString(),
+            JournalEntryType = JournalEntryType.Credit,
+            IsActive = true,
+            Description = "Integration test",
+            GeneralLedgerAccountId = generalLedgerAccount.Id
+        };
+        await setup.TestInit1.SubLedgerAccountClient.CreateAsync(createdAccount3);
+
+        // get all subLedger account
+        var filter = new FilterSubLedgerAccountApiModel
+        {
+            Code = code
+        };
+        var result = await setup.TestInit1.SubLedgerAccountClient.GetAllAsync(code: filter.Code);
+
+        // Get expected results from DB
+        var expected = await setup.TestInit1.AccountingDbContext
+            .Set<SubLedgerAccountEntity>()
+            .AsNoTracking()
+            .Where(x => x.AccountCode.Contains(code))
+            .ToListAsync();
+
+        // Assert
+        result.Data.Should().NotBeNull();
+        result.Data.Count.Should().Be(expected.Count);
+        result.IsSuccess.Should().BeTrue();
     }
 }

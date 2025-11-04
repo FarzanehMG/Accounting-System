@@ -1346,7 +1346,7 @@ public class GeneralLedgerAccountTests(ApiTestSetup setup, ITestOutputHelper out
         };
         await setup.TestInit1.GeneralLedgerAccountClient.CreateAsync(createdAccount3);
 
-        // get all group account
+        // get all generalLedger account
         var filter = new FilterGeneralLedgerAccountApiModel
         {
             Code = code
