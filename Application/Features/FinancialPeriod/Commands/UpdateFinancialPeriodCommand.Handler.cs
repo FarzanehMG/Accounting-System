@@ -18,7 +18,11 @@ public class UpdateFinancialPeriodCommandHandler(IUnitOfWork unitOfWork)
         var financialPeriod = await unitOfWork.FinancialPeriodRepository.GetByIdAsync(command.FinancialPeriodId, cancellationToken);
 
         if (financialPeriod is null)
-            return OperationResult<bool>.NotFoundResult(nameof(UpdateFinancialPeriodCommand), "Financial period not found.");
+            return OperationResult<bool>.NotFoundResult(nameof(UpdateFinancialPeriodCommand), "Financial Period Not Found.");
+
+        // Cannot update a closed period
+        if (financialPeriod.IsActive)
+            return OperationResult<bool>.FailureResult("FinancialPeriod", "Cannot update a closed financial period.");
 
         // Update fields if provided
         if (!string.IsNullOrWhiteSpace(command.FinancialPeriodTitle?.Value))
