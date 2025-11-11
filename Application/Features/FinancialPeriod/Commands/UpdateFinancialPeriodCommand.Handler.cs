@@ -21,31 +21,41 @@ public class UpdateFinancialPeriodCommandHandler(IUnitOfWork unitOfWork)
             return OperationResult<bool>.NotFoundResult(nameof(UpdateFinancialPeriodCommand), "Financial Period Not Found.");
 
         // Cannot update a closed period
-        if (financialPeriod.IsActive)
+        if (!financialPeriod.IsActive)
             return OperationResult<bool>.FailureResult("FinancialPeriod", "Cannot update a closed financial period.");
 
         // Update fields if provided
         if (!string.IsNullOrWhiteSpace(command.FinancialPeriodTitle?.Value))
             financialPeriod.FinancialPeriodTitle = command.FinancialPeriodTitle.Value;
 
-        // Business Rule: Ensure not overlapping dates
-        var newStartDate = command.StartDate ?? financialPeriod.StartDate;
-        var newEndDate = command.EndDate ?? financialPeriod.EndDate;
+        if (command.StartDate is not null || command.EndDate is not null)
+        {
+            // Business Rule: Ensure not overlapping dates
+            var newStartDate = command.StartDate ?? financialPeriod.StartDate;
+            var newEndDate = command.EndDate ?? financialPeriod.EndDate;
 
-        if (command.StartDate is not null && financialPeriod.JournalVouchers.Any())
-            return OperationResult<bool>.FailureResult(nameof(command.StartDate), "Cannot change StartDate because some journal entries already exist.");
+            // Business Rule: Lock start/end dates if any transactions exist (Most conservative approach)
+            if (financialPeriod.JournalVouchers.Any())
+            {
+                if (command.StartDate is not null)
+                    return OperationResult<bool>.FailureResult(nameof(command.StartDate), "Cannot change StartDate because journal entries already exist in the period.");
 
-        if (newEndDate.Value <= newStartDate.Value)
-            return OperationResult<bool>.FailureResult(nameof(command.EndDate), "End date must be later than start date.");
+                if (command.EndDate is not null)
+                    return OperationResult<bool>.FailureResult(nameof(command.EndDate), "Cannot change EndDate because journal entries already exist in the period.");
+            }
 
-        var overlappingFinancialPeriod = await unitOfWork.FinancialPeriodRepository
-            .GetOverlappingFinancialPeriodAsync(cancellationToken, newStartDate, newEndDate);
+            if (newEndDate.Value <= newStartDate.Value)
+                return OperationResult<bool>.FailureResult(nameof(command.EndDate), "End date must be later than start date.");
 
-        if (overlappingFinancialPeriod is not null)
-            return OperationResult<bool>.FailureResult("Date", "The selected period overlaps with an existing financial period.");
+            var overlappingFinancialPeriod = await unitOfWork.FinancialPeriodRepository
+                .GetOverlappingFinancialPeriodAsync(cancellationToken, newStartDate, newEndDate);
 
-        financialPeriod.StartDate = newStartDate;
-        financialPeriod.EndDate = newEndDate;
+            if (overlappingFinancialPeriod is not null)
+                return OperationResult<bool>.FailureResult("Date", "The selected period overlaps with an existing financial period.");
+
+            financialPeriod.StartDate = newStartDate;
+            financialPeriod.EndDate = newEndDate;
+        }
 
         await unitOfWork.CommitAsync(cancellationToken);
         return OperationResult<bool>.SuccessResult(true);
