@@ -8,14 +8,17 @@ namespace Persistence.Repositories.FinancialPeriod;
 
 internal sealed class FinancialPeriodRepository(AccountingDbContext dbContext) : BaseRepository<FinancialPeriodEntity>(dbContext), IFinancialPeriodRepository
 {
+    private readonly AccountingDbContext _dbContext = dbContext;
+
     public async Task CreateAsync(FinancialPeriodEntity entity, CancellationToken cancellationToken = default)
     {
         await AddAsync(entity, cancellationToken);
     }
 
-    public async Task UpdateAsync(FinancialPeriodEntity entity, CancellationToken cancellationToken = default)
+    public Task UpdateAsync(FinancialPeriodEntity entity, CancellationToken cancellationToken = default)
     {
-        dbContext.Set<FinancialPeriodEntity>().Update(entity);
+        _dbContext.Set<FinancialPeriodEntity>().Update(entity);
+        return Task.CompletedTask;
     }
 
     public async Task<FinancialPeriodEntity?> GetOverlappingFinancialPeriodAsync(CancellationToken cancellationToken = default, DateTime? startDate = null, DateTime? endDate = null)
@@ -35,7 +38,7 @@ internal sealed class FinancialPeriodRepository(AccountingDbContext dbContext) :
 
     public async Task<FinancialPeriodEntity?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
     {
-        return await TableNoTracking.FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
+        return await Table.FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
     }
 
     public async Task<IReadOnlyList<FinancialPeriodEntity>> GetAllAsync(FinancialPeriodFilter filter, CancellationToken cancellationToken = default)

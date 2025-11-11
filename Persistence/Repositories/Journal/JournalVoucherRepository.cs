@@ -9,6 +9,8 @@ namespace Persistence.Repositories.Journal;
 
 internal sealed class JournalVoucherRepository(AccountingDbContext dbContext) : BaseRepository<JournalVoucherEntity>(dbContext), IJournalVoucherRepository
 {
+    private readonly AccountingDbContext _dbContext = dbContext;
+
     public async Task CreateAsync(JournalVoucherEntity entity, CancellationToken cancellationToken = default)
     {
         await AddAsync(entity, cancellationToken);
@@ -75,10 +77,22 @@ internal sealed class JournalVoucherRepository(AccountingDbContext dbContext) : 
             .AnyAsync(j => j.FinancialPeriodId == financialPeriodId && j.JournalVoucherState == JournalVoucherState.Draft, cancellationToken);
     }
 
-    public async Task<IReadOnlyList<JournalVoucherEntity>> GetByFinancialPeriodAsync(Guid financialPeriodId, JournalVoucherState state, CancellationToken cancellationToken)
+    public async Task<IReadOnlyList<JournalVoucherEntity>> GetByFinancialPeriodAndStateAsync(Guid financialPeriodId, JournalVoucherState state, CancellationToken cancellationToken)
     {
         return await TableNoTracking
             .Where(x => x.FinancialPeriodId == financialPeriodId && x.JournalVoucherState == state)
             .ToListAsync(cancellationToken);
+    }
+
+    public async Task<JournalVoucherEntity> GetByFinancialPeriodAsync(Guid financialPeriodId, CancellationToken cancellationToken)
+    {
+        return await TableNoTracking
+            .SingleAsync(x => x.FinancialPeriodId == financialPeriodId, cancellationToken);
+    }
+
+    public Task UpdateAsync(JournalVoucherEntity entity, CancellationToken cancellationToken = default)
+    {
+        _dbContext.Set<JournalVoucherEntity>().Update(entity);
+        return Task.CompletedTask;
     }
 }
