@@ -12,5 +12,7 @@ public interface IJournalVoucherRepository
     Task<JournalVoucherEntity?> GetByIdWithEntriesAsync(Guid journalVoucherId, CancellationToken cancellationToken = default);
     Task<IReadOnlyList<JournalVoucherEntity>> GetAllAsync(JournalVoucherFilter filter, CancellationToken cancellationToken = default);
     Task<bool> HasUnPostedTransactionsAsync(Guid financialPeriodId, CancellationToken cancellationToken = default);
-    Task<IReadOnlyList<JournalVoucherEntity>> GetByFinancialPeriodAsync(Guid financialPeriodId, JournalVoucherState state, CancellationToken cancellationToken);
+    Task<IReadOnlyList<JournalVoucherEntity>> GetByFinancialPeriodAndStateAsync(Guid financialPeriodId, JournalVoucherState state, CancellationToken cancellationToken);
+    Task<JournalVoucherEntity> GetByFinancialPeriodAsync(Guid financialPeriodId, CancellationToken cancellationToken);
+    Task UpdateAsync(JournalVoucherEntity entity, CancellationToken cancellationToken = default);
 }
