@@ -26,9 +26,19 @@ internal sealed class FinancialPeriodRepository(AccountingDbContext dbContext) :
         return await TableNoTracking.FirstOrDefaultAsync(x =>
                 (!startDate.HasValue || x.EndDate >= startDate.Value) &&
                 (!endDate.HasValue || x.StartDate <= endDate.Value) &&
-                x.IsActive, 
+                x.IsActive,
                 cancellationToken);
 
+    }
+
+    public async Task<FinancialPeriodEntity?> GetOverlappingFinancialPeriodByIdAsync(Guid id, CancellationToken cancellationToken = default, DateTime? startDate = null, DateTime? endDate = null)
+    {
+        return await TableNoTracking.FirstOrDefaultAsync(x =>
+                (!startDate.HasValue || x.EndDate >= startDate.Value) &&
+                (!endDate.HasValue || x.StartDate <= endDate.Value) &&
+                x.IsActive &&
+                x.Id != id,
+            cancellationToken);
     }
 
     public async Task<FinancialPeriodEntity?> GetActiveFinancialPeriodAsync(CancellationToken cancellationToken = default)
@@ -38,7 +48,9 @@ internal sealed class FinancialPeriodRepository(AccountingDbContext dbContext) :
 
     public async Task<FinancialPeriodEntity?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
     {
-        return await Table.FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
+        return await Table
+            .Include(x=>x.JournalVouchers)
+            .FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
     }
 
     public async Task<IReadOnlyList<FinancialPeriodEntity>> GetAllAsync(FinancialPeriodFilter filter, CancellationToken cancellationToken = default)
