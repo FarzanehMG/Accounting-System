@@ -4,6 +4,7 @@ using FluentAssertions;
 using GenerateApi;
 using Microsoft.EntityFrameworkCore;
 using Xunit.Abstractions;
+using UpdateFinancialPeriodCommand = GenerateApi.UpdateFinancialPeriodCommand;
 
 namespace APIIntegration.Tests.FinancialPeriod;
 
@@ -382,37 +383,194 @@ public class FinancialPeriodTests(ApiTestSetup setup, ITestOutputHelper output) 
     [Fact]
     public async Task UpdateFinancialPeriod_ShouldSucceed_WhenOnlyStartDateIsProvided()
     {
-        throw new NotImplementedException();
+        // Create active financial period
+        var financialPeriod = await setup.TestInit1.GetOrCreateFinancialPeriod();
+
+        // Update financial period
+        var updateFinancialPeriodCommand = new UpdateFinancialPeriodCommand
+        {
+            FinancialPeriodId = financialPeriod.Id,
+            StartDate = new PatchOfDateTime
+            {
+                Value = financialPeriod.StartDate.AddDays(2)
+            }
+        };
+        var result = await setup.TestInit1.FinancialPeriodClient.UpdateAsync(updateFinancialPeriodCommand);
+
+        // Get financial period
+        var afterUpdateFinancialPeriod = await setup.TestInit1.AccountingDbContext
+            .Set<FinancialPeriodEntity>()
+            .AsNoTracking()
+            .SingleAsync(x => x.Id == financialPeriod.Id);
+
+        // Assert
+        result.IsSuccess.Should().BeTrue();
+        afterUpdateFinancialPeriod.FinancialPeriodTitle.Should().Be(financialPeriod.FinancialPeriodTitle);
+        afterUpdateFinancialPeriod.StartDate.Should().NotBe(financialPeriod.StartDate);
+        afterUpdateFinancialPeriod.EndDate.Should().Be(financialPeriod.EndDate);
+        afterUpdateFinancialPeriod.IsActive.Should().Be(financialPeriod.IsActive);
     }
 
     [Fact]
     public async Task UpdateFinancialPeriod_ShouldSucceed_WhenOnlyEndDateIsProvided()
     {
-        throw new NotImplementedException();
+        // Create active financial period
+        var financialPeriod = await setup.TestInit1.GetOrCreateFinancialPeriod();
+
+        // Update financial period
+        var updateFinancialPeriodCommand = new UpdateFinancialPeriodCommand
+        {
+            FinancialPeriodId = financialPeriod.Id,
+            EndDate = new PatchOfDateTime
+            {
+                Value = financialPeriod.EndDate.AddDays(2)
+            }
+        };
+        var result = await setup.TestInit1.FinancialPeriodClient.UpdateAsync(updateFinancialPeriodCommand);
+
+        // Get financial period
+        var afterUpdateFinancialPeriod = await setup.TestInit1.AccountingDbContext
+            .Set<FinancialPeriodEntity>()
+            .AsNoTracking()
+            .SingleAsync(x => x.Id == financialPeriod.Id);
+
+        // Assert
+        result.IsSuccess.Should().BeTrue();
+        afterUpdateFinancialPeriod.FinancialPeriodTitle.Should().Be(financialPeriod.FinancialPeriodTitle);
+        afterUpdateFinancialPeriod.StartDate.Should().Be(financialPeriod.StartDate);
+        afterUpdateFinancialPeriod.EndDate.Should().NotBe(financialPeriod.EndDate);
+        afterUpdateFinancialPeriod.IsActive.Should().Be(financialPeriod.IsActive);
     }
 
     [Fact]
     public async Task UpdateFinancialPeriod_ShouldSucceed_WhenAllFieldsProvidedAndNoJournalEntries()
     {
-        throw new NotImplementedException();
+        // Create active financial period
+        var financialPeriod = await setup.TestInit1.GetOrCreateFinancialPeriod();
+
+        // Update isActive
+        financialPeriod.IsActive = false;
+        await setup.TestInit1.AccountingDbContext.SaveChangesAsync();
+
+        // Create active financial period
+        var financialPeriod2 = await setup.TestInit1.GetOrCreateFinancialPeriod();
+
+        // Update financial period
+        var updateFinancialPeriodCommand = new UpdateFinancialPeriodCommand
+        {
+            FinancialPeriodId = financialPeriod2.Id,
+            FinancialPeriodTitle = new PatchOfString
+            {
+                Value = Guid.NewGuid().ToString()
+            },
+            StartDate = new PatchOfDateTime
+            {
+                Value = financialPeriod2.StartDate.AddDays(2)
+            },
+            EndDate = new PatchOfDateTime
+            {
+                Value = financialPeriod2.EndDate.AddDays(2)
+            }
+        };
+        var result = await setup.TestInit1.FinancialPeriodClient.UpdateAsync(updateFinancialPeriodCommand);
+
+        // Get financial period
+        var afterUpdateFinancialPeriod = await setup.TestInit1.AccountingDbContext
+            .Set<FinancialPeriodEntity>()
+            .AsNoTracking()
+            .SingleAsync(x => x.Id == financialPeriod2.Id);
+
+        // Assert
+        result.IsSuccess.Should().BeTrue();
+        afterUpdateFinancialPeriod.FinancialPeriodTitle.Should().NotBe(financialPeriod2.FinancialPeriodTitle);
+        afterUpdateFinancialPeriod.StartDate.Should().NotBe(financialPeriod2.StartDate);
+        afterUpdateFinancialPeriod.EndDate.Should().NotBe(financialPeriod2.EndDate);
+        afterUpdateFinancialPeriod.IsActive.Should().Be(financialPeriod2.IsActive);
     }
 
     [Fact]
     public async Task UpdateFinancialPeriod_ShouldNotChange_WhenNoFieldsProvided()
     {
-        throw new NotImplementedException();
+        // Create active financial period
+        var financialPeriod = await setup.TestInit1.GetOrCreateFinancialPeriod();
+
+        // Update financial period
+        var updateFinancialPeriodCommand = new UpdateFinancialPeriodCommand
+        {
+            FinancialPeriodId = financialPeriod.Id,
+        };
+        var result = await setup.TestInit1.FinancialPeriodClient.UpdateAsync(updateFinancialPeriodCommand);
+
+        // Get financial period
+        var afterUpdateFinancialPeriod = await setup.TestInit1.AccountingDbContext
+            .Set<FinancialPeriodEntity>()
+            .AsNoTracking()
+            .SingleAsync(x => x.Id == financialPeriod.Id);
+
+        // Assert
+        result.IsSuccess.Should().BeTrue();
+        afterUpdateFinancialPeriod.FinancialPeriodTitle.Should().Be(financialPeriod.FinancialPeriodTitle);
+        afterUpdateFinancialPeriod.StartDate.Should().Be(financialPeriod.StartDate);
+        afterUpdateFinancialPeriod.EndDate.Should().Be(financialPeriod.EndDate);
+        afterUpdateFinancialPeriod.IsActive.Should().Be(financialPeriod.IsActive);
     }
 
     [Fact]
     public async Task UpdateFinancialPeriod_ShouldFail_WhenFinancialPeriodDoesNotExist()
     {
-        throw new NotImplementedException();
+        // Create active financial period
+        await setup.TestInit1.GetOrCreateFinancialPeriod();
+
+        // Update financial period
+        var updateFinancialPeriodCommand = new UpdateFinancialPeriodCommand
+        {
+            FinancialPeriodId = Guid.NewGuid()
+        };
+
+        try
+        {
+            var result = await setup.TestInit1.FinancialPeriodClient.UpdateAsync(updateFinancialPeriodCommand);
+            result.IsSuccess.Should().BeFalse("Expected an ApiException was not thrown.");
+        }
+        catch (ApiException ex)
+        {
+            var responseContent = ex.Message;
+            responseContent.Should().Contain("Financial Period Not Found.");
+            ex.StatusCode.Should().Be(404);
+        }
     }
 
     [Fact]
     public async Task UpdateFinancialPeriod_ShouldFail_WhenPeriodIsClosed()
     {
-        throw new NotImplementedException();
+        // Create active financial period
+        var financialPeriod = await setup.TestInit1.GetOrCreateFinancialPeriod();
+
+        // Update isActive
+        financialPeriod.IsActive = false;
+        await setup.TestInit1.AccountingDbContext.SaveChangesAsync();
+
+        // Update financial period
+        var updateFinancialPeriodCommand = new UpdateFinancialPeriodCommand
+        {
+            FinancialPeriodId = financialPeriod.Id,
+            FinancialPeriodTitle = new PatchOfString
+            {
+                Value = Guid.NewGuid().ToString()
+            }
+        };
+
+        try
+        {
+            var result = await setup.TestInit1.FinancialPeriodClient.UpdateAsync(updateFinancialPeriodCommand);
+            result.IsSuccess.Should().BeFalse("Expected an ApiException was not thrown.");
+        }
+        catch (ApiException ex)
+        {
+            var responseContent = ex.Message;
+            responseContent.Should().Contain("Cannot update a closed financial period.");
+            ex.StatusCode.Should().Be(400);
+        }
     }
 
     [Fact]
@@ -422,44 +580,184 @@ public class FinancialPeriodTests(ApiTestSetup setup, ITestOutputHelper output) 
     }
 
     [Fact]
-    public async Task UpdateFinancialPeriod_ShouldFail_WhenJournalVouchersExistAndStartDateIsChanged()
+    public async Task UpdateFinancialPeriod_ShouldFail_WhenJournalEntriesExistAndStartDateIsChanged()
     {
-        throw new NotImplementedException();
+        // Create active financial period
+        var financialPeriod = await setup.TestInit1.GetOrCreateFinancialPeriod();
+
+        // Create group account
+        var creditGroupAccount = await setup.TestInit1.CreateGroupAccount(JournalEntryType.Credit);
+        var debitGroupAccount = await setup.TestInit1.CreateGroupAccount(JournalEntryType.Debit);
+
+        // Create journal voucher
+        await setup.TestInit1.CreateJournalEntry(creditGroupAccount.Id, debitGroupAccount.Id, financialPeriod);
+
+        // Update financial period
+        var updateFinancialPeriodCommand = new UpdateFinancialPeriodCommand
+        {
+            FinancialPeriodId = financialPeriod.Id,
+            StartDate = new PatchOfDateTime
+            {
+                Value = financialPeriod.StartDate.AddDays(4)
+            }
+        };
+
+        try
+        {
+            var result = await setup.TestInit1.FinancialPeriodClient.UpdateAsync(updateFinancialPeriodCommand);
+            result.IsSuccess.Should().BeFalse("Expected an ApiException was not thrown.");
+        }
+        catch (ApiException ex)
+        {
+            var responseContent = ex.Message;
+            responseContent.Should().Contain("annot change StartDate because journal entries already exist in the period.");
+            ex.StatusCode.Should().Be(400);
+        }
     }
 
     [Fact]
     public async Task UpdateFinancialPeriod_ShouldFail_WhenJournalVouchersExistAndEndDateIsChanged()
     {
-        throw new NotImplementedException();
+        // Create active financial period
+        var financialPeriod = await setup.TestInit1.GetOrCreateFinancialPeriod();
+
+        // Create group account
+        var creditGroupAccount = await setup.TestInit1.CreateGroupAccount(JournalEntryType.Credit);
+        var debitGroupAccount = await setup.TestInit1.CreateGroupAccount(JournalEntryType.Debit);
+
+        // Create journal voucher
+        await setup.TestInit1.CreateJournalEntry(creditGroupAccount.Id, debitGroupAccount.Id, financialPeriod);
+
+        // Update financial period
+        var updateFinancialPeriodCommand = new UpdateFinancialPeriodCommand
+        {
+            FinancialPeriodId = financialPeriod.Id,
+            EndDate = new PatchOfDateTime
+            {
+                Value = financialPeriod.EndDate.AddDays(4)
+            }
+        };
+
+        try
+        {
+            var result = await setup.TestInit1.FinancialPeriodClient.UpdateAsync(updateFinancialPeriodCommand);
+            result.IsSuccess.Should().BeFalse("Expected an ApiException was not thrown.");
+        }
+        catch (ApiException ex)
+        {
+            var responseContent = ex.Message;
+            responseContent.Should().Contain("Cannot change EndDate because journal entries already exist in the period.");
+            ex.StatusCode.Should().Be(400);
+        }
     }
 
     [Fact]
     public async Task UpdateFinancialPeriod_ShouldSucceed_WhenJournalVouchersExistAndOnlyTitleIsChanged()
     {
-        throw new NotImplementedException();
+        // Create active financial period
+        var financialPeriod = await setup.TestInit1.GetOrCreateFinancialPeriod();
+
+        // Update isActive
+        financialPeriod.IsActive = false;
+        await setup.TestInit1.AccountingDbContext.SaveChangesAsync();
+
+        // Create active financial period
+        var financialPeriod2 = await setup.TestInit1.GetOrCreateFinancialPeriod();
+
+        // Create group account
+        var creditGroupAccount = await setup.TestInit1.CreateGroupAccount(JournalEntryType.Credit);
+        var debitGroupAccount = await setup.TestInit1.CreateGroupAccount(JournalEntryType.Debit);
+
+        // Create journal voucher
+        await setup.TestInit1.CreateJournalEntry(creditGroupAccount.Id, debitGroupAccount.Id, financialPeriod2);
+
+        // Update financial period
+        var updateFinancialPeriodCommand = new UpdateFinancialPeriodCommand
+        {
+            FinancialPeriodId = financialPeriod2.Id,
+            FinancialPeriodTitle = new PatchOfString
+            {
+                Value = Guid.NewGuid().ToString()
+            }
+        };
+        var result = await setup.TestInit1.FinancialPeriodClient.UpdateAsync(updateFinancialPeriodCommand);
+
+        // Get financial period
+        var afterUpdateFinancialPeriod = await setup.TestInit1.AccountingDbContext
+            .Set<FinancialPeriodEntity>()
+            .AsNoTracking()
+            .SingleAsync(x => x.Id == financialPeriod2.Id);
+
+        // Assert
+        result.IsSuccess.Should().BeTrue();
+        afterUpdateFinancialPeriod.FinancialPeriodTitle.Should().NotBe(financialPeriod2.FinancialPeriodTitle);
+        afterUpdateFinancialPeriod.StartDate.Should().Be(financialPeriod2.StartDate);
+        afterUpdateFinancialPeriod.EndDate.Should().Be(financialPeriod2.EndDate);
+        afterUpdateFinancialPeriod.IsActive.Should().Be(financialPeriod2.IsActive);
     }
 
     [Fact]
     public async Task UpdateFinancialPeriod_ShouldFail_WhenEndDateEqualsStartDate()
     {
-        throw new NotImplementedException();
+        // Create active financial period
+        var financialPeriod = await setup.TestInit1.GetOrCreateFinancialPeriod();
+
+        // Update isActive
+        financialPeriod.IsActive = false;
+        await setup.TestInit1.AccountingDbContext.SaveChangesAsync();
+
+        // Create active financial period
+        var financialPeriod2 = await setup.TestInit1.GetOrCreateFinancialPeriod();
+
+        // Update financial period
+        var updateFinancialPeriodCommand = new UpdateFinancialPeriodCommand
+        {
+            FinancialPeriodId = financialPeriod2.Id,
+            EndDate = new PatchOfDateTime
+            {
+                Value = financialPeriod2.StartDate
+            }
+        };
+
+        try
+        {
+            var result = await setup.TestInit1.FinancialPeriodClient.UpdateAsync(updateFinancialPeriodCommand);
+            result.IsSuccess.Should().BeFalse("Expected an ApiException was not thrown.");
+        }
+        catch (ApiException ex)
+        {
+            var responseContent = ex.Message;
+            responseContent.Should().Contain("End date must be later than start date.");
+            ex.StatusCode.Should().Be(400);
+        }
     }
 
     [Fact]
     public async Task UpdateFinancialPeriod_ShouldFail_WhenEndDateLessThanStartDate()
     {
-        throw new NotImplementedException();
-    }
+        // Create active financial period
+        var financialPeriod = await setup.TestInit1.GetOrCreateFinancialPeriod();
 
-    [Fact]
-    public async Task UpdateFinancialPeriod_ShouldFail_WhenNewStartDateMakesItInvalid()
-    {
-        throw new NotImplementedException();
-    }
+        // Update financial period
+        var updateFinancialPeriodCommand = new UpdateFinancialPeriodCommand
+        {
+            FinancialPeriodId = financialPeriod.Id,
+            EndDate = new PatchOfDateTime
+            {
+                Value = financialPeriod.StartDate.AddDays(-5)
+            }
+        };
 
-    [Fact]
-    public async Task UpdateFinancialPeriod_ShouldFail_WhenNewEndDateMakesItInvalid()
-    {
-        throw new NotImplementedException();
+        try
+        {
+            var result = await setup.TestInit1.FinancialPeriodClient.UpdateAsync(updateFinancialPeriodCommand);
+            result.IsSuccess.Should().BeFalse("Expected an ApiException was not thrown.");
+        }
+        catch (ApiException ex)
+        {
+            var responseContent = ex.Message;
+            responseContent.Should().Contain("End date must be later than start date.");
+            ex.StatusCode.Should().Be(400);
+        }
     }
 }
