@@ -730,7 +730,7 @@ public class SubLedgerAccountTests(ApiTestSetup setup, ITestOutputHelper output)
         var subLedgerAccountDebit = await setup.TestInit1.CreateSubLedgerAccount(generalLedgerAccountDebit.Id, JournalEntryType.Debit);
 
         // Create journal entry
-        await setup.TestInit1.CreateJournalEntry(financialPeriod.Id, groupAccountCredit.Id, groupAccountDebit.Id, generalLedgerAccountCredit.Id, generalLedgerAccountDebit.Id, subLedgerAccountCredit, subLedgerAccountDebit);
+        await setup.TestInit1.CreateJournalEntry(financialPeriod, groupAccountCredit.Id, groupAccountDebit.Id, generalLedgerAccountCredit.Id, generalLedgerAccountDebit.Id, subLedgerAccountCredit, subLedgerAccountDebit);
 
         // Update subLedger account
         var updateSubLedgerAccountCommand = new UpdateSubLedgerAccountCommand
@@ -851,7 +851,7 @@ public class SubLedgerAccountTests(ApiTestSetup setup, ITestOutputHelper output)
         var subLedgerAccountDebit = await setup.TestInit1.CreateSubLedgerAccount(generalLedgerAccountDebit.Id, JournalEntryType.Debit);
 
         // Create journal entry
-        await setup.TestInit1.CreateJournalEntry(financialPeriod.Id, groupAccountCredit.Id, groupAccountDebit.Id, generalLedgerAccountCredit.Id, generalLedgerAccountDebit.Id, subLedgerAccountCredit, subLedgerAccountDebit);
+        await setup.TestInit1.CreateJournalEntry(financialPeriod, groupAccountCredit.Id, groupAccountDebit.Id, generalLedgerAccountCredit.Id, generalLedgerAccountDebit.Id, subLedgerAccountCredit, subLedgerAccountDebit);
 
         // Update subLedger account
         var updateSubLedgerAccountCommand = new UpdateSubLedgerAccountCommand
@@ -1019,7 +1019,7 @@ public class SubLedgerAccountTests(ApiTestSetup setup, ITestOutputHelper output)
         var subLedgerAccountDebit = await setup.TestInit1.CreateSubLedgerAccount(generalLedgerAccountDebit.Id, JournalEntryType.Debit);
 
         // Create journal entry
-        await setup.TestInit1.CreateJournalEntry(financialPeriod.Id, groupAccountCredit.Id, groupAccountDebit.Id, generalLedgerAccountCredit.Id, generalLedgerAccountDebit.Id, subLedgerAccountCredit, subLedgerAccountDebit);
+        await setup.TestInit1.CreateJournalEntry(financialPeriod, groupAccountCredit.Id, groupAccountDebit.Id, generalLedgerAccountCredit.Id, generalLedgerAccountDebit.Id, subLedgerAccountCredit, subLedgerAccountDebit);
 
         // Update subLedger account
         var updateSubLedgerAccountCommand = new UpdateSubLedgerAccountCommand

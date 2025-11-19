@@ -788,7 +788,7 @@ public class DetailedAccountTests(ApiTestSetup setup, ITestOutputHelper output) 
         var detailedAccountDebit = await setup.TestInit1.CreateDetailedAccount(subLedgerAccountDebit.Id, JournalEntryType.Debit);
 
         // Create journal entry
-        await setup.TestInit1.CreateJournalEntry(financialPeriod.Id, groupAccountCredit.Id, groupAccountDebit.Id,
+        await setup.TestInit1.CreateJournalEntry(financialPeriod, groupAccountCredit.Id, groupAccountDebit.Id,
             generalLedgerAccountCredit.Id,
             generalLedgerAccountDebit.Id,
             subLedgerAccountCredit,
@@ -927,7 +927,7 @@ public class DetailedAccountTests(ApiTestSetup setup, ITestOutputHelper output) 
         var detailedAccountDebit = await setup.TestInit1.CreateDetailedAccount(subLedgerAccountDebit.Id, JournalEntryType.Debit);
 
         // Create journal entry
-        await setup.TestInit1.CreateJournalEntry(financialPeriod.Id, groupAccountCredit.Id, groupAccountDebit.Id,
+        await setup.TestInit1.CreateJournalEntry(financialPeriod, groupAccountCredit.Id, groupAccountDebit.Id,
             generalLedgerAccountCredit.Id, generalLedgerAccountDebit.Id,
             subLedgerAccountCredit, subLedgerAccountDebit,
             detailedAccountCredit, detailedAccountDebit);
@@ -1112,7 +1112,7 @@ public class DetailedAccountTests(ApiTestSetup setup, ITestOutputHelper output) 
         var detailedAccountDebit = await setup.TestInit1.CreateDetailedAccount(subLedgerAccountDebit.Id, JournalEntryType.Debit);
 
         // Create journal entry
-        await setup.TestInit1.CreateJournalEntry(financialPeriod.Id, groupAccountCredit.Id, groupAccountDebit.Id,
+        await setup.TestInit1.CreateJournalEntry(financialPeriod, groupAccountCredit.Id, groupAccountDebit.Id,
             generalLedgerAccountCredit.Id, generalLedgerAccountDebit.Id,
             subLedgerAccountCredit, subLedgerAccountDebit,
             detailedAccountCredit, detailedAccountDebit);

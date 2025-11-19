@@ -551,7 +551,7 @@ public class GroupAccountTests(ApiTestSetup setup, ITestOutputHelper output) : I
         var debitGroupAccount = await setup.TestInit1.CreateGroupAccount(JournalEntryType.Debit);
 
         // Create journal entry
-        await setup.TestInit1.CreateJournalEntry(creditGroupAccount.Id, debitGroupAccount.Id, financialPeriod.Id);
+        await setup.TestInit1.CreateJournalEntry(creditGroupAccount.Id, debitGroupAccount.Id, financialPeriod);
 
         // Update group account
         var updateGroupAccountCommand = new UpdateGroupAccountCommand
@@ -672,7 +672,7 @@ public class GroupAccountTests(ApiTestSetup setup, ITestOutputHelper output) : I
         var debitGroupAccount = await setup.TestInit1.CreateGroupAccount(JournalEntryType.Debit);
 
         // Create journal entry
-        await setup.TestInit1.CreateJournalEntry(creditGroupAccount.Id, debitGroupAccount.Id, financialPeriod.Id);
+        await setup.TestInit1.CreateJournalEntry(creditGroupAccount.Id, debitGroupAccount.Id, financialPeriod);
 
         // Update group account
         var updateGroupAccountCommand = new UpdateGroupAccountCommand
@@ -812,7 +812,7 @@ public class GroupAccountTests(ApiTestSetup setup, ITestOutputHelper output) : I
         var debitGroupAccount = await setup.TestInit1.CreateGroupAccount(JournalEntryType.Debit);
 
         // Create journal entry
-        await setup.TestInit1.CreateJournalEntry(creditGroupAccount.Id, debitGroupAccount.Id, financialPeriod.Id);
+        await setup.TestInit1.CreateJournalEntry(creditGroupAccount.Id, debitGroupAccount.Id, financialPeriod);
 
         // Update group account
         var updateGroupAccountCommand = new UpdateGroupAccountCommand

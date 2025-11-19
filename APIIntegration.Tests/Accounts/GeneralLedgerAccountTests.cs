@@ -579,7 +579,7 @@ public class GeneralLedgerAccountTests(ApiTestSetup setup, ITestOutputHelper out
         var generalLedgerAccountDebit = await setup.TestInit1.CreateGeneralLedgerAccount(groupAccountDebit.Id, JournalEntryType.Debit);
 
         // Create journal entry
-        await setup.TestInit1.CreateJournalEntry(financialPeriod.Id, groupAccountCredit.Id, groupAccountDebit.Id, generalLedgerAccountCredit.Id, generalLedgerAccountDebit.Id);
+        await setup.TestInit1.CreateJournalEntry(financialPeriod, groupAccountCredit.Id, groupAccountDebit.Id, generalLedgerAccountCredit.Id, generalLedgerAccountDebit.Id);
 
         // Update generalLedger account
         var updateGeneralLedgerAccountCommand = new UpdateGeneralLedgerAccountCommand
@@ -735,7 +735,7 @@ public class GeneralLedgerAccountTests(ApiTestSetup setup, ITestOutputHelper out
         var generalLedgerAccountDebit = await setup.TestInit1.CreateGeneralLedgerAccount(groupAccountDebit.Id, JournalEntryType.Debit);
 
         // Create journal entry
-        await setup.TestInit1.CreateJournalEntry(financialPeriod.Id, groupAccountCredit.Id, groupAccountDebit.Id, generalLedgerAccountCredit.Id, generalLedgerAccountDebit.Id);
+        await setup.TestInit1.CreateJournalEntry(financialPeriod, groupAccountCredit.Id, groupAccountDebit.Id, generalLedgerAccountCredit.Id, generalLedgerAccountDebit.Id);
 
         // Update generalLedger account
         var updateGeneralLedgerAccountCommand = new UpdateGeneralLedgerAccountCommand
@@ -889,7 +889,7 @@ public class GeneralLedgerAccountTests(ApiTestSetup setup, ITestOutputHelper out
         var generalLedgerAccountDebit = await setup.TestInit1.CreateGeneralLedgerAccount(groupAccountDebit.Id, JournalEntryType.Debit);
 
         // Create journal entry
-        await setup.TestInit1.CreateJournalEntry(financialPeriod.Id, groupAccountCredit.Id, groupAccountDebit.Id, generalLedgerAccountCredit.Id, generalLedgerAccountDebit.Id);
+        await setup.TestInit1.CreateJournalEntry(financialPeriod, groupAccountCredit.Id, groupAccountDebit.Id, generalLedgerAccountCredit.Id, generalLedgerAccountDebit.Id);
 
         // Update generalLedger account
         var updateGeneralLedgerAccountCommand = new UpdateGeneralLedgerAccountCommand
