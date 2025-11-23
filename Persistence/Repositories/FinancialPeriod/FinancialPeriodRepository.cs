@@ -24,9 +24,8 @@ internal sealed class FinancialPeriodRepository(AccountingDbContext dbContext) :
     public async Task<FinancialPeriodEntity?> GetOverlappingFinancialPeriodAsync(CancellationToken cancellationToken = default, DateTime? startDate = null, DateTime? endDate = null)
     {
         return await TableNoTracking.FirstOrDefaultAsync(x =>
-                (!startDate.HasValue || x.EndDate >= startDate.Value) &&
-                (!endDate.HasValue || x.StartDate <= endDate.Value) &&
-                x.IsActive,
+                (!startDate.HasValue || x.EndDate.Date >= startDate.Value.Date) &&
+                (!endDate.HasValue || x.StartDate.Date <= endDate.Value.Date),
                 cancellationToken);
 
     }
@@ -34,9 +33,8 @@ internal sealed class FinancialPeriodRepository(AccountingDbContext dbContext) :
     public async Task<FinancialPeriodEntity?> GetOverlappingFinancialPeriodByIdAsync(Guid id, CancellationToken cancellationToken = default, DateTime? startDate = null, DateTime? endDate = null)
     {
         return await TableNoTracking.FirstOrDefaultAsync(x =>
-                (!startDate.HasValue || x.EndDate >= startDate.Value) &&
-                (!endDate.HasValue || x.StartDate <= endDate.Value) &&
-                x.IsActive &&
+                (!startDate.HasValue || x.EndDate.Date >= startDate.Value.Date) &&
+                (!endDate.HasValue || x.StartDate.Date <= endDate.Value.Date) &&
                 x.Id != id,
             cancellationToken);
     }
@@ -64,10 +62,10 @@ internal sealed class FinancialPeriodRepository(AccountingDbContext dbContext) :
             query = query.Where(x => x.IsActive == filter.IsActive.Value);
 
         if (filter.StartDate.HasValue)
-            query = query.Where(x => x.StartDate == filter.StartDate.Value);
+            query = query.Where(x => x.StartDate.Date == filter.StartDate.Value.Date);
 
         if (filter.EndDate.HasValue)
-            query = query.Where(x => x.EndDate == filter.EndDate.Value);
+            query = query.Where(x => x.EndDate.Date == filter.EndDate.Value.Date);
 
         // TODO: Apply pagination
         return await query.ToListAsync(cancellationToken);

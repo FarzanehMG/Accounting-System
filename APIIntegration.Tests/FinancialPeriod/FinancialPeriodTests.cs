@@ -1,4 +1,5 @@
 ﻿using APIIntegration.Tests.Helper;
+using Application.Features.FinancialPeriod.Queries.Dtos;
 using Domain.Entities.FinancialPeriod;
 using FluentAssertions;
 using GenerateApi;
@@ -8,29 +9,28 @@ using UpdateFinancialPeriodCommand = GenerateApi.UpdateFinancialPeriodCommand;
 
 namespace APIIntegration.Tests.FinancialPeriod;
 
-public class FinancialPeriodTests(ApiTestSetup setup, ITestOutputHelper output) : IClassFixture<ApiTestSetup>
+public class FinancialPeriodTests(ApiTestSetup setup, ITestOutputHelper output) : IClassFixture<ApiTestSetup>, IAsyncLifetime
 {
-    [Fact]
-    public async Task CreateFinancialPeriod__ShouldSuccess_WhenRequestIsValid()
+    public async Task InitializeAsync()
     {
-        // Create active financial period
-        await setup.TestInit1.GetOrCreateFinancialPeriod();
+        // clean DB before each test
+        await setup.TestInit1.DeleteFinancialPeriodAndDependenciesAsync();
+    }
 
-        // Get active financial period
-        var activeFinancialPeriod = await setup.TestInit1.AccountingDbContext
-            .Set<FinancialPeriodEntity>()
-            .SingleAsync(x => x.IsActive);
+    public Task DisposeAsync()
+    {
+        return Task.CompletedTask;
+    }
 
-        // Close active financial period
-        activeFinancialPeriod.IsActive = false;
-        await setup.TestInit1.AccountingDbContext.SaveChangesAsync();
-
+    [Fact]
+    public async Task CreateFinancialPeriod_ShouldSuccess_WhenRequestIsValid()
+    {
         // Create financial period
         var model = new CreateFinancialPeriodApiModel
         {
             FinancialPeriodTitle = Guid.NewGuid().ToString(),
-            StartDate = DateTime.UtcNow.AddDays(100),
-            EndDate = DateTime.UtcNow.AddDays(100)
+            StartDate = DateTime.UtcNow.AddDays(1),
+            EndDate = DateTime.UtcNow.AddDays(2)
         };
         await setup.TestInit1.FinancialPeriodClient.CreateAsync(model);
 
@@ -53,24 +53,12 @@ public class FinancialPeriodTests(ApiTestSetup setup, ITestOutputHelper output) 
     [Fact]
     public async Task CreateFinancialPeriod_ShouldFail_WhenEndDateLessThanStartDate()
     {
-        // Create active financial period
-        await setup.TestInit1.GetOrCreateFinancialPeriod();
-
-        // Get active financial period
-        var activeFinancialPeriod = await setup.TestInit1.AccountingDbContext
-            .Set<FinancialPeriodEntity>()
-            .SingleAsync(x => x.IsActive);
-
-        // Close active financial period
-        activeFinancialPeriod.IsActive = false;
-        await setup.TestInit1.AccountingDbContext.SaveChangesAsync();
-
         // Create financial period
         var model = new CreateFinancialPeriodApiModel
         {
             FinancialPeriodTitle = Guid.NewGuid().ToString(),
-            StartDate = DateTime.UtcNow.AddDays(100),
-            EndDate = DateTime.UtcNow
+            StartDate = DateTime.UtcNow.AddDays(1),
+            EndDate =DateTime.UtcNow.Date
         };
 
         // Act And Assert
@@ -90,15 +78,15 @@ public class FinancialPeriodTests(ApiTestSetup setup, ITestOutputHelper output) 
     [Fact]
     public async Task CreateFinancialPeriodHandler_ShouldFail_WhenPeriodOverlapWithExistingFinancialPeriod()
     {
-        // Create active financial period
+        // Create financial period
         await setup.TestInit1.GetOrCreateFinancialPeriod();
 
         // Create financial period
         var model = new CreateFinancialPeriodApiModel
         {
             FinancialPeriodTitle = Guid.NewGuid().ToString(),
-            StartDate = DateTime.UtcNow.AddDays(5),
-            EndDate = DateTime.UtcNow.AddDays(15)
+            StartDate = DateTime.UtcNow.AddDays(-1),
+            EndDate = DateTime.UtcNow.AddDays(2)
         };
 
         // Act And Assert
@@ -118,15 +106,15 @@ public class FinancialPeriodTests(ApiTestSetup setup, ITestOutputHelper output) 
     [Fact]
     public async Task CreateFinancialPeriodHandler_ShouldFail_WhenHaveActiveExistingFinancialPeriod()
     {
-        // Create active financial period
-        await setup.TestInit1.GetOrCreateFinancialPeriod();
+        // Create financial period
+        var financialPeriod = await setup.TestInit1.GetOrCreateFinancialPeriod();
 
         // Create financial period
         var model = new CreateFinancialPeriodApiModel
         {
             FinancialPeriodTitle = Guid.NewGuid().ToString(),
-            StartDate = DateTime.UtcNow.AddDays(100),
-            EndDate = DateTime.UtcNow.AddDays(101)
+            StartDate = financialPeriod.EndDate.AddDays(1),
+            EndDate = financialPeriod.EndDate.AddDays(2)
         };
 
         // Act And Assert
@@ -146,20 +134,8 @@ public class FinancialPeriodTests(ApiTestSetup setup, ITestOutputHelper output) 
     [Fact]
     public async Task CreateFinancialPeriodHandler_ShouldFail_WhenEndDateEqualsStartDate()
     {
-        // Create active financial period
-        await setup.TestInit1.GetOrCreateFinancialPeriod();
-
-        // Get active financial period
-        var activeFinancialPeriod = await setup.TestInit1.AccountingDbContext
-            .Set<FinancialPeriodEntity>()
-            .SingleAsync(x => x.IsActive);
-
-        // Close active financial period
-        activeFinancialPeriod.IsActive = false;
-        await setup.TestInit1.AccountingDbContext.SaveChangesAsync();
-
         // Create financial period
-        var exactDate = DateTime.UtcNow.AddDays(100).Date;
+        var exactDate = DateTime.UtcNow.AddDays(1);
 
         var model = new CreateFinancialPeriodApiModel
         {
@@ -185,24 +161,12 @@ public class FinancialPeriodTests(ApiTestSetup setup, ITestOutputHelper output) 
     [Fact]
     public async Task CreateFinancialPeriod_ShouldFail_WhenFinancialPeriodTitleIsNull()
     {
-        // Create active financial period
-        await setup.TestInit1.GetOrCreateFinancialPeriod();
-
-        // Get active financial period
-        var activeFinancialPeriod = await setup.TestInit1.AccountingDbContext
-            .Set<FinancialPeriodEntity>()
-            .SingleAsync(x => x.IsActive);
-
-        // Close active financial period
-        activeFinancialPeriod.IsActive = false;
-        await setup.TestInit1.AccountingDbContext.SaveChangesAsync();
-
         // Create financial period
         var model = new CreateFinancialPeriodApiModel
         {
             FinancialPeriodTitle = "",
-            StartDate = DateTime.UtcNow.AddDays(100),
-            EndDate = DateTime.UtcNow.AddDays(101)
+            StartDate = DateTime.UtcNow.AddDays(1),
+            EndDate = DateTime.UtcNow.AddDays(2)
         };
 
         // Act And Assert
@@ -222,24 +186,12 @@ public class FinancialPeriodTests(ApiTestSetup setup, ITestOutputHelper output) 
     [Fact]
     public async Task CreateFinancialPeriod_ShouldFail_WhenStartDateIsNull()
     {
-        // Create active financial period
-        await setup.TestInit1.GetOrCreateFinancialPeriod();
-
-        // Get active financial period
-        var activeFinancialPeriod = await setup.TestInit1.AccountingDbContext
-            .Set<FinancialPeriodEntity>()
-            .SingleAsync(x => x.IsActive);
-
-        // Close active financial period
-        activeFinancialPeriod.IsActive = false;
-        await setup.TestInit1.AccountingDbContext.SaveChangesAsync();
-
         // Create financial period
         var model = new CreateFinancialPeriodApiModel
         {
             FinancialPeriodTitle = Guid.NewGuid().ToString(),
             StartDate = DateTime.MinValue,
-            EndDate = DateTime.UtcNow.AddDays(101)
+            EndDate = DateTime.UtcNow.AddDays(2)
         };
 
         // Act And Assert
@@ -259,23 +211,11 @@ public class FinancialPeriodTests(ApiTestSetup setup, ITestOutputHelper output) 
     [Fact]
     public async Task CreateFinancialPeriod_ShouldFail_WhenEndDateIsNull()
     {
-        // Create active financial period
-        await setup.TestInit1.GetOrCreateFinancialPeriod();
-
-        // Get active financial period
-        var activeFinancialPeriod = await setup.TestInit1.AccountingDbContext
-            .Set<FinancialPeriodEntity>()
-            .SingleAsync(x => x.IsActive);
-
-        // Close active financial period
-        activeFinancialPeriod.IsActive = false;
-        await setup.TestInit1.AccountingDbContext.SaveChangesAsync();
-
         // Create financial period
         var model = new CreateFinancialPeriodApiModel
         {
             FinancialPeriodTitle = Guid.NewGuid().ToString(),
-            StartDate = DateTime.UtcNow.AddDays(101),
+            StartDate = DateTime.UtcNow.AddDays(1),
             EndDate = DateTime.MinValue
         };
 
@@ -296,15 +236,15 @@ public class FinancialPeriodTests(ApiTestSetup setup, ITestOutputHelper output) 
     [Fact]
     public async Task CreateFinancialPeriod_ShouldFail_WhenPeriodOverlapsOnlyAtStartDate()
     {
-        // Create active financial period
-        await setup.TestInit1.GetOrCreateFinancialPeriod();
+        // Create financial period
+        var financialPeriod = await setup.TestInit1.GetOrCreateFinancialPeriod();
 
         // Create financial period
         var model = new CreateFinancialPeriodApiModel
         {
             FinancialPeriodTitle = Guid.NewGuid().ToString(),
-            StartDate = DateTime.UtcNow.AddDays(5),
-            EndDate = DateTime.UtcNow.AddDays(101)
+            StartDate = financialPeriod.EndDate.AddDays(-2),
+            EndDate = financialPeriod.EndDate.AddDays(2)
         };
 
         // Act And Assert
@@ -324,15 +264,15 @@ public class FinancialPeriodTests(ApiTestSetup setup, ITestOutputHelper output) 
     [Fact]
     public async Task CreateFinancialPeriod_ShouldFail_WhenPeriodOverlapsOnlyAtEndDate()
     {
-        // Create active financial period
-        await setup.TestInit1.GetOrCreateFinancialPeriod();
+        // Create financial period
+        var financialPeriod = await setup.TestInit1.GetOrCreateFinancialPeriod();
 
         // Create financial period
         var model = new CreateFinancialPeriodApiModel
         {
             FinancialPeriodTitle = Guid.NewGuid().ToString(),
-            StartDate = DateTime.UtcNow.AddDays(80),
-            EndDate = DateTime.UtcNow.AddDays(90)
+            StartDate = financialPeriod.EndDate.AddDays(-2),
+            EndDate = financialPeriod.EndDate.AddDays(-1)
         };
 
         // Act And Assert
@@ -375,8 +315,8 @@ public class FinancialPeriodTests(ApiTestSetup setup, ITestOutputHelper output) 
         // Assert
         result.IsSuccess.Should().BeTrue();
         afterUpdateFinancialPeriod.FinancialPeriodTitle.Should().NotBe(financialPeriod.FinancialPeriodTitle);
-        afterUpdateFinancialPeriod.StartDate.Should().Be(financialPeriod.StartDate);
-        afterUpdateFinancialPeriod.EndDate.Should().Be(financialPeriod.EndDate);
+        afterUpdateFinancialPeriod.StartDate.Date.Should().Be(financialPeriod.StartDate.Date);
+        afterUpdateFinancialPeriod.EndDate.Date.Should().Be(financialPeriod.EndDate.Date);
         afterUpdateFinancialPeriod.IsActive.Should().Be(financialPeriod.IsActive);
     }
 
@@ -445,13 +385,6 @@ public class FinancialPeriodTests(ApiTestSetup setup, ITestOutputHelper output) 
     [Fact]
     public async Task UpdateFinancialPeriod_ShouldSucceed_WhenAllFieldsProvidedAndNoJournalEntries()
     {
-        // Create active financial period
-        var financialPeriod = await setup.TestInit1.GetOrCreateFinancialPeriod();
-
-        // Update isActive
-        financialPeriod.IsActive = false;
-        await setup.TestInit1.AccountingDbContext.SaveChangesAsync();
-
         // Create active financial period
         var financialPeriod2 = await setup.TestInit1.GetOrCreateFinancialPeriod();
 
@@ -576,7 +509,46 @@ public class FinancialPeriodTests(ApiTestSetup setup, ITestOutputHelper output) 
     [Fact]
     public async Task UpdateFinancialPeriod_ShouldFail_WhenOverlapsWithAnotherPeriod()
     {
-        throw new NotImplementedException();
+        // Create active financial period
+        var financialPeriod = await setup.TestInit1.GetOrCreateFinancialPeriod();
+
+        financialPeriod.IsActive = false;
+        await setup.TestInit1.AccountingDbContext.SaveChangesAsync();
+
+        // Create active financial period
+        var createFinancialPeriod = new CreateFinancialPeriodApiModel
+        {
+            FinancialPeriodTitle = Guid.NewGuid().ToString(),
+            StartDate = financialPeriod.EndDate.AddDays(1),
+            EndDate = financialPeriod.EndDate.AddDays(2)
+        };
+        await setup.TestInit1.FinancialPeriodClient.CreateAsync(createFinancialPeriod);
+
+        var financialPeriod2 = await setup.TestInit1.AccountingDbContext.Set<FinancialPeriodEntity>()
+            .SingleAsync(x => x.FinancialPeriodTitle == createFinancialPeriod.FinancialPeriodTitle && x.StartDate == createFinancialPeriod.StartDate);
+
+
+        // Update financial period
+        var updateFinancialPeriodCommand = new UpdateFinancialPeriodCommand
+        {
+            FinancialPeriodId = financialPeriod2.Id,
+            StartDate = new PatchOfDateTime
+            {
+                Value = financialPeriod.EndDate.AddDays(-2)
+            }
+        };
+
+        try
+        {
+            var result = await setup.TestInit1.FinancialPeriodClient.UpdateAsync(updateFinancialPeriodCommand);
+            result.IsSuccess.Should().BeFalse("Expected an ApiException was not thrown.");
+        }
+        catch (ApiException ex)
+        {
+            var responseContent = ex.Message;
+            responseContent.Should().Contain("The selected period overlaps with an existing financial period.");
+            ex.StatusCode.Should().Be(400);
+        }
     }
 
     [Fact]
@@ -655,13 +627,6 @@ public class FinancialPeriodTests(ApiTestSetup setup, ITestOutputHelper output) 
     public async Task UpdateFinancialPeriod_ShouldSucceed_WhenJournalVouchersExistAndOnlyTitleIsChanged()
     {
         // Create active financial period
-        var financialPeriod = await setup.TestInit1.GetOrCreateFinancialPeriod();
-
-        // Update isActive
-        financialPeriod.IsActive = false;
-        await setup.TestInit1.AccountingDbContext.SaveChangesAsync();
-
-        // Create active financial period
         var financialPeriod2 = await setup.TestInit1.GetOrCreateFinancialPeriod();
 
         // Create group account
@@ -702,20 +667,13 @@ public class FinancialPeriodTests(ApiTestSetup setup, ITestOutputHelper output) 
         // Create active financial period
         var financialPeriod = await setup.TestInit1.GetOrCreateFinancialPeriod();
 
-        // Update isActive
-        financialPeriod.IsActive = false;
-        await setup.TestInit1.AccountingDbContext.SaveChangesAsync();
-
-        // Create active financial period
-        var financialPeriod2 = await setup.TestInit1.GetOrCreateFinancialPeriod();
-
         // Update financial period
         var updateFinancialPeriodCommand = new UpdateFinancialPeriodCommand
         {
-            FinancialPeriodId = financialPeriod2.Id,
+            FinancialPeriodId = financialPeriod.Id,
             EndDate = new PatchOfDateTime
             {
-                Value = financialPeriod2.StartDate
+                Value = financialPeriod.StartDate
             }
         };
 
@@ -759,5 +717,123 @@ public class FinancialPeriodTests(ApiTestSetup setup, ITestOutputHelper output) 
             responseContent.Should().Contain("End date must be later than start date.");
             ex.StatusCode.Should().Be(400);
         }
+    }
+
+    [Fact]
+    public async Task GetAllFinancialPeriods_ShouldSucceed_WhenNoFiltersApplied()
+    {
+        // Create active financial period
+        await setup.TestInit1.GetOrCreateFinancialPeriod();
+
+        // Get financial period
+        var original = await setup.TestInit1.AccountingDbContext
+            .Set<FinancialPeriodEntity>()
+            .AsNoTracking()
+            .ToListAsync();
+
+        // Get all financial period
+        var result = await setup.TestInit1.FinancialPeriodClient.GetAllAsync();
+
+        // Assert
+        result.Data.Should().NotBeNull();
+        result.Data.Count.Should().Be(original.Count);
+        result.IsSuccess.Should().BeTrue();
+    }
+
+    [Fact]
+    public async Task GetAllFinancialPeriods_ShouldSucceed_WhenFilteredByTitle()
+    {
+        // Create active financial period
+        var financialPeriod = await setup.TestInit1.GetOrCreateFinancialPeriod();
+
+        // Get financial period
+        var original = await setup.TestInit1.AccountingDbContext
+            .Set<FinancialPeriodEntity>()
+            .AsNoTracking()
+            .Where(x => x.FinancialPeriodTitle == financialPeriod.FinancialPeriodTitle)
+            .ToListAsync();
+
+        // Get all financial period
+        var filterFinancialPeriod = new FinancialPeriodFilter
+        {
+            Title = financialPeriod.FinancialPeriodTitle
+        };
+        var result = await setup.TestInit1.FinancialPeriodClient.GetAllAsync(filterFinancialPeriod.Title);
+
+        // Assert
+        result.Data.Should().NotBeNull();
+        result.Data.Count.Should().Be(original.Count);
+        result.IsSuccess.Should().BeTrue();
+    }
+
+    [Fact]
+    public async Task GetAllFinancialPeriods_ShouldSucceed_WhenFilteredByActiveFlag()
+    {
+        // Create active financial period
+        var financialPeriod = await setup.TestInit1.GetOrCreateFinancialPeriod();
+
+        // Get all financial period
+        var filterFinancialPeriod = new FinancialPeriodFilter
+        {
+            IsActive = financialPeriod.IsActive
+        };
+        var result = await setup.TestInit1.FinancialPeriodClient.GetAllAsync(isActive: filterFinancialPeriod.IsActive);
+
+        // Assert
+        result.Data.Should().NotBeNull();
+        result.Data.Count.Should().Be(1);
+        result.IsSuccess.Should().BeTrue();
+    }
+
+    [Fact]
+    public async Task GetAllFinancialPeriods_ShouldSucceed_WhenFilteredByStartDate()
+    {
+        // Create active financial period
+        var financialPeriod = await setup.TestInit1.GetOrCreateFinancialPeriod();
+
+        // Get financial period
+        var original = await setup.TestInit1.AccountingDbContext
+            .Set<FinancialPeriodEntity>()
+            .AsNoTracking()
+            .Where(x=>x.StartDate.Date == financialPeriod.StartDate.Date)
+            .ToListAsync();
+
+        // Get all financial period
+        var filterFinancialPeriod = new FinancialPeriodFilter
+        {
+            StartDate = financialPeriod.StartDate
+        };
+        var result = await setup.TestInit1.FinancialPeriodClient.GetAllAsync(startDate: filterFinancialPeriod.StartDate);
+
+        // Assert
+        result.Data.Should().NotBeNull();
+        result.Data.Count.Should().Be(original.Count);
+        result.IsSuccess.Should().BeTrue();
+    }
+
+    [Fact]
+    public async Task GetAllFinancialPeriods_ShouldSucceed_WhenFilteredByEndDate()
+    {
+        // Create active financial period
+        var financialPeriod = await setup.TestInit1.GetOrCreateFinancialPeriod();
+
+        // Get financial period
+        var original = await setup.TestInit1.AccountingDbContext
+            .Set<FinancialPeriodEntity>()
+            .AsNoTracking()
+            .Where(x => x.EndDate.Date == financialPeriod.EndDate.Date)
+            .ToListAsync();
+
+        // Get all financial period
+        var filterFinancialPeriod = new FinancialPeriodFilter
+        {
+            EndDate = financialPeriod.EndDate
+        };
+        var result = await setup.TestInit1.FinancialPeriodClient.GetAllAsync(endDate: filterFinancialPeriod.EndDate);
+
+        // Assert
+        result.Data.Should().NotBeNull();
+        result.Data.Count.Should().Be(original.Count);
+        result.IsSuccess.Should().BeTrue();
     }
 }

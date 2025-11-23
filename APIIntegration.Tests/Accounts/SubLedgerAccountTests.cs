@@ -9,8 +9,19 @@ using CreateSubLedgerAccountApiModel = GenerateApi.CreateSubLedgerAccountApiMode
 
 namespace APIIntegration.Tests.Accounts;
 
-public class SubLedgerAccountTests(ApiTestSetup setup, ITestOutputHelper output) : IClassFixture<ApiTestSetup>
+public class SubLedgerAccountTests(ApiTestSetup setup, ITestOutputHelper output) : IClassFixture<ApiTestSetup>, IAsyncLifetime
 {
+    public async Task InitializeAsync()
+    {
+        // clean DB before each test
+        await setup.TestInit1.DeleteFinancialPeriodAndDependenciesAsync();
+    }
+
+    public Task DisposeAsync()
+    {
+        return Task.CompletedTask;
+    }
+
     [Fact]
     public async Task CreateSubLedgerAccount_ShouldSuccess_WhenRequestIsValid()
     {
