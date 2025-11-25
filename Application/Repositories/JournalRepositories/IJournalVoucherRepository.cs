@@ -15,4 +15,6 @@ public interface IJournalVoucherRepository
     Task<IReadOnlyList<JournalVoucherEntity>> GetByFinancialPeriodAndStateAsync(Guid financialPeriodId, JournalVoucherState state, CancellationToken cancellationToken);
     Task<JournalVoucherEntity> GetByFinancialPeriodAsync(Guid financialPeriodId, CancellationToken cancellationToken);
     Task UpdateAsync(JournalVoucherEntity entity, CancellationToken cancellationToken = default);
+
+    public Task<int> GetMaxVoucherNumberAsync(Guid financialPeriodId, CancellationToken cancellationToken = default);
 }

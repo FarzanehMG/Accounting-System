@@ -27,25 +27,39 @@ public class CreateJournalVoucherCommandHandler(IUnitOfWork unitOfWork)
         if (command.TransactionTime < financialPeriod.StartDate || command.TransactionTime > financialPeriod.EndDate)
             return OperationResult<bool>.FailureResult(nameof(command.FinancialPeriodId), "Transaction time must be within the selected financial period.");
 
-        // Generate journal voucher Number (incremental per last JournalVoucher)
-        var lastJournalVoucher = await unitOfWork.JournalVoucherRepository.GetLastJournalVoucherAsync(command.FinancialPeriodId, cancellationToken);
-        var journalVoucherNumber = (lastJournalVoucher is null) ? "1" : (int.Parse(lastJournalVoucher.JournalVoucherNumber) + 1).ToString();
+        // Start transaction (The container for atomicity)
+        await using var transaction = await unitOfWork.BeginTransactionAsync(System.Data.IsolationLevel.Serializable, cancellationToken);
 
-        var journalVoucherEntity = new JournalVoucherEntity
+        try
         {
-            JournalVoucherTitle = command.JournalVoucherTitle,
-            JournalVoucherNumber = journalVoucherNumber,
-            Description = command.Description,
-            TransactionTime = command.TransactionTime,
-            FinancialPeriodId = command.FinancialPeriodId,
-            JournalVoucherState = JournalVoucherState.Draft,
-            ReferenceNumber = command.ReferenceNumber,
-            CreatedByUserId = command.CreatedByUserId
-        };
+            // Generate next voucher number safely using Max in EF
+            var lastNumber = await unitOfWork.JournalVoucherRepository.GetMaxVoucherNumberAsync(command.FinancialPeriodId, cancellationToken);
 
-        await unitOfWork.JournalVoucherRepository.CreateAsync(journalVoucherEntity, cancellationToken);
-        await unitOfWork.CommitAsync(cancellationToken);
+            var nextNumber = lastNumber + 1;
+            var voucherNumber = nextNumber.ToString("D5"); // padded format
 
-        return OperationResult<bool>.SuccessResult(true);
+            var journalVoucherEntity = new JournalVoucherEntity
+            {
+                JournalVoucherTitle = command.JournalVoucherTitle,
+                JournalVoucherNumber = voucherNumber,
+                Description = command.Description,
+                TransactionTime = command.TransactionTime,
+                FinancialPeriodId = command.FinancialPeriodId,
+                JournalVoucherState = JournalVoucherState.Draft,
+                ReferenceNumber = command.ReferenceNumber,
+                CreatedByUserId = command.CreatedByUserId
+            };
+
+            await unitOfWork.JournalVoucherRepository.CreateAsync(journalVoucherEntity, cancellationToken);
+            await unitOfWork.CommitAsync(cancellationToken);
+            await transaction.CommitAsync(cancellationToken);
+
+            return OperationResult<bool>.SuccessResult(true);
+        }
+        catch
+        {
+            await transaction.RollbackAsync(cancellationToken);
+            throw;
+        }
     }
 }

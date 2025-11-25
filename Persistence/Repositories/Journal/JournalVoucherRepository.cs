@@ -20,8 +20,20 @@ internal sealed class JournalVoucherRepository(AccountingDbContext dbContext) : 
     {
         return await TableNoTracking
             .Where(x => x.FinancialPeriodId == financialPeriodId)
-            .OrderByDescending(x => x.CreatedDate)
+            .OrderByDescending(x => x.JournalVoucherNumber)
             .FirstOrDefaultAsync(cancellationToken);
+    }
+
+    public async Task<int> GetMaxVoucherNumberAsync(Guid financialPeriodId, CancellationToken cancellationToken = default)
+    {
+        // EF translates Max to SQL, safe inside Serializable transaction
+        var maxNumber = await TableNoTracking
+            .Where(x => x.FinancialPeriodId == financialPeriodId)
+            .Select(x => int.Parse(x.JournalVoucherNumber))
+            .DefaultIfEmpty(0)
+            .MaxAsync(cancellationToken);
+
+        return maxNumber;
     }
 
     public async Task<JournalVoucherEntity?> GetByIdAsync(Guid journalVoucherId, CancellationToken cancellationToken = default)
