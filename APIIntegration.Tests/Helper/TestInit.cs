@@ -267,11 +267,12 @@ public class TestInit
 
         if (financialPeriod is null)
         {
+            var uniqueSuffix = Math.Abs(Guid.NewGuid().GetHashCode() % 1000);
             var createFinancialPeriod = new CreateFinancialPeriodApiModel
             {
                 FinancialPeriodTitle = Guid.NewGuid().ToString(),
-                StartDate = DateTime.UtcNow.AddDays(1),
-                EndDate = DateTime.UtcNow.AddDays(3)
+                StartDate = DateTime.UtcNow.AddDays(uniqueSuffix + 1),
+                EndDate = DateTime.UtcNow.AddDays(uniqueSuffix + 3)
             };
             await FinancialPeriodClient.CreateAsync(createFinancialPeriod);
 
@@ -291,26 +292,9 @@ public class TestInit
 
     internal async Task DeleteFinancialPeriodAndDependenciesAsync()
     {
-        AccountingDbContext.ChangeTracker.Clear();
-
-        var strategy = AccountingDbContext.Database.CreateExecutionStrategy();
-
-        await strategy.ExecuteAsync(async () =>
-        {
-            await using var transaction = await AccountingDbContext.Database.BeginTransactionAsync();
-
-            var entries = await AccountingDbContext.Set<JournalEntryEntity>().ToListAsync();
-            AccountingDbContext.RemoveRange(entries);
-
-            var vouchers = await AccountingDbContext.Set<JournalVoucherEntity>().ToListAsync();
-            AccountingDbContext.RemoveRange(vouchers);
-
-            var periods = await AccountingDbContext.Set<FinancialPeriodEntity>().ToListAsync();
-            AccountingDbContext.RemoveRange(periods);
-
-            await AccountingDbContext.SaveChangesAsync();
-            await transaction.CommitAsync();
-        });
+        await AccountingDbContext.Set<JournalEntryEntity>().ExecuteDeleteAsync();
+        await AccountingDbContext.Set<JournalVoucherEntity>().ExecuteDeleteAsync();
+        await AccountingDbContext.Set<FinancialPeriodEntity>().ExecuteDeleteAsync();
     }
 
     private async Task<JournalVoucherEntity> CreateJournalVoucher(FinancialPeriodEntity financialPeriod)
@@ -319,7 +303,7 @@ public class TestInit
         {
             JournalVoucherTitle = Guid.NewGuid().ToString(),
             ReferenceNumber = Guid.NewGuid().ToString(),
-            TransactionTime = financialPeriod.StartDate,
+            TransactionTime = financialPeriod.StartDate.AddDays(1),
             CreatedByUserId = Guid.NewGuid(),
             FinancialPeriodId = financialPeriod.Id
         };

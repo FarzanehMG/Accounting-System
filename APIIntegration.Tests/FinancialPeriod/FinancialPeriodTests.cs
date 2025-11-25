@@ -9,28 +9,24 @@ using UpdateFinancialPeriodCommand = GenerateApi.UpdateFinancialPeriodCommand;
 
 namespace APIIntegration.Tests.FinancialPeriod;
 
-public class FinancialPeriodTests(ApiTestSetup setup, ITestOutputHelper output) : IClassFixture<ApiTestSetup>, IAsyncLifetime
+[Collection("Sequential Financial Tests")]
+public class FinancialPeriodTests(ApiTestSetup setup, ITestOutputHelper output)
 {
-    public async Task InitializeAsync()
-    {
-        // clean DB before each test
-        await setup.TestInit1.DeleteFinancialPeriodAndDependenciesAsync();
-    }
-
-    public Task DisposeAsync()
-    {
-        return Task.CompletedTask;
-    }
-
     [Fact]
     public async Task CreateFinancialPeriod_ShouldSuccess_WhenRequestIsValid()
     {
+        // Get or create financial period
+        var activeFinancialPeriod = await setup.TestInit1.GetOrCreateFinancialPeriod();
+
+        activeFinancialPeriod.IsActive = false;
+        await setup.TestInit1.AccountingDbContext.SaveChangesAsync();
+
         // Create financial period
         var model = new CreateFinancialPeriodApiModel
         {
             FinancialPeriodTitle = Guid.NewGuid().ToString(),
-            StartDate = DateTime.UtcNow.AddDays(1),
-            EndDate = DateTime.UtcNow.AddDays(2)
+            StartDate = activeFinancialPeriod.EndDate.AddDays(1),
+            EndDate = activeFinancialPeriod.EndDate.AddDays(3)
         };
         await setup.TestInit1.FinancialPeriodClient.CreateAsync(model);
 
@@ -78,15 +74,20 @@ public class FinancialPeriodTests(ApiTestSetup setup, ITestOutputHelper output) 
     [Fact]
     public async Task CreateFinancialPeriodHandler_ShouldFail_WhenPeriodOverlapWithExistingFinancialPeriod()
     {
-        // Create financial period
-        await setup.TestInit1.GetOrCreateFinancialPeriod();
+        await setup.TestInit1.DeleteFinancialPeriodAndDependenciesAsync();
+
+        // Get or create financial period
+        var activeFinancialPeriod = await setup.TestInit1.GetOrCreateFinancialPeriod();
+
+        activeFinancialPeriod.IsActive = false;
+        await setup.TestInit1.AccountingDbContext.SaveChangesAsync();
 
         // Create financial period
         var model = new CreateFinancialPeriodApiModel
         {
             FinancialPeriodTitle = Guid.NewGuid().ToString(),
-            StartDate = DateTime.UtcNow.AddDays(-1),
-            EndDate = DateTime.UtcNow.AddDays(2)
+            StartDate = activeFinancialPeriod.StartDate,
+            EndDate = activeFinancialPeriod.EndDate
         };
 
         // Act And Assert
@@ -264,6 +265,8 @@ public class FinancialPeriodTests(ApiTestSetup setup, ITestOutputHelper output) 
     [Fact]
     public async Task CreateFinancialPeriod_ShouldFail_WhenPeriodOverlapsOnlyAtEndDate()
     {
+        await setup.TestInit1.DeleteFinancialPeriodAndDependenciesAsync();
+
         // Create financial period
         var financialPeriod = await setup.TestInit1.GetOrCreateFinancialPeriod();
 
@@ -323,6 +326,8 @@ public class FinancialPeriodTests(ApiTestSetup setup, ITestOutputHelper output) 
     [Fact]
     public async Task UpdateFinancialPeriod_ShouldSucceed_WhenOnlyStartDateIsProvided()
     {
+        await setup.TestInit1.DeleteFinancialPeriodAndDependenciesAsync();
+
         // Create active financial period
         var financialPeriod = await setup.TestInit1.GetOrCreateFinancialPeriod();
 
@@ -354,6 +359,8 @@ public class FinancialPeriodTests(ApiTestSetup setup, ITestOutputHelper output) 
     [Fact]
     public async Task UpdateFinancialPeriod_ShouldSucceed_WhenOnlyEndDateIsProvided()
     {
+        await setup.TestInit1.DeleteFinancialPeriodAndDependenciesAsync();
+
         // Create active financial period
         var financialPeriod = await setup.TestInit1.GetOrCreateFinancialPeriod();
 
@@ -385,6 +392,8 @@ public class FinancialPeriodTests(ApiTestSetup setup, ITestOutputHelper output) 
     [Fact]
     public async Task UpdateFinancialPeriod_ShouldSucceed_WhenAllFieldsProvidedAndNoJournalEntries()
     {
+        await setup.TestInit1.DeleteFinancialPeriodAndDependenciesAsync();
+
         // Create active financial period
         var financialPeriod2 = await setup.TestInit1.GetOrCreateFinancialPeriod();
 
@@ -424,6 +433,8 @@ public class FinancialPeriodTests(ApiTestSetup setup, ITestOutputHelper output) 
     [Fact]
     public async Task UpdateFinancialPeriod_ShouldNotChange_WhenNoFieldsProvided()
     {
+        await setup.TestInit1.DeleteFinancialPeriodAndDependenciesAsync();
+
         // Create active financial period
         var financialPeriod = await setup.TestInit1.GetOrCreateFinancialPeriod();
 
@@ -590,6 +601,8 @@ public class FinancialPeriodTests(ApiTestSetup setup, ITestOutputHelper output) 
     [Fact]
     public async Task UpdateFinancialPeriod_ShouldFail_WhenJournalVouchersExistAndEndDateIsChanged()
     {
+        await setup.TestInit1.DeleteFinancialPeriodAndDependenciesAsync();
+
         // Create active financial period
         var financialPeriod = await setup.TestInit1.GetOrCreateFinancialPeriod();
 
@@ -626,6 +639,8 @@ public class FinancialPeriodTests(ApiTestSetup setup, ITestOutputHelper output) 
     [Fact]
     public async Task UpdateFinancialPeriod_ShouldSucceed_WhenJournalVouchersExistAndOnlyTitleIsChanged()
     {
+        await setup.TestInit1.DeleteFinancialPeriodAndDependenciesAsync();
+
         // Create active financial period
         var financialPeriod2 = await setup.TestInit1.GetOrCreateFinancialPeriod();
 
@@ -665,6 +680,7 @@ public class FinancialPeriodTests(ApiTestSetup setup, ITestOutputHelper output) 
     public async Task UpdateFinancialPeriod_ShouldFail_WhenEndDateEqualsStartDate()
     {
         // Create active financial period
+        await setup.TestInit1.DeleteFinancialPeriodAndDependenciesAsync();
         var financialPeriod = await setup.TestInit1.GetOrCreateFinancialPeriod();
 
         // Update financial period
@@ -694,6 +710,7 @@ public class FinancialPeriodTests(ApiTestSetup setup, ITestOutputHelper output) 
     public async Task UpdateFinancialPeriod_ShouldFail_WhenEndDateLessThanStartDate()
     {
         // Create active financial period
+        await setup.TestInit1.DeleteFinancialPeriodAndDependenciesAsync();
         var financialPeriod = await setup.TestInit1.GetOrCreateFinancialPeriod();
 
         // Update financial period

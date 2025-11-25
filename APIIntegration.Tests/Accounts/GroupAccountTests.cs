@@ -10,19 +10,9 @@ using UpdateGroupAccountCommand = GenerateApi.UpdateGroupAccountCommand;
 
 namespace APIIntegration.Tests.Accounts;
 
-public class GroupAccountTests(ApiTestSetup setup, ITestOutputHelper output) : IClassFixture<ApiTestSetup>, IAsyncLifetime
+[Collection("Sequential Financial Tests")]
+public class GroupAccountTests(ApiTestSetup setup, ITestOutputHelper output)
 {
-    public async Task InitializeAsync()
-    {
-        // clean DB before each test
-        await setup.TestInit1.DeleteFinancialPeriodAndDependenciesAsync();
-    }
-
-    public Task DisposeAsync()
-    {
-        return Task.CompletedTask;
-    }
-
     [Fact]
     public async Task CreateGroupAccount_ShouldSuccess_WhenRequestIsValid()
     {
