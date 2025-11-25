@@ -28,7 +28,7 @@ public class CreateJournalVoucherCommandHandler(IUnitOfWork unitOfWork)
             return OperationResult<bool>.FailureResult(nameof(command.FinancialPeriodId), "Transaction time must be within the selected financial period.");
 
         // Start transaction (The container for atomicity)
-        await using var transaction = await unitOfWork.BeginTransactionAsync(System.Data.IsolationLevel.Serializable, cancellationToken);
+        await unitOfWork.BeginTransactionAsync(TransactionIsolation.Serializable, cancellationToken);
 
         try
         {
@@ -52,13 +52,12 @@ public class CreateJournalVoucherCommandHandler(IUnitOfWork unitOfWork)
 
             await unitOfWork.JournalVoucherRepository.CreateAsync(journalVoucherEntity, cancellationToken);
             await unitOfWork.CommitAsync(cancellationToken);
-            await transaction.CommitAsync(cancellationToken);
 
             return OperationResult<bool>.SuccessResult(true);
         }
         catch
         {
-            await transaction.RollbackAsync(cancellationToken);
+            await unitOfWork.RollbackAsync(cancellationToken);
             throw;
         }
     }
