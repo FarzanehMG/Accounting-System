@@ -19,7 +19,5 @@ public interface IUnitOfWork : IAsyncDisposable, IDisposable
     IAttachmentRepository AttachmentRepository { get; }
     IAccountBalanceRepository AccountBalanceRepository { get; }
 
-    Task BeginTransactionAsync(TransactionIsolation level = TransactionIsolation.Default, CancellationToken cancellationToken = default);
-    Task RollbackAsync(CancellationToken cancellationToken = default);
     Task CommitAsync(CancellationToken cancellationToken = default);
 }

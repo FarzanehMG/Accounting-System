@@ -5,7 +5,7 @@ namespace API.Controllers.Models.Journal;
 public record FilterJournalVoucherApiModel
 {
     public string? JournalVoucherTitle { get; init; }
-    public string? JournalVoucherNumber { get; init; }
+    public int? JournalVoucherNumber { get; init; }
     public string? ReferenceNumber { get; init; }
     public DateTime? TransactionTime { get; init; }
     public JournalVoucherState? JournalVoucherState { get; init; }

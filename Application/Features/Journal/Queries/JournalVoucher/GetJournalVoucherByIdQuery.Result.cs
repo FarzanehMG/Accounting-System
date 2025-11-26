@@ -6,7 +6,7 @@ public record GetJournalVoucherByIdQueryResult
 {
     public required Guid Id { get; init; }
     public required string JournalVoucherTitle { get; init; }
-    public required string JournalVoucherNumber { get; init; }
+    public required int JournalVoucherNumber { get; init; }
     public required string ReferenceNumber { get; init; }
     public required DateTime TransactionTime { get; init; }
     public string? Description { get; init; }

@@ -24,16 +24,19 @@ internal sealed class JournalVoucherRepository(AccountingDbContext dbContext) : 
             .FirstOrDefaultAsync(cancellationToken);
     }
 
-    public async Task<int> GetMaxVoucherNumberAsync(Guid financialPeriodId, CancellationToken cancellationToken = default)
+    public async Task<JournalVoucherEntity?> GetLastJournalVoucherWithLockAsync(Guid financialPeriodId, CancellationToken cancellationToken = default)
     {
-        // EF translates Max to SQL, safe inside Serializable transaction
-        var maxNumber = await TableNoTracking
-            .Where(x => x.FinancialPeriodId == financialPeriodId)
-            .Select(x => int.Parse(x.JournalVoucherNumber))
-            .DefaultIfEmpty(0)
-            .MaxAsync(cancellationToken);
+        var sql = @"
+            SELECT TOP(1) *
+            FROM JournalVouchers WITH (UPDLOCK, HOLDLOCK)
+            WHERE FinancialPeriodId = {0}
+            ORDER BY CAST(JournalVoucherNumber AS INT) DESC
+        ";
 
-        return maxNumber;
+        return await Entities
+            .FromSqlRaw(sql, financialPeriodId)
+            .AsTracking()
+            .FirstOrDefaultAsync(cancellationToken);
     }
 
     public async Task<JournalVoucherEntity?> GetByIdAsync(Guid journalVoucherId, CancellationToken cancellationToken = default)
@@ -55,7 +58,7 @@ internal sealed class JournalVoucherRepository(AccountingDbContext dbContext) : 
         if (!string.IsNullOrEmpty(filter.JournalVoucherTitle))
             query = query.Where(x => x.JournalVoucherTitle.Equals(filter.JournalVoucherTitle));
 
-        if (!string.IsNullOrEmpty(filter.JournalVoucherNumber))
+        if (filter.JournalVoucherNumber is not null)
             query = query.Where(x => x.JournalVoucherNumber.Equals(filter.JournalVoucherNumber));
 
         if (!string.IsNullOrEmpty(filter.ReferenceNumber))

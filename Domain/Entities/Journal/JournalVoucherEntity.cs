@@ -7,7 +7,7 @@ namespace Domain.Entities.Journal;
 public sealed class JournalVoucherEntity : BaseEntity<Guid>
 {
     public required string JournalVoucherTitle { get; set; }
-    public string JournalVoucherNumber { get; init; } = null!;
+    public int JournalVoucherNumber { get; init; }
     public required string ReferenceNumber { get; set; }
     public required DateTime TransactionTime { get; set; }
     public string? Description { get; set; } = null!;

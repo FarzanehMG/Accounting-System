@@ -5,9 +5,9 @@ namespace Persistence.Repositories.Common;
 
 internal abstract class BaseRepository<TEntity>(AccountingDbContext db) where TEntity : class, IEntity
 {
+    private protected readonly DbSet<TEntity> _entities = db.Set<TEntity>();
 
-    private readonly DbSet<TEntity> _entities = db.Set<TEntity>();
-
+    private protected DbSet<TEntity> Entities => _entities;
     private protected IQueryable<TEntity> Table => _entities;
 
     private protected IQueryable<TEntity> TableNoTracking => _entities.AsNoTracking();

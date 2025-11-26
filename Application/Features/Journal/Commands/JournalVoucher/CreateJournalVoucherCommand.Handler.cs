@@ -27,38 +27,24 @@ public class CreateJournalVoucherCommandHandler(IUnitOfWork unitOfWork)
         if (command.TransactionTime < financialPeriod.StartDate || command.TransactionTime > financialPeriod.EndDate)
             return OperationResult<bool>.FailureResult(nameof(command.FinancialPeriodId), "Transaction time must be within the selected financial period.");
 
-        // Start transaction (The container for atomicity)
-        await unitOfWork.BeginTransactionAsync(TransactionIsolation.Serializable, cancellationToken);
+        var lastNumber = await unitOfWork.JournalVoucherRepository.GetLastJournalVoucherWithLockAsync(command.FinancialPeriodId, cancellationToken);
+        var voucherNumber = (lastNumber?.JournalVoucherNumber ?? 0) + 1;
 
-        try
+        var journalVoucherEntity = new JournalVoucherEntity
         {
-            // Generate next voucher number safely using Max in EF
-            var lastNumber = await unitOfWork.JournalVoucherRepository.GetMaxVoucherNumberAsync(command.FinancialPeriodId, cancellationToken);
+            JournalVoucherTitle = command.JournalVoucherTitle,
+            JournalVoucherNumber = voucherNumber,
+            Description = command.Description,
+            TransactionTime = command.TransactionTime,
+            FinancialPeriodId = command.FinancialPeriodId,
+            JournalVoucherState = JournalVoucherState.Draft,
+            ReferenceNumber = command.ReferenceNumber,
+            CreatedByUserId = command.CreatedByUserId
+        };
 
-            var nextNumber = lastNumber + 1;
-            var voucherNumber = nextNumber.ToString("D5"); // padded format
+        await unitOfWork.JournalVoucherRepository.CreateAsync(journalVoucherEntity, cancellationToken);
+        await unitOfWork.CommitAsync(cancellationToken);
 
-            var journalVoucherEntity = new JournalVoucherEntity
-            {
-                JournalVoucherTitle = command.JournalVoucherTitle,
-                JournalVoucherNumber = voucherNumber,
-                Description = command.Description,
-                TransactionTime = command.TransactionTime,
-                FinancialPeriodId = command.FinancialPeriodId,
-                JournalVoucherState = JournalVoucherState.Draft,
-                ReferenceNumber = command.ReferenceNumber,
-                CreatedByUserId = command.CreatedByUserId
-            };
-
-            await unitOfWork.JournalVoucherRepository.CreateAsync(journalVoucherEntity, cancellationToken);
-            await unitOfWork.CommitAsync(cancellationToken);
-
-            return OperationResult<bool>.SuccessResult(true);
-        }
-        catch
-        {
-            await unitOfWork.RollbackAsync(cancellationToken);
-            throw;
-        }
+        return OperationResult<bool>.SuccessResult(true);
     }
 }

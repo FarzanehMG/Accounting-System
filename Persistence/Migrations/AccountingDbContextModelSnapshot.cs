@@ -418,10 +418,9 @@ namespace Persistence.Migrations
                     b.Property<Guid>("FinancialPeriodId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("JournalVoucherNumber")
-                        .IsRequired()
+                    b.Property<int>("JournalVoucherNumber")
                         .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                        .HasColumnType("int");
 
                     b.Property<string>("JournalVoucherState")
                         .IsRequired()
@@ -446,15 +445,13 @@ namespace Persistence.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("FinancialPeriodId");
-
                     b.HasIndex("JournalVoucherState");
 
                     b.HasIndex("ReferenceNumber");
 
                     b.HasIndex("TransactionTime");
 
-                    b.HasIndex("JournalVoucherNumber", "Id")
+                    b.HasIndex("FinancialPeriodId", "JournalVoucherNumber")
                         .IsUnique();
 
                     b.ToTable("JournalVouchers", (string)null);

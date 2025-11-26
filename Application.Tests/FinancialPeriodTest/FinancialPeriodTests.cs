@@ -279,7 +279,7 @@ public class FinancialPeriodTests(ITestOutputHelper testOutputHelper)
                 new JournalVoucherEntity
                 {
                     JournalVoucherTitle = faker.Finance.AccountName(),
-                    JournalVoucherNumber = faker.Finance.Account(),
+                    JournalVoucherNumber = new Random().Next(),
                     ReferenceNumber = Guid.NewGuid().ToString(),
                     TransactionTime = DateTime.UtcNow,
                     Description = faker.Finance.AccountName(),
@@ -329,7 +329,7 @@ public class FinancialPeriodTests(ITestOutputHelper testOutputHelper)
                 new JournalVoucherEntity
                 {
                     JournalVoucherTitle = faker.Finance.AccountName(),
-                    JournalVoucherNumber = faker.Finance.Account(),
+                    JournalVoucherNumber = new Random().Next(),
                     ReferenceNumber = Guid.NewGuid().ToString(),
                     TransactionTime = DateTime.UtcNow,
                     Description = faker.Finance.AccountName(),
@@ -383,7 +383,7 @@ public class FinancialPeriodTests(ITestOutputHelper testOutputHelper)
                 new JournalVoucherEntity
                 {
                     JournalVoucherTitle = faker.Finance.AccountName(),
-                    JournalVoucherNumber = faker.Finance.Account(),
+                    JournalVoucherNumber = new Random().Next(),
                     ReferenceNumber = Guid.NewGuid().ToString(),
                     TransactionTime = DateTime.UtcNow,
                     Description = faker.Finance.AccountName(),
@@ -434,7 +434,7 @@ public class FinancialPeriodTests(ITestOutputHelper testOutputHelper)
                 new JournalVoucherEntity
                 {
                     JournalVoucherTitle = faker.Finance.AccountName(),
-                    JournalVoucherNumber = faker.Finance.Account(),
+                    JournalVoucherNumber = new Random().Next(),
                     ReferenceNumber = Guid.NewGuid().ToString(),
                     TransactionTime = DateTime.UtcNow,
                     Description = faker.Finance.AccountName(),
@@ -485,7 +485,7 @@ public class FinancialPeriodTests(ITestOutputHelper testOutputHelper)
                 new JournalVoucherEntity
                 {
                     JournalVoucherTitle = faker.Finance.AccountName(),
-                    JournalVoucherNumber = faker.Finance.Account(),
+                    JournalVoucherNumber = new Random().Next(),
                     ReferenceNumber = Guid.NewGuid().ToString(),
                     TransactionTime = DateTime.UtcNow,
                     Description = faker.Finance.AccountName(),

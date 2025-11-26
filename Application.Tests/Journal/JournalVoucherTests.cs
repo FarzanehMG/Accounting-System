@@ -40,7 +40,7 @@ public class JournalVoucherTests(ITestOutputHelper testOutputHelper)
             JournalVoucherState = JournalVoucherState.Draft,
             CreatedByUserId = Guid.NewGuid(),
             FinancialPeriodId = financialPeriodId,
-            JournalVoucherNumber = "1"
+            JournalVoucherNumber = 1
         };
 
         unitOfWork.FinancialPeriodRepository.GetByIdAsync(financialPeriodId, CancellationToken.None)
@@ -70,7 +70,7 @@ public class JournalVoucherTests(ITestOutputHelper testOutputHelper)
             .CommitAsync(CancellationToken.None);
 
         await unitOfWork.JournalVoucherRepository.Received(1)
-            .CreateAsync(Arg.Is<JournalVoucherEntity>(x => x.JournalVoucherNumber == "2"), CancellationToken.None);
+            .CreateAsync(Arg.Is<JournalVoucherEntity>(x => x.JournalVoucherNumber == 2), CancellationToken.None);
     }
 
     [Fact]
@@ -233,7 +233,7 @@ public class JournalVoucherTests(ITestOutputHelper testOutputHelper)
         // Assert
         result.IsSuccess.Should().BeTrue();
         await unitOfWork.JournalVoucherRepository.Received(1)
-            .CreateAsync(Arg.Is<JournalVoucherEntity>(x => x.JournalVoucherNumber == "1"), CancellationToken.None);
+            .CreateAsync(Arg.Is<JournalVoucherEntity>(x => x.JournalVoucherNumber == 1), CancellationToken.None);
     }
 
     [Fact]
@@ -260,7 +260,7 @@ public class JournalVoucherTests(ITestOutputHelper testOutputHelper)
             JournalVoucherState = JournalVoucherState.Draft,
             CreatedByUserId = Guid.NewGuid(),
             FinancialPeriodId = financialPeriodId,
-            JournalVoucherNumber = "1"
+            JournalVoucherNumber = 1
         };
 
         unitOfWork.FinancialPeriodRepository.GetByIdAsync(financialPeriodId, CancellationToken.None)
@@ -290,7 +290,7 @@ public class JournalVoucherTests(ITestOutputHelper testOutputHelper)
             .CommitAsync(CancellationToken.None);
 
         await unitOfWork.JournalVoucherRepository.Received(1)
-            .CreateAsync(Arg.Is<JournalVoucherEntity>(x => x.JournalVoucherNumber == "2"), CancellationToken.None);
+            .CreateAsync(Arg.Is<JournalVoucherEntity>(x => x.JournalVoucherNumber == 2), CancellationToken.None);
     }
 
     [Fact]
