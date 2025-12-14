@@ -297,7 +297,7 @@ public class TestInit
         await AccountingDbContext.Set<FinancialPeriodEntity>().ExecuteDeleteAsync();
     }
 
-    private async Task<JournalVoucherEntity> CreateJournalVoucher(FinancialPeriodEntity financialPeriod)
+    internal async Task<JournalVoucherEntity> CreateJournalVoucher(FinancialPeriodEntity financialPeriod)
     {
         var createJournalVoucher = new CreateJournalVoucherApiModel
         {
