@@ -1,7 +1,9 @@
-﻿using Application.Repositories.Common;
+﻿using Application.Contracts.JournalVoucherService;
+using Application.Repositories.Common;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Persistence.JournalVoucherService;
 using Persistence.Repositories.Common;
 
 namespace Persistence.Extensions;
@@ -19,6 +21,8 @@ public static class PersistenceServiceCollectionExtensions
                 builder.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery);
             });
         });
+
+        services.AddScoped<IJournalVoucherNumberGenerator, JournalVoucherNumberGenerator>();
 
         // Unit of work
         services.AddScoped<IUnitOfWork, UnitOfWork>();

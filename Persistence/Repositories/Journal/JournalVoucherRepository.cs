@@ -24,21 +24,6 @@ internal sealed class JournalVoucherRepository(AccountingDbContext dbContext) : 
             .FirstOrDefaultAsync(cancellationToken);
     }
 
-    public async Task<JournalVoucherEntity?> GetLastJournalVoucherWithLockAsync(Guid financialPeriodId, CancellationToken cancellationToken = default)
-    {
-        var sql = @"
-            SELECT TOP(1) *
-            FROM JournalVouchers WITH (UPDLOCK, HOLDLOCK)
-            WHERE FinancialPeriodId = {0}
-            ORDER BY CAST(JournalVoucherNumber AS INT) DESC
-        ";
-
-        return await Entities
-            .FromSqlRaw(sql, financialPeriodId)
-            .AsTracking()
-            .FirstOrDefaultAsync(cancellationToken);
-    }
-
     public async Task<JournalVoucherEntity?> GetByIdAsync(Guid journalVoucherId, CancellationToken cancellationToken = default)
     {
         return await Table.FirstOrDefaultAsync(x => x.Id == journalVoucherId, cancellationToken);

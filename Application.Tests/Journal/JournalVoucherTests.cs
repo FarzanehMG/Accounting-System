@@ -1,4 +1,5 @@
 ﻿using Application.Common;
+using Application.Contracts.JournalVoucherService;
 using Application.Features.Journal.Commands.JournalVoucher;
 using Application.Features.Journal.Queries.JournalVoucher;
 using Application.Features.Journal.Queries.JournalVoucher.Dtos;
@@ -21,6 +22,7 @@ public class JournalVoucherTests(ITestOutputHelper testOutputHelper)
     {
         // Arrange
         var unitOfWork = Substitute.For<IUnitOfWork>();
+        var journalVoucherNumberGenerator = Substitute.For<IJournalVoucherNumberGenerator>();
         var faker = new Faker();
         var financialPeriodId = Guid.NewGuid();
 
@@ -59,7 +61,7 @@ public class JournalVoucherTests(ITestOutputHelper testOutputHelper)
             FinancialPeriodId = financialPeriodId
         };
 
-        var handler = new CreateJournalVoucherCommandHandler(unitOfWork);
+        var handler = new CreateJournalVoucherCommandHandler(unitOfWork, journalVoucherNumberGenerator);
 
         // Act
         var result = await handler.Handle(createJournalVoucherCommand, CancellationToken.None);
@@ -78,6 +80,7 @@ public class JournalVoucherTests(ITestOutputHelper testOutputHelper)
     {
         // Arrange
         var unitOfWork = Substitute.For<IUnitOfWork>();
+        var journalVoucherNumberGenerator = Substitute.For<IJournalVoucherNumberGenerator>();
         var faker = new Faker();
         var financialPeriodId = Guid.NewGuid();
 
@@ -102,7 +105,7 @@ public class JournalVoucherTests(ITestOutputHelper testOutputHelper)
             FinancialPeriodId = Guid.NewGuid()
         };
 
-        var handler = new CreateJournalVoucherCommandHandler(unitOfWork);
+        var handler = new CreateJournalVoucherCommandHandler(unitOfWork, journalVoucherNumberGenerator);
 
         // Act
         var result = await handler.Handle(createJournalVoucherCommand, CancellationToken.None);
@@ -118,6 +121,7 @@ public class JournalVoucherTests(ITestOutputHelper testOutputHelper)
     {
         // Arrange
         var unitOfWork = Substitute.For<IUnitOfWork>();
+        var journalVoucherNumberGenerator = Substitute.For<IJournalVoucherNumberGenerator>();
         var faker = new Faker();
         var financialPeriodId = Guid.NewGuid();
 
@@ -142,7 +146,7 @@ public class JournalVoucherTests(ITestOutputHelper testOutputHelper)
             FinancialPeriodId = financialPeriodId
         };
 
-        var handler = new CreateJournalVoucherCommandHandler(unitOfWork);
+        var handler = new CreateJournalVoucherCommandHandler(unitOfWork, journalVoucherNumberGenerator);
 
         // Act
         var result = await handler.Handle(createJournalVoucherCommand, CancellationToken.None);
@@ -158,6 +162,7 @@ public class JournalVoucherTests(ITestOutputHelper testOutputHelper)
     {
         // Arrange
         var unitOfWork = Substitute.For<IUnitOfWork>();
+        var journalVoucherNumberGenerator = Substitute.For<IJournalVoucherNumberGenerator>();
         var faker = new Faker();
         var financialPeriodId = Guid.NewGuid();
 
@@ -182,7 +187,7 @@ public class JournalVoucherTests(ITestOutputHelper testOutputHelper)
             FinancialPeriodId = financialPeriodId
         };
 
-        var handler = new CreateJournalVoucherCommandHandler(unitOfWork);
+        var handler = new CreateJournalVoucherCommandHandler(unitOfWork, journalVoucherNumberGenerator);
 
         // Act
         var result = await handler.Handle(createJournalVoucherCommand, CancellationToken.None);
@@ -198,6 +203,7 @@ public class JournalVoucherTests(ITestOutputHelper testOutputHelper)
     {
         // Arrange
         var unitOfWork = Substitute.For<IUnitOfWork>();
+        var journalVoucherNumberGenerator = Substitute.For<IJournalVoucherNumberGenerator>();
         var faker = new Faker();
         var financialPeriodId = Guid.NewGuid();
 
@@ -225,7 +231,7 @@ public class JournalVoucherTests(ITestOutputHelper testOutputHelper)
             FinancialPeriodId = financialPeriodId
         };
 
-        var handler = new CreateJournalVoucherCommandHandler(unitOfWork);
+        var handler = new CreateJournalVoucherCommandHandler(unitOfWork, journalVoucherNumberGenerator);
 
         // Act
         var result = await handler.Handle(createJournalVoucherCommand, CancellationToken.None);
@@ -241,6 +247,7 @@ public class JournalVoucherTests(ITestOutputHelper testOutputHelper)
     {
         // Arrange
         var unitOfWork = Substitute.For<IUnitOfWork>();
+        var journalVoucherNumberGenerator = Substitute.For<IJournalVoucherNumberGenerator>();
         var faker = new Faker();
         var financialPeriodId = Guid.NewGuid();
 
@@ -279,7 +286,7 @@ public class JournalVoucherTests(ITestOutputHelper testOutputHelper)
             FinancialPeriodId = financialPeriodId
         };
 
-        var handler = new CreateJournalVoucherCommandHandler(unitOfWork);
+        var handler = new CreateJournalVoucherCommandHandler(unitOfWork, journalVoucherNumberGenerator);
 
         // Act
         var result = await handler.Handle(createJournalVoucherCommand, CancellationToken.None);
@@ -304,6 +311,7 @@ public class JournalVoucherTests(ITestOutputHelper testOutputHelper)
     {
         // Arrange
         var unitOfWork = Substitute.For<IUnitOfWork>();
+        var journalVoucherNumberGenerator = Substitute.For<IJournalVoucherNumberGenerator>();
 
         var createJournalVoucherCommand = new CreateJournalVoucherCommand
         {
@@ -315,7 +323,7 @@ public class JournalVoucherTests(ITestOutputHelper testOutputHelper)
             FinancialPeriodId = Guid.NewGuid()
         };
 
-        var handler = new CreateJournalVoucherCommandHandler(unitOfWork);
+        var handler = new CreateJournalVoucherCommandHandler(unitOfWork, journalVoucherNumberGenerator);
 
         // Act
         await handler.Handle(createJournalVoucherCommand, CancellationToken.None);

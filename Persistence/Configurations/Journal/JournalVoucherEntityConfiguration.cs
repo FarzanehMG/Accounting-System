@@ -19,8 +19,7 @@ internal class JournalVoucherEntityConfiguration : IEntityTypeConfiguration<Jour
             .HasMaxLength(100);
 
         builder.Property(x => x.JournalVoucherNumber)
-            .IsRequired()
-            .HasMaxLength(100);
+            .IsRequired();
 
         builder.Property(x => x.ReferenceNumber)
             .IsRequired()
@@ -34,9 +33,7 @@ internal class JournalVoucherEntityConfiguration : IEntityTypeConfiguration<Jour
 
         builder.Property(x => x.JournalVoucherState)
             .IsRequired()
-            .HasConversion<EnumToStringConverter<JournalVoucherState>>();
-
-        builder.Property(x => x.JournalVoucherState)
+            .HasConversion<EnumToStringConverter<JournalVoucherState>>()
             .HasMaxLength(20);
 
         builder.Property(x => x.CreatedByUserId)

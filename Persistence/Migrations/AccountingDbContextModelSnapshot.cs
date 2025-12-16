@@ -419,7 +419,6 @@ namespace Persistence.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<int>("JournalVoucherNumber")
-                        .HasMaxLength(100)
                         .HasColumnType("int");
 
                     b.Property<string>("JournalVoucherState")
@@ -455,6 +454,21 @@ namespace Persistence.Migrations
                         .IsUnique();
 
                     b.ToTable("JournalVouchers", (string)null);
+                });
+
+            modelBuilder.Entity("Persistence.Model.JournalVoucherSequence", b =>
+                {
+                    b.Property<Guid>("FinancialPeriodId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("CurrentNumber")
+                        .HasColumnType("int")
+                        .HasDefaultValue(0);
+
+                    b.HasKey("FinancialPeriodId");
+
+                    b.ToTable("JournalVoucherSequences", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Entities.Accounts.DetailedAccountEntity", b =>

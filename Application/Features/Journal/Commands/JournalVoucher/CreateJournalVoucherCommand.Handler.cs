@@ -1,12 +1,13 @@
 ﻿using Application.Common;
-using Application.Repositories.Common;
+using Application.Contracts.JournalVoucherService;
 using Application.Extensions;
+using Application.Repositories.Common;
 using Domain.Entities.Journal;
 using Domain.Enums;
 
 namespace Application.Features.Journal.Commands.JournalVoucher;
 
-public class CreateJournalVoucherCommandHandler(IUnitOfWork unitOfWork)
+public class CreateJournalVoucherCommandHandler(IUnitOfWork unitOfWork, IJournalVoucherNumberGenerator  numberGenerator)
 {
     public async Task<OperationResult<bool>> Handle(CreateJournalVoucherCommand command, CancellationToken cancellationToken)
     {
@@ -27,13 +28,12 @@ public class CreateJournalVoucherCommandHandler(IUnitOfWork unitOfWork)
         if (command.TransactionTime < financialPeriod.StartDate || command.TransactionTime > financialPeriod.EndDate)
             return OperationResult<bool>.FailureResult(nameof(command.FinancialPeriodId), "Transaction time must be within the selected financial period.");
 
-        var lastNumber = await unitOfWork.JournalVoucherRepository.GetLastJournalVoucherWithLockAsync(command.FinancialPeriodId, cancellationToken);
-        var voucherNumber = (lastNumber?.JournalVoucherNumber ?? 0) + 1;
+        var journalVoucherNumber = await numberGenerator.GenerateAsync(command.FinancialPeriodId, cancellationToken);
 
         var journalVoucherEntity = new JournalVoucherEntity
         {
             JournalVoucherTitle = command.JournalVoucherTitle,
-            JournalVoucherNumber = voucherNumber,
+            JournalVoucherNumber = journalVoucherNumber,
             Description = command.Description,
             TransactionTime = command.TransactionTime,
             FinancialPeriodId = command.FinancialPeriodId,
