@@ -40,10 +40,10 @@ internal sealed class JournalVoucherRepository(AccountingDbContext dbContext) : 
 
     public async Task<IReadOnlyList<JournalVoucherEntity>> GetAllAsync(JournalVoucherFilter filter, CancellationToken cancellationToken = default)
     {
-        var query = TableNoTracking;
+        var query = TableNoTracking.AsQueryable();
 
         if (!string.IsNullOrEmpty(filter.JournalVoucherTitle))
-            query = query.Where(x => x.JournalVoucherTitle.Equals(filter.JournalVoucherTitle));
+            query = query.Where(x => x.JournalVoucherTitle.Contains(filter.JournalVoucherTitle));
 
         if (filter.JournalVoucherNumber is not null)
             query = query.Where(x => x.JournalVoucherNumber.Equals(filter.JournalVoucherNumber));
@@ -55,10 +55,24 @@ internal sealed class JournalVoucherRepository(AccountingDbContext dbContext) : 
             query = query.Where(x => x.JournalVoucherState == filter.JournalVoucherState.Value);
 
         if (filter.TransactionTime.HasValue)
-            query = query.Where(x => x.TransactionTime == filter.TransactionTime.Value.Date);
+        {
+            var start = filter.TransactionTime.Value.Date;
+            var end = start.AddDays(1);
+
+            query = query.Where(x =>
+                x.TransactionTime >= start &&
+                x.TransactionTime < end);
+        }
 
         if (filter.ApprovedTime.HasValue)
-            query = query.Where(x => x.ApprovedTime == filter.ApprovedTime.Value.Date);
+        {
+            var start = filter.ApprovedTime.Value.Date;
+            var end = start.AddDays(1);
+
+            query = query.Where(x =>
+                x.ApprovedTime >= start &&
+                x.ApprovedTime < end);
+        }
 
         if (filter.FinancialPeriodId.HasValue)
             query = query.Where(x => x.FinancialPeriodId == filter.FinancialPeriodId.Value);
@@ -70,7 +84,7 @@ internal sealed class JournalVoucherRepository(AccountingDbContext dbContext) : 
             query = query.Where(x => x.ApprovedByUserId == filter.ApprovedByUserId.Value);
 
         // TODO: Apply pagination
-        return await query.ToListAsync(cancellationToken);
+        return await query.OrderBy(x => x.Id).ToListAsync(cancellationToken);
     }
 
     public async Task<bool> HasUnPostedTransactionsAsync(Guid financialPeriodId, CancellationToken cancellationToken = default)

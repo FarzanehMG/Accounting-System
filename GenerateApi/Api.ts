@@ -411,7 +411,7 @@ export class JournalVoucherClient {
         return _observableOf<ApiResultOfGetJournalVoucherByIdQueryResult>(null as any);
     }
 
-    getAll(journalVoucherTitle?: string | null | undefined, journalVoucherNumber?: string | null | undefined, referenceNumber?: string | null | undefined, transactionTime?: Date | null | undefined, journalVoucherState?: JournalVoucherState | null | undefined, createdByUserId?: string | null | undefined, approvedByUserId?: string | null | undefined, approvedTime?: Date | null | undefined, financialPeriodId?: string | null | undefined): Observable<ApiResultOfListOfGetJournalVouchersQueryResult> {
+    getAll(journalVoucherTitle?: string | null | undefined, journalVoucherNumber?: number | null | undefined, referenceNumber?: string | null | undefined, transactionTime?: Date | null | undefined, journalVoucherState?: JournalVoucherState | null | undefined, createdByUserId?: string | null | undefined, approvedByUserId?: string | null | undefined, approvedTime?: Date | null | undefined, financialPeriodId?: string | null | undefined): Observable<ApiResultOfListOfGetJournalVouchersQueryResult> {
         let url_ = this.baseUrl + "/api/journal_vouchers/journalVouchers?";
         if (journalVoucherTitle !== undefined && journalVoucherTitle !== null)
             url_ += "JournalVoucherTitle=" + encodeURIComponent("" + journalVoucherTitle) + "&";
@@ -2460,7 +2460,7 @@ export interface IApiResultOfGetJournalVoucherByIdQueryResult extends IApiResult
 export class GetJournalVoucherByIdQueryResult implements IGetJournalVoucherByIdQueryResult {
     id?: string;
     journalVoucherTitle?: string;
-    journalVoucherNumber?: string;
+    journalVoucherNumber?: number;
     referenceNumber?: string;
     transactionTime?: Date;
     description?: string | undefined;
@@ -2522,7 +2522,7 @@ export class GetJournalVoucherByIdQueryResult implements IGetJournalVoucherByIdQ
 export interface IGetJournalVoucherByIdQueryResult {
     id?: string;
     journalVoucherTitle?: string;
-    journalVoucherNumber?: string;
+    journalVoucherNumber?: number;
     referenceNumber?: string;
     transactionTime?: Date;
     description?: string | undefined;
@@ -2599,7 +2599,7 @@ export interface IApiResultOfListOfGetJournalVouchersQueryResult extends IApiRes
 export class GetJournalVouchersQueryResult implements IGetJournalVouchersQueryResult {
     id?: string;
     journalVoucherTitle?: string;
-    journalVoucherNumber?: string | undefined;
+    journalVoucherNumber?: number | undefined;
     referenceNumber?: string;
     transactionTime?: Date;
     description?: string | undefined;
@@ -2661,7 +2661,7 @@ export class GetJournalVouchersQueryResult implements IGetJournalVouchersQueryRe
 export interface IGetJournalVouchersQueryResult {
     id?: string;
     journalVoucherTitle?: string;
-    journalVoucherNumber?: string | undefined;
+    journalVoucherNumber?: number | undefined;
     referenceNumber?: string;
     transactionTime?: Date;
     description?: string | undefined;

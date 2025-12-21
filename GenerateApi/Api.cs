@@ -758,7 +758,7 @@ namespace GenerateApi
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<ApiResultOfListOfGetJournalVouchersQueryResult> GetAllAsync(string? journalVoucherTitle = null, string? journalVoucherNumber = null, string? referenceNumber = null, System.DateTime? transactionTime = null, JournalVoucherState? journalVoucherState = null, System.Guid? createdByUserId = null, System.Guid? approvedByUserId = null, System.DateTime? approvedTime = null, System.Guid? financialPeriodId = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        public virtual async System.Threading.Tasks.Task<ApiResultOfListOfGetJournalVouchersQueryResult> GetAllAsync(string? journalVoucherTitle = null, int? journalVoucherNumber = null, string? referenceNumber = null, System.DateTime? transactionTime = null, JournalVoucherState? journalVoucherState = null, System.Guid? createdByUserId = null, System.Guid? approvedByUserId = null, System.DateTime? approvedTime = null, System.Guid? financialPeriodId = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             var client_ = _httpClient;
             var disposeClient_ = false;
@@ -3603,7 +3603,7 @@ namespace GenerateApi
         public string JournalVoucherTitle { get; set; } = default!;
 
         [Newtonsoft.Json.JsonProperty("journalVoucherNumber", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public string JournalVoucherNumber { get; set; } = default!;
+        public int JournalVoucherNumber { get; set; } = default!;
 
         [Newtonsoft.Json.JsonProperty("referenceNumber", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string ReferenceNumber { get; set; } = default!;
@@ -3668,7 +3668,7 @@ namespace GenerateApi
         public string JournalVoucherTitle { get; set; } = default!;
 
         [Newtonsoft.Json.JsonProperty("journalVoucherNumber", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public string? JournalVoucherNumber { get; set; } = default!;
+        public int? JournalVoucherNumber { get; set; } = default!;
 
         [Newtonsoft.Json.JsonProperty("referenceNumber", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string ReferenceNumber { get; set; } = default!;
