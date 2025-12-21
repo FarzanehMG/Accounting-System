@@ -317,4 +317,341 @@ public class JournalVoucherTests(ApiTestSetup setup, ITestOutputHelper output)
     {
         throw new NotImplementedException();
     }
+
+    [Fact]
+    public async Task UpdateJournalVoucher_ShouldSucceed_WhenValidRequest()
+    {
+        await setup.TestInit1.DeleteFinancialPeriodAndDependenciesAsync();
+
+        // Create or get financial period
+        var financialPeriod = await setup.TestInit1.GetOrCreateFinancialPeriod();
+
+        // Create journal voucher
+        var journalVoucher = await setup.TestInit1.CreateJournalVoucher(financialPeriod);
+
+        // Update journal voucher
+        var model = new UpdateJournalVoucherCommand
+        {
+            JournalVoucherId = journalVoucher.Id,
+            JournalVoucherTitle = new PatchOfString
+            {
+                Value = Guid.NewGuid().ToString()
+            },
+            ReferenceNumber = new PatchOfString
+            {
+                Value = Guid.NewGuid().ToString()
+            },
+            TransactionTime = new PatchOfDateTime
+            {
+                Value = financialPeriod.StartDate.AddDays(2)
+            },
+            Description = new PatchOfString
+            {
+                Value = Guid.NewGuid().ToString()
+            }
+        };
+
+        var result = await setup.TestInit1.JournalVouchClient.UpdateAsync(model, CancellationToken.None);
+
+        // Verify in database
+        var afterUpdateJournalVoucher = await setup.TestInit1.AccountingDbContext
+            .Set<JournalVoucherEntity>()
+            .SingleAsync(g => g.Id == journalVoucher.Id);
+
+        // Assert
+        result.IsSuccess.Should().BeTrue();
+        afterUpdateJournalVoucher.JournalVoucherTitle.Should().Be(journalVoucher.JournalVoucherTitle);
+        afterUpdateJournalVoucher.ReferenceNumber.Should().Be(journalVoucher.ReferenceNumber);
+        afterUpdateJournalVoucher.TransactionTime.Should().Be(journalVoucher.TransactionTime);
+        afterUpdateJournalVoucher.Description.Should().Be(journalVoucher.Description);
+    }
+
+    [Fact]
+    public async Task UpdateJournalVoucher_ShouldFail_WhenJournalVoucherNotFound()
+    {
+        await setup.TestInit1.DeleteFinancialPeriodAndDependenciesAsync();
+
+        // Create or get financial period
+        await setup.TestInit1.GetOrCreateFinancialPeriod();
+
+        // Update journal voucher
+        var model = new UpdateJournalVoucherCommand
+        {
+            JournalVoucherId = Guid.NewGuid(),
+            JournalVoucherTitle = new PatchOfString
+            {
+                Value = Guid.NewGuid().ToString()
+            }
+        };
+
+        try
+        {
+            var result = await setup.TestInit1.JournalVouchClient.UpdateAsync(model, CancellationToken.None);
+            result.IsSuccess.Should().BeFalse("Expected an ApiException was not thrown.");
+        }
+        catch (ApiException ex)
+        {
+            var responseContent = ex.Response;
+            responseContent.Should().Contain("Journal voucher not found.");
+            ex.StatusCode.Should().Be(400);
+        }
+    }
+
+    [Fact]
+    public async Task UpdateJournalVoucher_ShouldFail_WhenJournalVoucherStateNotDraft()
+    {
+        await setup.TestInit1.DeleteFinancialPeriodAndDependenciesAsync();
+
+        // Create or get financial period
+        var financialPeriod = await setup.TestInit1.GetOrCreateFinancialPeriod();
+
+        // Create journal voucher
+        var journalVoucher = await setup.TestInit1.CreateJournalVoucher(financialPeriod);
+
+        journalVoucher.JournalVoucherState = JournalVoucherState.Rejected;
+        await setup.TestInit1.AccountingDbContext.SaveChangesAsync();
+
+        // Update journal voucher
+        var model = new UpdateJournalVoucherCommand
+        {
+            JournalVoucherId = journalVoucher.Id,
+            JournalVoucherTitle = new PatchOfString
+            {
+                Value = Guid.NewGuid().ToString()
+            }
+        };
+
+        try
+        {
+            var result = await setup.TestInit1.JournalVouchClient.UpdateAsync(model, CancellationToken.None);
+            result.IsSuccess.Should().BeFalse("Expected an ApiException was not thrown.");
+        }
+        catch (ApiException ex)
+        {
+            var responseContent = ex.Response;
+            responseContent.Should().Contain("Cannot update entry of a non-Draft voucher.");
+            ex.StatusCode.Should().Be(400);
+        }
+    }
+
+    [Fact]
+    public async Task UpdateJournalVoucher_ShouldFail_WhenFinancialPeriodIsClosed()
+    {
+        await setup.TestInit1.DeleteFinancialPeriodAndDependenciesAsync();
+
+        // Create or get financial period
+        var financialPeriod = await setup.TestInit1.GetOrCreateFinancialPeriod();
+
+        // Create journal voucher
+        var journalVoucher = await setup.TestInit1.CreateJournalVoucher(financialPeriod);
+
+        ArgumentNullException.ThrowIfNull(journalVoucher.FinancialPeriod);
+
+        journalVoucher.FinancialPeriod.IsActive = false;
+        await setup.TestInit1.AccountingDbContext.SaveChangesAsync();
+
+        // Update journal voucher
+        var model = new UpdateJournalVoucherCommand
+        {
+            JournalVoucherId = journalVoucher.Id,
+            JournalVoucherTitle = new PatchOfString
+            {
+                Value = Guid.NewGuid().ToString()
+            }
+        };
+
+        try
+        {
+            var result = await setup.TestInit1.JournalVouchClient.UpdateAsync(model, CancellationToken.None);
+            result.IsSuccess.Should().BeFalse("Expected an ApiException was not thrown.");
+        }
+        catch (ApiException ex)
+        {
+            var responseContent = ex.Response;
+            responseContent.Should().Contain("Financial period is closed. Cannot update journal voucher.");
+            ex.StatusCode.Should().Be(400);
+        }
+    }
+
+    [Fact]
+    public async Task UpdateJournalVoucher_ShouldFail_WhenTransactionDateNotStayInsideFinancialPeriod()
+    {
+        await setup.TestInit1.DeleteFinancialPeriodAndDependenciesAsync();
+
+        // Create or get financial period
+        var financialPeriod = await setup.TestInit1.GetOrCreateFinancialPeriod();
+
+        // Create journal voucher
+        var journalVoucher = await setup.TestInit1.CreateJournalVoucher(financialPeriod);
+
+        // Update journal voucher
+        var model = new UpdateJournalVoucherCommand
+        {
+            JournalVoucherId = journalVoucher.Id,
+            TransactionTime = new PatchOfDateTime
+            {
+                Value = financialPeriod.StartDate.AddDays(6)
+            }
+        };
+
+        try
+        {
+            var result = await setup.TestInit1.JournalVouchClient.UpdateAsync(model, CancellationToken.None);
+            result.IsSuccess.Should().BeFalse("Expected an ApiException was not thrown.");
+        }
+        catch (ApiException ex)
+        {
+            var responseContent = ex.Response;
+            responseContent.Should().Contain("Transaction time must be within the financial period");
+            ex.StatusCode.Should().Be(400);
+        }
+    }
+
+    [Fact]
+    public async Task UpdateJournalVoucher_ShouldSuccess_WhenTitleIsChanged()
+    {
+        await setup.TestInit1.DeleteFinancialPeriodAndDependenciesAsync();
+
+        // Create or get financial period
+        var financialPeriod = await setup.TestInit1.GetOrCreateFinancialPeriod();
+
+        // Create journal voucher
+        var journalVoucher = await setup.TestInit1.CreateJournalVoucher(financialPeriod);
+
+        // Update journal voucher
+        var model = new UpdateJournalVoucherCommand
+        {
+            JournalVoucherId = journalVoucher.Id,
+            JournalVoucherTitle = new PatchOfString
+            {
+                Value = Guid.NewGuid().ToString()
+            }
+        };
+
+        var result = await setup.TestInit1.JournalVouchClient.UpdateAsync(model, CancellationToken.None);
+
+        // Verify in database
+        var afterUpdateJournalVoucher = await setup.TestInit1.AccountingDbContext
+            .Set<JournalVoucherEntity>()
+            .AsNoTracking()
+            .SingleAsync(g => g.Id == journalVoucher.Id);
+
+        // Assert
+        result.IsSuccess.Should().BeTrue();
+        afterUpdateJournalVoucher.JournalVoucherTitle.Should().NotBe(journalVoucher.JournalVoucherTitle);
+        afterUpdateJournalVoucher.ReferenceNumber.Should().Be(journalVoucher.ReferenceNumber);
+        afterUpdateJournalVoucher.TransactionTime.Should().Be(journalVoucher.TransactionTime);
+        afterUpdateJournalVoucher.Description.Should().Be(journalVoucher.Description);
+    }
+
+    [Fact]
+    public async Task UpdateJournalVoucher_ShouldSuccess_WhenDescriptionIsChanged()
+    {
+        await setup.TestInit1.DeleteFinancialPeriodAndDependenciesAsync();
+
+        // Create or get financial period
+        var financialPeriod = await setup.TestInit1.GetOrCreateFinancialPeriod();
+
+        // Create journal voucher
+        var journalVoucher = await setup.TestInit1.CreateJournalVoucher(financialPeriod);
+
+        // Update journal voucher
+        var model = new UpdateJournalVoucherCommand
+        {
+            JournalVoucherId = journalVoucher.Id,
+            Description = new PatchOfString
+            {
+                Value = Guid.NewGuid().ToString()
+            }
+        };
+
+        var result = await setup.TestInit1.JournalVouchClient.UpdateAsync(model, CancellationToken.None);
+
+        // Verify in database
+        var afterUpdateJournalVoucher = await setup.TestInit1.AccountingDbContext
+            .Set<JournalVoucherEntity>()
+            .AsNoTracking()
+            .SingleAsync(g => g.Id == journalVoucher.Id);
+
+        // Assert
+        result.IsSuccess.Should().BeTrue();
+        afterUpdateJournalVoucher.JournalVoucherTitle.Should().Be(journalVoucher.JournalVoucherTitle);
+        afterUpdateJournalVoucher.ReferenceNumber.Should().Be(journalVoucher.ReferenceNumber);
+        afterUpdateJournalVoucher.TransactionTime.Should().Be(journalVoucher.TransactionTime);
+        afterUpdateJournalVoucher.Description.Should().NotBe(journalVoucher.Description);
+    }
+
+    [Fact]
+    public async Task UpdateJournalVoucher_ShouldSuccess_WhenReferenceNumberIsChanged()
+    {
+        await setup.TestInit1.DeleteFinancialPeriodAndDependenciesAsync();
+
+        // Create or get financial period
+        var financialPeriod = await setup.TestInit1.GetOrCreateFinancialPeriod();
+
+        // Create journal voucher
+        var journalVoucher = await setup.TestInit1.CreateJournalVoucher(financialPeriod);
+
+        // Update journal voucher
+        var model = new UpdateJournalVoucherCommand
+        {
+            JournalVoucherId = journalVoucher.Id,
+            ReferenceNumber = new PatchOfString
+            {
+                Value = Guid.NewGuid().ToString()
+            }
+        };
+
+        var result = await setup.TestInit1.JournalVouchClient.UpdateAsync(model, CancellationToken.None);
+
+        // Verify in database
+        var afterUpdateJournalVoucher = await setup.TestInit1.AccountingDbContext
+            .Set<JournalVoucherEntity>()
+            .AsNoTracking()
+            .SingleAsync(g => g.Id == journalVoucher.Id);
+
+        // Assert
+        result.IsSuccess.Should().BeTrue();
+        afterUpdateJournalVoucher.JournalVoucherTitle.Should().Be(journalVoucher.JournalVoucherTitle);
+        afterUpdateJournalVoucher.ReferenceNumber.Should().NotBe(journalVoucher.ReferenceNumber);
+        afterUpdateJournalVoucher.TransactionTime.Should().Be(journalVoucher.TransactionTime);
+        afterUpdateJournalVoucher.Description.Should().Be(journalVoucher.Description);
+    }
+
+    [Fact]
+    public async Task UpdateJournalVoucher_ShouldSucceed_WhenTransactionDateIsExactlyStartOrEndOfPeriod()
+    {
+        await setup.TestInit1.DeleteFinancialPeriodAndDependenciesAsync();
+
+        // Create or get financial period
+        var financialPeriod = await setup.TestInit1.GetOrCreateFinancialPeriod();
+
+        // Create journal voucher
+        var journalVoucher = await setup.TestInit1.CreateJournalVoucher(financialPeriod);
+
+        // Update journal voucher
+        var model = new UpdateJournalVoucherCommand
+        {
+            JournalVoucherId = journalVoucher.Id,
+            TransactionTime = new PatchOfDateTime
+            {
+                Value = financialPeriod.StartDate.AddDays(2)
+            }
+        };
+
+        var result = await setup.TestInit1.JournalVouchClient.UpdateAsync(model, CancellationToken.None);
+
+        // Verify in database
+        var afterUpdateJournalVoucher = await setup.TestInit1.AccountingDbContext
+            .Set<JournalVoucherEntity>()
+            .AsNoTracking()
+            .SingleAsync(g => g.Id == journalVoucher.Id);
+
+        // Assert
+        result.IsSuccess.Should().BeTrue();
+        afterUpdateJournalVoucher.JournalVoucherTitle.Should().Be(journalVoucher.JournalVoucherTitle);
+        afterUpdateJournalVoucher.ReferenceNumber.Should().Be(journalVoucher.ReferenceNumber);
+        afterUpdateJournalVoucher.TransactionTime.Should().NotBe(journalVoucher.TransactionTime);
+        afterUpdateJournalVoucher.Description.Should().Be(journalVoucher.Description);
+    }
 }

@@ -272,7 +272,7 @@ public class TestInit
             {
                 FinancialPeriodTitle = Guid.NewGuid().ToString(),
                 StartDate = DateTime.UtcNow.AddDays(uniqueSuffix + 1),
-                EndDate = DateTime.UtcNow.AddDays(uniqueSuffix + 3)
+                EndDate = DateTime.UtcNow.AddDays(uniqueSuffix + 5)
             };
             await FinancialPeriodClient.CreateAsync(createFinancialPeriod);
 

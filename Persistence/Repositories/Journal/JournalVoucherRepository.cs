@@ -26,7 +26,9 @@ internal sealed class JournalVoucherRepository(AccountingDbContext dbContext) : 
 
     public async Task<JournalVoucherEntity?> GetByIdAsync(Guid journalVoucherId, CancellationToken cancellationToken = default)
     {
-        return await Table.FirstOrDefaultAsync(x => x.Id == journalVoucherId, cancellationToken);
+        return await Table
+            .Include(x=>x.FinancialPeriod)
+            .FirstOrDefaultAsync(x => x.Id == journalVoucherId, cancellationToken);
     }
 
     public async Task<JournalVoucherEntity?> GetByIdWithEntriesAsync(Guid journalVoucherId, CancellationToken cancellationToken = default)
