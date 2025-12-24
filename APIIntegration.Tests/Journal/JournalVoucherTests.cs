@@ -899,12 +899,79 @@ public class JournalVoucherTests(ApiTestSetup setup, ITestOutputHelper output)
     [Fact]
     public async Task GetAllJournalVoucher_ShouldSucceed_WhenFilteredByCreatedByUserId()
     {
-        throw new NotImplementedException();
+        await setup.TestInit1.DeleteFinancialPeriodAndDependenciesAsync();
+
+        var userId = Guid.NewGuid();
+        // Create or get financial period
+        var financialPeriod = await setup.TestInit1.GetOrCreateFinancialPeriod();
+
+        // Create journal voucher
+        var model = new CreateJournalVoucherApiModel
+        {
+            FinancialPeriodId = financialPeriod.Id,
+            JournalVoucherTitle = Guid.NewGuid().ToString(),
+            ReferenceNumber = Guid.NewGuid().ToString(),
+            TransactionTime = financialPeriod.StartDate.AddDays(1),
+            CreatedByUserId = userId
+        };
+        await setup.TestInit1.JournalVouchClient.CreateAsync(model, CancellationToken.None);
+
+        // Get expected results from DB
+        var original = await setup.TestInit1.AccountingDbContext
+            .Set<JournalVoucherEntity>()
+            .AsNoTracking()
+            .Where(x => x.FinancialPeriodId == financialPeriod.Id)
+            .ToListAsync();
+
+        // Get all journal voucher
+        var filter = new FilterJournalVoucherApiModel
+        {
+            CreatedByUserId = userId
+        };
+        var result = await setup.TestInit1.JournalVouchClient.GetAllAsync(createdByUserId: filter.CreatedByUserId);
+
+        // Assert
+        result.Data.Should().NotBeNull();
+        result.Data.Count.Should().Be(original.Count);
+        result.IsSuccess.Should().BeTrue();
     }
 
     [Fact]
     public async Task GetAllJournalVoucher_ShouldSucceed_WhenFilteredByJournalVoucherNumber()
     {
-        throw new NotImplementedException();
+        await setup.TestInit1.DeleteFinancialPeriodAndDependenciesAsync();
+
+        // Create or get financial period
+        var financialPeriod = await setup.TestInit1.GetOrCreateFinancialPeriod();
+
+        // Create journal voucher
+        var model = new CreateJournalVoucherApiModel
+        {
+            FinancialPeriodId = financialPeriod.Id,
+            JournalVoucherTitle = Guid.NewGuid().ToString(),
+            ReferenceNumber = Guid.NewGuid().ToString(),
+            TransactionTime = financialPeriod.StartDate.AddDays(1),
+            CreatedByUserId = Guid.NewGuid()
+        };
+        await setup.TestInit1.JournalVouchClient.CreateAsync(model, CancellationToken.None);
+
+        // Get expected results from DB
+        var original = await setup.TestInit1.AccountingDbContext
+            .Set<JournalVoucherEntity>()
+            .AsNoTracking()
+            .Where(x => x.FinancialPeriodId == financialPeriod.Id)
+            .ToListAsync();
+
+        // Get all journal voucher
+        var filter = new FilterJournalVoucherApiModel
+        {
+            JournalVoucherNumber = 1
+        };
+        var result = await setup.TestInit1.JournalVouchClient.GetAllAsync(journalVoucherNumber: filter.JournalVoucherNumber);
+
+        // Assert
+        result.Data.Should().NotBeNull();
+        result.Data.Count.Should().Be(original.Count);
+        result.IsSuccess.Should().BeTrue();
     }
 }
