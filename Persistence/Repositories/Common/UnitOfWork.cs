@@ -4,6 +4,7 @@ using Application.Repositories.Balance;
 using Application.Repositories.Common;
 using Application.Repositories.FinancialPeriod;
 using Application.Repositories.JournalRepositories;
+using Microsoft.EntityFrameworkCore.Storage;
 using Persistence.Repositories.Accounts;
 using Persistence.Repositories.Attachment;
 using Persistence.Repositories.Balance;
@@ -14,6 +15,8 @@ namespace Persistence.Repositories.Common;
 
 public class UnitOfWork(AccountingDbContext dbContext) : IUnitOfWork
 {
+    private IDbContextTransaction? _transaction;
+
     public void Dispose()
     {
         dbContext.Dispose();
@@ -37,6 +40,23 @@ public class UnitOfWork(AccountingDbContext dbContext) : IUnitOfWork
     public IAttachmentRepository AttachmentRepository { get; } = new AttachmentRepository(dbContext);
 
     public IAccountBalanceRepository AccountBalanceRepository { get; } = new AccountBalanceRepository(dbContext);
+
+    public async Task BeginTransactionAsync(CancellationToken cancellationToken = default)
+    {
+        _transaction = await dbContext.Database.BeginTransactionAsync(cancellationToken);
+    }
+
+    public async Task CommitTransactionAsync(CancellationToken cancellationToken = default)
+    {
+        await dbContext.SaveChangesAsync(cancellationToken);
+        await _transaction!.CommitAsync(cancellationToken);
+    }
+
+    public async Task RollbackTransactionAsync(CancellationToken cancellationToken = default)
+    {
+        if (_transaction is not null)
+            await _transaction.RollbackAsync(cancellationToken);
+    }
 
     public async Task CommitAsync(CancellationToken cancellationToken = default)
     {

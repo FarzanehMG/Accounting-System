@@ -19,6 +19,16 @@ public class CreateJournalEntryCommandHandler(IUnitOfWork unitOfWork, IFileServi
         if (commands.Any(c => c.JournalVoucherId != voucherId))
             return OperationResult<bool>.FailureResult("JournalVoucherId", "All entries must belong to the same journal voucher.");
 
+        // Check Journal Voucher
+        var journalVoucher = await unitOfWork.JournalVoucherRepository
+            .GetByIdAsync(voucherId, cancellationToken);
+
+        if (journalVoucher is null)
+            return OperationResult<bool>.NotFoundResult(nameof(voucherId), "Journal voucher not found.");
+
+        if (journalVoucher.JournalVoucherState != JournalVoucherState.Draft)
+            return OperationResult<bool>.FailureResult(nameof(journalVoucher.JournalVoucherState), "Cannot add entries to a non-draft voucher.");
+
         // Business Rule: Entries must be balanced (Debit = Credit)
         var debitTotal = commands
             .Where(c => c.JournalEntryType == JournalEntryType.Debit)
@@ -29,77 +39,72 @@ public class CreateJournalEntryCommandHandler(IUnitOfWork unitOfWork, IFileServi
             .Sum(c => c.Amount);
 
         if (debitTotal != creditTotal)
-            return OperationResult<bool>.FailureResult("Entries", "Journal entries are not balanced. Debit and Credit totals must match.");
+            return OperationResult<bool>.FailureResult("Entries", "Journal entries are not balanced.");
 
         // Generate Entry Number (incremental per JournalVoucher)
         var lastEntry = await unitOfWork.JournalEntryRepository.GetLastEntryByVoucherIdAsync(voucherId, cancellationToken);
 
-        var lastEntryNum = 0;
-        if (lastEntry is not null)
-            int.TryParse(lastEntry.JournalEntryNumber, out lastEntryNum);
+        var lastEntryNum = lastEntry is null ? 0 : int.Parse(lastEntry.JournalEntryNumber);
 
-        // Create entries and commit once at the end (atomic)
-        foreach (var command in commands)
+        // Validator
+        var validator = new CreateJournalEntryCommandValidator();
+
+        await unitOfWork.BeginTransactionAsync(cancellationToken);
+
+        try
         {
-            // Validator
-            var validator = new CreateJournalEntryCommandValidator();
-            var validateResult = await validator.ValidateAsync(command, cancellationToken);
-            if (!validateResult.IsValid)
-                return OperationResult<bool>.FailureResult(validateResult.Errors.ConvertToKeyValuePair());
-
-            // Check Journal Voucher
-            var journalVoucherEntity = await unitOfWork.JournalVoucherRepository.GetByIdAsync(command.JournalVoucherId, cancellationToken);
-            if (journalVoucherEntity is null)
-                return OperationResult<bool>.NotFoundResult(nameof(command.JournalVoucherId), "The journal voucher was not found.");
-
-            if (journalVoucherEntity.JournalVoucherState != JournalVoucherState.Draft)
-                return OperationResult<bool>.FailureResult(nameof(journalVoucherEntity.JournalVoucherState), "Cannot add entries to a non-Draft voucher.");
-
-            // Check SubLedger account
-            var subLedgerAccountEntity = await unitOfWork.SubLedgerAccountRepository.GetByIdAsync(command.SubLedgerAccountId, cancellationToken);
-            if (subLedgerAccountEntity is null)
-                return OperationResult<bool>.NotFoundResult(nameof(command.SubLedgerAccountId), "This subLedger account was not found.");
-
-            if (!subLedgerAccountEntity.IsActive)
-                return OperationResult<bool>.FailureResult(nameof(command.SubLedgerAccountId), "This subLedger account is not active.");
-
-            if (subLedgerAccountEntity.JournalEntryType != command.JournalEntryType)
-                return OperationResult<bool>.FailureResult(nameof(command.JournalEntryType), "Journal entry type does not match subLedger account.");
-
-            // Check Detailed account
-            if (command.DetailedAccountId is not null)
+            foreach (var command in commands)
             {
-                var detailedAccountEntity = await unitOfWork.DetailedAccountRepository.GetByIdAsync(command.DetailedAccountId.Value, cancellationToken);
-                if (detailedAccountEntity is null)
-                    return OperationResult<bool>.NotFoundResult(nameof(command.DetailedAccountId), "This detailed account was not found.");
+                var validationResult = await validator.ValidateAsync(command, cancellationToken);
+                if (!validationResult.IsValid)
+                    throw new InvalidOperationException(validationResult.Errors.ConvertToKeyValuePair().First().Value);
 
-                if (!detailedAccountEntity.IsActive)
-                    return OperationResult<bool>.FailureResult(nameof(command.DetailedAccountId), "This detailed account is not active.");
+                var subLedgerAccountEntity = await unitOfWork.SubLedgerAccountRepository.GetByIdAsync(command.SubLedgerAccountId, cancellationToken);
 
-                if (detailedAccountEntity.JournalEntryType != command.JournalEntryType)
-                    return OperationResult<bool>.FailureResult(nameof(command.JournalEntryType), "Journal entry type does not match detailed account.");
+                if (subLedgerAccountEntity is null || !subLedgerAccountEntity.IsActive)
+                    return OperationResult<bool>.FailureResult(nameof(command.SubLedgerAccountId), "Invalid or inactive sub-ledger account.");
+
+                if (subLedgerAccountEntity.JournalEntryType != command.JournalEntryType)
+                    return OperationResult<bool>.FailureResult(nameof(command.JournalEntryType), "Journal entry type mismatch.");
+
+                // Check Detailed account
+                if (command.DetailedAccountId is not null)
+                {
+                    var detailedAccountEntity = await unitOfWork.DetailedAccountRepository.GetByIdAsync(command.DetailedAccountId.Value, cancellationToken);
+
+                    if (detailedAccountEntity is null || !detailedAccountEntity.IsActive)
+                        return OperationResult<bool>.FailureResult(nameof(command.DetailedAccountId), "Invalid or inactive detailed account.");
+
+                    if (detailedAccountEntity.JournalEntryType != command.JournalEntryType)
+                        return OperationResult<bool>.FailureResult(nameof(command.JournalEntryType), "Journal entry type mismatch.");
+                }
+
+                lastEntryNum++;
+
+                var journalEntryEntity = new JournalEntryEntity
+                {
+                    JournalEntryNumber = lastEntryNum.ToString(),
+                    JournalEntryType = command.JournalEntryType,
+                    Amount = command.Amount,
+                    Description = command.Description,
+                    DetailedAccountId = command.DetailedAccountId,
+                    SubLedgerAccountId = command.SubLedgerAccountId,
+                    JournalVoucherId = voucherId
+                };
+
+                await unitOfWork.JournalEntryRepository.CreateAsync(journalEntryEntity, cancellationToken);
+
+                // Save files
+                await fileService.SaveFilesAsync(command.Attachments, journalEntryEntity.Id, cancellationToken);
             }
 
-            lastEntryNum++;
-
-            var journalEntryEntity = new JournalEntryEntity
-            {
-                JournalEntryNumber = lastEntryNum.ToString(),
-                JournalEntryType = command.JournalEntryType,
-                Amount = command.Amount,
-                Description = command.Description,
-                DetailedAccountId = command.DetailedAccountId,
-                SubLedgerAccountId = command.SubLedgerAccountId,
-                JournalVoucherId = command.JournalVoucherId
-            };
-
-            await unitOfWork.JournalEntryRepository.CreateAsync(journalEntryEntity, cancellationToken);
-            
-            // Save files
-            await fileService.SaveFilesAsync(command.Attachments, journalEntryEntity.Id, cancellationToken);
+            await unitOfWork.CommitTransactionAsync(cancellationToken);
+            return OperationResult<bool>.SuccessResult(true);
         }
-
-        await unitOfWork.CommitAsync(cancellationToken);
-        return OperationResult<bool>.SuccessResult(true);
+        catch (Exception ex)
+        {
+            await unitOfWork.RollbackTransactionAsync(cancellationToken);
+            return OperationResult<bool>.FailureResult("Posting", ex.Message);
+        }
     }
 }
