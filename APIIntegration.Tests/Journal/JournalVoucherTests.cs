@@ -4,6 +4,7 @@ using Domain.Entities.Journal;
 using FluentAssertions;
 using GenerateApi;
 using Microsoft.EntityFrameworkCore;
+using Persistence.Model;
 using Xunit.Abstractions;
 using CreateJournalVoucherApiModel = GenerateApi.CreateJournalVoucherApiModel;
 using JournalVoucherState = Domain.Enums.JournalVoucherState;
@@ -317,7 +318,57 @@ public class JournalVoucherTests(ApiTestSetup setup, ITestOutputHelper output)
     [Fact]
     public async Task CreateJournalVoucher_ShouldPreventDuplicateNumber_WhenParallelExecution()
     {
-        throw new NotImplementedException();
+        await setup.TestInit1.DeleteFinancialPeriodAndDependenciesAsync();
+
+        // Create or get financial period
+        var financialPeriod = await setup.TestInit1.GetOrCreateFinancialPeriod();
+
+        var taskCount = 50;
+        var tasks = new List<Task>();
+
+        output.WriteLine($"Starting parallel execution with {taskCount} requests...");
+
+        for (var i = 0; i < taskCount; i++)
+        {
+            var model = new CreateJournalVoucherApiModel
+            {
+                FinancialPeriodId = financialPeriod.Id,
+                JournalVoucherTitle = $"Parallel-Voucher-{i}-{Guid.NewGuid().ToString().Substring(0, 8)}",
+                ReferenceNumber = $"Ref-{i}",
+                TransactionTime = financialPeriod.StartDate.AddDays(1),
+                CreatedByUserId = Guid.NewGuid()
+            };
+
+            tasks.Add(setup.TestInit1.JournalVouchClient.CreateAsync(model, CancellationToken.None));
+        }
+
+        await Task.WhenAll(tasks);
+
+        var vouchers = await setup.TestInit1.AccountingDbContext
+            .Set<JournalVoucherEntity>()
+            .Where(x => x.FinancialPeriodId == financialPeriod.Id)
+            .ToListAsync();
+
+        // Assertion
+        Assert.Equal(taskCount, vouchers.Count);
+
+        var distinctNumbers = vouchers.Select(x => x.JournalVoucherNumber).Distinct().Count();
+        Assert.Equal(taskCount, distinctNumbers);
+
+        var orderedNumbers = vouchers.Select(x => x.JournalVoucherNumber).OrderBy(n => n).ToList();
+        for (var i = 0; i < taskCount; i++)
+        {
+            Assert.Equal(i + 1, orderedNumbers[i]);
+        }
+
+        var sequence = await setup.TestInit1.AccountingDbContext
+            .Set<JournalVoucherSequence>()
+            .SingleOrDefaultAsync(x => x.FinancialPeriodId == financialPeriod.Id);
+
+        Assert.NotNull(sequence);
+        Assert.Equal(taskCount, sequence.CurrentNumber);
+
+        output.WriteLine("Concurrency Test Passed: No duplicates and no gaps found.");
     }
 
     [Fact]

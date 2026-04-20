@@ -301,12 +301,6 @@ public class JournalVoucherTests(ITestOutputHelper testOutputHelper)
     }
 
     [Fact]
-    public async Task CreateJournalVoucherCommandHandler_ShouldHandleConcurrency_WhenMultipleCreates()
-    {
-        throw new NotImplementedException();
-    }
-
-    [Fact]
     public async Task When_Validation_Fails_Should_Not_Call_Commit()
     {
         // Arrange

@@ -43,19 +43,42 @@ public class UnitOfWork(AccountingDbContext dbContext) : IUnitOfWork
 
     public async Task BeginTransactionAsync(CancellationToken cancellationToken = default)
     {
+        if (_transaction is not null) 
+            return;
+
         _transaction = await dbContext.Database.BeginTransactionAsync(cancellationToken);
     }
 
     public async Task CommitTransactionAsync(CancellationToken cancellationToken = default)
     {
-        await dbContext.SaveChangesAsync(cancellationToken);
-        await _transaction!.CommitAsync(cancellationToken);
+        try
+        {
+            await dbContext.SaveChangesAsync(cancellationToken);
+
+            if (_transaction is not null) 
+                await _transaction.CommitAsync(cancellationToken);
+        }
+        finally
+        {
+            await ReleaseTransaction();
+        }
     }
 
     public async Task RollbackTransactionAsync(CancellationToken cancellationToken = default)
     {
-        if (_transaction is not null)
+        if (_transaction is not null) 
             await _transaction.RollbackAsync(cancellationToken);
+
+        await ReleaseTransaction();
+    }
+
+    private async Task ReleaseTransaction()
+    {
+        if (_transaction is not null)
+        {
+            await _transaction.DisposeAsync();
+            _transaction = null;
+        }
     }
 
     public async Task CommitAsync(CancellationToken cancellationToken = default)

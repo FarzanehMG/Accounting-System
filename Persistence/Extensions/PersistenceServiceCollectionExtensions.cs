@@ -17,7 +17,7 @@ public static class PersistenceServiceCollectionExtensions
         {
             options.UseSqlServer(configuration.GetConnectionString("AccountingSystem"), builder =>
             {
-                builder.EnableRetryOnFailure();
+                //builder.EnableRetryOnFailure();
                 builder.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery);
             });
         });
