@@ -3,26 +3,41 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Persistence.JournalVoucherService;
 
-public sealed class JournalVoucherNumberGenerator(AccountingDbContext dbContext) : IJournalVoucherNumberGenerator
+public class JournalVoucherNumberGenerator(AccountingDbContext db) : IJournalVoucherNumberGenerator
 {
-    public async Task<int> GenerateAsync(Guid financialPeriodId, CancellationToken cancellationToken)
+    public async Task<int> GenerateAsync(Guid financialPeriodId, CancellationToken ct)
     {
-        var sql = @"
-            SET NOCOUNT ON;
-            MERGE INTO JournalVoucherSequences AS Target
-            USING (SELECT @p0 AS FinancialPeriodId) AS Source
-            ON Target.FinancialPeriodId = Source.FinancialPeriodId
-            WHEN MATCHED THEN
-                UPDATE SET CurrentNumber = Target.CurrentNumber + 1
-            WHEN NOT MATCHED THEN
-                INSERT (FinancialPeriodId, CurrentNumber)
-                VALUES (Source.FinancialPeriodId, 1)
-            OUTPUT INSERTED.CurrentNumber;";
+        if (db.Database.CurrentTransaction is null)
+            throw new InvalidOperationException("Must run inside transaction.");
 
-        var result = await dbContext.Database
-            .SqlQueryRaw<int>(sql, financialPeriodId)
-            .ToListAsync(cancellationToken);
+        // Step 1: ensure sequence exists (SAFE initialization pattern)
+        var initSql = @"
+            IF NOT EXISTS (
+                SELECT 1
+                FROM JournalVoucherSequences WITH (UPDLOCK, HOLDLOCK)
+                WHERE FinancialPeriodId = {0}
+            )
+            BEGIN
+                INSERT INTO JournalVoucherSequences (FinancialPeriodId, CurrentNumber)
+                VALUES ({0}, 0)
+            END";
 
-        return result.First();
+        await db.Database.ExecuteSqlRawAsync(initSql, financialPeriodId);
+
+        // Step 2: atomic increment
+        var updateSql = @"
+            UPDATE JournalVoucherSequences WITH (ROWLOCK, UPDLOCK)
+            SET CurrentNumber = CurrentNumber + 1
+            OUTPUT INSERTED.CurrentNumber
+            WHERE FinancialPeriodId = {0};";
+
+        var result = await db.Database
+            .SqlQueryRaw<int>(updateSql, financialPeriodId)
+            .ToListAsync(ct);
+
+        if (result.Count == 0)
+            throw new InvalidOperationException("Sequence generation failed.");
+
+        return result[0];
     }
 }

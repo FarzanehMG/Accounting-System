@@ -23,4 +23,7 @@ public interface IUnitOfWork : IAsyncDisposable, IDisposable
     Task RollbackTransactionAsync(CancellationToken cancellationToken = default);
 
     Task CommitAsync(CancellationToken cancellationToken = default);
+
+    // Execute the provided operation within a transaction using the unit's DbContext.
+    Task<T> ExecuteInTransactionAsync<T>(Func<Task<T>> operation, CancellationToken cancellationToken = default);
 }

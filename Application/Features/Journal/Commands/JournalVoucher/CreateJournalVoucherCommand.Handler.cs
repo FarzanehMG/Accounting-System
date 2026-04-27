@@ -11,31 +11,30 @@ public class CreateJournalVoucherCommandHandler(IUnitOfWork unitOfWork, IJournal
 {
     public async Task<OperationResult<bool>> Handle(CreateJournalVoucherCommand command, CancellationToken cancellationToken)
     {
-        // Validator
+        // Input validation
         var validator = new CreateJournalVoucherCommandValidator();
         var validateResult = await validator.ValidateAsync(command, cancellationToken);
         if (!validateResult.IsValid)
             return OperationResult<bool>.FailureResult(validateResult.Errors.ConvertToKeyValuePair());
 
-        // Start Atomic Scope
-        await unitOfWork.BeginTransactionAsync(cancellationToken);
+        // Check financial period (read-only - do outside transaction)
+        var financialPeriod = await unitOfWork.FinancialPeriodRepository.GetByIdAsync(command.FinancialPeriodId, cancellationToken);
+        if (financialPeriod is null)
+            return OperationResult<bool>.NotFoundResult(nameof(command.FinancialPeriodId), "Financial period not found.");
 
-        try
+        if (!financialPeriod.IsActive)
+            return OperationResult<bool>.FailureResult(nameof(command.FinancialPeriodId), "This financial period is not active.");
+
+        if (command.TransactionTime < financialPeriod.StartDate || command.TransactionTime > financialPeriod.EndDate)
+            return OperationResult<bool>.FailureResult(nameof(command.FinancialPeriodId), "Transaction time must be within the selected financial period.");
+
+        // Execute transactional work using UnitOfWork's execution strategy aware method
+        return await unitOfWork.ExecuteInTransactionAsync(async () =>
         {
-            // Check financial period
-            var financialPeriod = await unitOfWork.FinancialPeriodRepository.GetByIdAsync(command.FinancialPeriodId, cancellationToken);
-            if (financialPeriod is null)
-                return OperationResult<bool>.NotFoundResult(nameof(command.FinancialPeriodId), "Financial period not found.");
-
-            if (!financialPeriod.IsActive)
-                return OperationResult<bool>.FailureResult(nameof(command.FinancialPeriodId), "This financial period is not active.");
-
-            if (command.TransactionTime < financialPeriod.StartDate || command.TransactionTime > financialPeriod.EndDate)
-                return OperationResult<bool>.FailureResult(nameof(command.FinancialPeriodId), "Transaction time must be within the selected financial period.");
-
-            // Generate Number (Locked row inside transaction)
+            // Generate Number
             var journalVoucherNumber = await numberGenerator.GenerateAsync(command.FinancialPeriodId, cancellationToken);
 
+            // Create journal voucher header
             var journalVoucherEntity = new JournalVoucherEntity
             {
                 JournalVoucherTitle = command.JournalVoucherTitle,
@@ -50,15 +49,7 @@ public class CreateJournalVoucherCommandHandler(IUnitOfWork unitOfWork, IJournal
 
             await unitOfWork.JournalVoucherRepository.CreateAsync(journalVoucherEntity, cancellationToken);
 
-            // This finalizes the DB transaction and releases the lock
-            await unitOfWork.CommitTransactionAsync(cancellationToken);
-
             return OperationResult<bool>.SuccessResult(true);
-        }
-        catch (Exception)
-        {
-            await unitOfWork.RollbackTransactionAsync(cancellationToken);
-            throw; // Re-throw to be handled by global exception middleware
-        }
+        }, cancellationToken);
     }
 }

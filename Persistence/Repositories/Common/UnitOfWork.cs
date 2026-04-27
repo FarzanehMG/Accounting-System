@@ -85,4 +85,42 @@ public class UnitOfWork(AccountingDbContext dbContext) : IUnitOfWork
     {
         await dbContext.SaveChangesAsync(cancellationToken);
     }
+
+    public async Task<T> ExecuteInTransactionAsync<T>(Func<Task<T>> operation, CancellationToken cancellationToken = default)
+    {
+        var strategy = dbContext.Database.CreateExecutionStrategy();
+        return await strategy.ExecuteAsync<AccountingDbContext, T>(
+            dbContext,
+            async (db, _, execCancellationToken) =>
+            {
+                await using var transaction = await db.Database.BeginTransactionAsync(execCancellationToken);
+
+                try
+                {
+                    var result = await operation();
+
+                    // Ensure changes are persisted within the same transaction
+                    await db.SaveChangesAsync(execCancellationToken);
+
+                    await transaction.CommitAsync(execCancellationToken);
+
+                    return result;
+                }
+                catch
+                {
+                    try
+                    {
+                        await transaction.RollbackAsync(execCancellationToken);
+                    }
+                    catch
+                    {
+                        // Swallow rollback exceptions - higher level should log
+                    }
+
+                    throw;
+                }
+            },
+            null,
+            cancellationToken);
+    }
 }

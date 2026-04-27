@@ -14,7 +14,6 @@ internal sealed class JournalVoucherSequenceConfiguration : IEntityTypeConfigura
 
         builder.Property(x => x.CurrentNumber)
             .IsRequired()
-            .HasDefaultValue(0)
-            .ValueGeneratedNever();
+            .HasDefaultValue(0);
     }
 }
