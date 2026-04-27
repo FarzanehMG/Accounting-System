@@ -70,7 +70,7 @@ public class ApprovedJournalVoucherCommandHandler(IUnitOfWork unitOfWork)
             return OperationResult<bool>.FailureResult("JournalEntryBalance", "Journal entries are not balanced.");
 
         // Update
-        journalVoucherEntity.JournalVoucherState = JournalVoucherState.Approved;
+        journalVoucherEntity.JournalVoucherState = JournalVoucherState.Posted;
         journalVoucherEntity.ApprovedByUserId = command.ApprovedByUserId;
         journalVoucherEntity.ApprovedTime = DateTime.UtcNow;
         journalVoucherEntity.ModifiedDate = DateTime.UtcNow;

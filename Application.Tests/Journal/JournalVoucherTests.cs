@@ -408,7 +408,7 @@ public class JournalVoucherTests(ITestOutputHelper testOutputHelper)
             JournalVoucherTitle = faker.Finance.AccountName(),
             ReferenceNumber = faker.Finance.RoutingNumber(),
             TransactionTime = DateTime.UtcNow,
-            JournalVoucherState = JournalVoucherState.Approved,
+            JournalVoucherState = JournalVoucherState.Posted,
             CreatedByUserId = Guid.NewGuid(),
             FinancialPeriodId = Guid.NewGuid()
         };
@@ -931,7 +931,7 @@ public class JournalVoucherTests(ITestOutputHelper testOutputHelper)
         // Arrange
         var unitOfWork = Substitute.For<IUnitOfWork>();
         var faker = new Faker();
-        var journalVoucherState = JournalVoucherState.Approved;
+        var journalVoucherState = JournalVoucherState.Posted;
 
         var existingJournalVouchers = new List<JournalVoucherEntity>
         {
@@ -992,7 +992,7 @@ public class JournalVoucherTests(ITestOutputHelper testOutputHelper)
                 JournalVoucherTitle = faker.Finance.AccountName(),
                 ReferenceNumber = faker.Finance.RoutingNumber(),
                 TransactionTime = DateTime.UtcNow,
-                JournalVoucherState = JournalVoucherState.Approved,
+                JournalVoucherState = JournalVoucherState.Posted,
                 CreatedByUserId = Guid.NewGuid(),
                 FinancialPeriodId = Guid.NewGuid(),
                 ApprovedTime = approvedTime
@@ -1002,7 +1002,7 @@ public class JournalVoucherTests(ITestOutputHelper testOutputHelper)
                 JournalVoucherTitle = faker.Finance.AccountName(),
                 ReferenceNumber = faker.Finance.RoutingNumber(),
                 TransactionTime = DateTime.UtcNow,
-                JournalVoucherState = JournalVoucherState.Approved,
+                JournalVoucherState = JournalVoucherState.Posted,
                 CreatedByUserId = Guid.NewGuid(),
                 FinancialPeriodId = Guid.NewGuid(),
                 ApprovedTime = approvedTime

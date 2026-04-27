@@ -30,7 +30,7 @@ internal sealed class JournalEntryRepository(AccountingDbContext dbContext) : Ba
     {
         var query = TableNoTracking;
 
-        if (!string.IsNullOrEmpty(filter.JournalEntryNumber))
+        if (filter.JournalEntryNumber.HasValue)
             query = query.Where(x => x.JournalEntryNumber.Equals(filter.JournalEntryNumber));
 
         if (filter.JournalEntryType.HasValue)

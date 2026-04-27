@@ -358,10 +358,9 @@ namespace Persistence.Migrations
                     b.Property<Guid?>("DetailedAccountId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("JournalEntryNumber")
-                        .IsRequired()
+                    b.Property<int>("JournalEntryNumber")
                         .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                        .HasColumnType("int");
 
                     b.Property<string>("JournalEntryType")
                         .IsRequired()
@@ -456,6 +455,22 @@ namespace Persistence.Migrations
                     b.ToTable("JournalVouchers", (string)null);
                 });
 
+            modelBuilder.Entity("Persistence.Model.JournalEntrySequence", b =>
+                {
+                    b.Property<Guid>("JournalVoucherId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("CurrentNumber")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(0);
+
+                    b.HasKey("JournalVoucherId");
+
+                    b.ToTable("JournalEntrySequences", (string)null);
+                });
+
             modelBuilder.Entity("Persistence.Model.JournalVoucherSequence", b =>
                 {
                     b.Property<Guid>("FinancialPeriodId")
@@ -463,6 +478,7 @@ namespace Persistence.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<int>("CurrentNumber")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasDefaultValue(0);
 

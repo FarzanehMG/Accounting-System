@@ -41,7 +41,7 @@ public class ApprovedJournalVoucherTests(ITestOutputHelper testOutputHelper)
             {
                 new()
                 {
-                    JournalEntryNumber = "1",
+                    JournalEntryNumber = 1,
                     JournalEntryType = JournalEntryType.Credit,
                     Amount = 5,
                     SubLedgerAccountId = subLedgerAccountId1,
@@ -49,7 +49,7 @@ public class ApprovedJournalVoucherTests(ITestOutputHelper testOutputHelper)
                 },
                 new()
                 {
-                    JournalEntryNumber = "2",
+                    JournalEntryNumber = 2,
                     JournalEntryType = JournalEntryType.Debit,
                     Amount = 5,
                     SubLedgerAccountId = subLedgerAccountId2,
@@ -80,7 +80,7 @@ public class ApprovedJournalVoucherTests(ITestOutputHelper testOutputHelper)
 
         // Assert
         result.IsSuccess.Should().BeTrue();
-        existingJournalVoucherEntity.JournalVoucherState.Should().Be(JournalVoucherState.Approved);
+        existingJournalVoucherEntity.JournalVoucherState.Should().Be(JournalVoucherState.Posted);
         existingJournalVoucherEntity.ApprovedByUserId.Should().Be(approvedByUserId);
         existingJournalVoucherEntity.ApprovedTime.Should().NotBeNull();
         existingJournalVoucherEntity.ModifiedDate.Should().BeAfter(oldModifiedDate);
@@ -158,7 +158,7 @@ public class ApprovedJournalVoucherTests(ITestOutputHelper testOutputHelper)
             JournalVoucherTitle = faker.Finance.AccountName(),
             ReferenceNumber = faker.Finance.RoutingNumber(),
             TransactionTime = DateTime.UtcNow,
-            JournalVoucherState = JournalVoucherState.Approved,
+            JournalVoucherState = JournalVoucherState.Posted,
             CreatedByUserId = Guid.NewGuid(),
             FinancialPeriodId = Guid.NewGuid(),
             ApprovedByUserId = null,
@@ -168,7 +168,7 @@ public class ApprovedJournalVoucherTests(ITestOutputHelper testOutputHelper)
             {
                 new()
                 {
-                    JournalEntryNumber = "1",
+                    JournalEntryNumber = 1,
                     JournalEntryType = JournalEntryType.Credit,
                     Amount = 5,
                     SubLedgerAccountId = subLedgerAccountId1,
@@ -176,7 +176,7 @@ public class ApprovedJournalVoucherTests(ITestOutputHelper testOutputHelper)
                 },
                 new()
                 {
-                    JournalEntryNumber = "2",
+                    JournalEntryNumber = 2,
                     JournalEntryType = JournalEntryType.Debit,
                     Amount = 5,
                     SubLedgerAccountId = subLedgerAccountId2,
@@ -232,7 +232,7 @@ public class ApprovedJournalVoucherTests(ITestOutputHelper testOutputHelper)
             {
                 new()
                 {
-                    JournalEntryNumber = "1",
+                    JournalEntryNumber = 1,
                     JournalEntryType = JournalEntryType.Credit,
                     Amount = 2,
                     SubLedgerAccountId = subLedgerAccountId1,
@@ -291,7 +291,7 @@ public class ApprovedJournalVoucherTests(ITestOutputHelper testOutputHelper)
             {
                 new()
                 {
-                    JournalEntryNumber = "1",
+                    JournalEntryNumber = 1,
                     JournalEntryType = JournalEntryType.Credit,
                     Amount = 5,
                     SubLedgerAccountId = subLedgerAccountId1,
@@ -299,7 +299,7 @@ public class ApprovedJournalVoucherTests(ITestOutputHelper testOutputHelper)
                 },
                 new()
                 {
-                    JournalEntryNumber = "2",
+                    JournalEntryNumber = 2,
                     JournalEntryType = JournalEntryType.Debit,
                     Amount = 5,
                     SubLedgerAccountId = subLedgerAccountId2,
@@ -365,7 +365,7 @@ public class ApprovedJournalVoucherTests(ITestOutputHelper testOutputHelper)
             {
                 new()
                 {
-                    JournalEntryNumber = "1",
+                    JournalEntryNumber = 1,
                     JournalEntryType = JournalEntryType.Credit,
                     Amount = 5,
                     SubLedgerAccountId = subLedgerAccountId1,
@@ -374,7 +374,7 @@ public class ApprovedJournalVoucherTests(ITestOutputHelper testOutputHelper)
                 },
                 new()
                 {
-                    JournalEntryNumber = "2",
+                    JournalEntryNumber = 2,
                     JournalEntryType = JournalEntryType.Debit,
                     Amount = 5,
                     SubLedgerAccountId = subLedgerAccountId2,
@@ -444,7 +444,7 @@ public class ApprovedJournalVoucherTests(ITestOutputHelper testOutputHelper)
             {
                 new()
                 {
-                    JournalEntryNumber = "1",
+                    JournalEntryNumber = 1,
                     JournalEntryType = 0,
                     Amount = 5,
                     SubLedgerAccountId = subLedgerAccountId1,
@@ -452,7 +452,7 @@ public class ApprovedJournalVoucherTests(ITestOutputHelper testOutputHelper)
                 },
                 new()
                 {
-                    JournalEntryNumber = "2",
+                    JournalEntryNumber = 2,
                     JournalEntryType = JournalEntryType.Debit,
                     Amount = 5,
                     SubLedgerAccountId = subLedgerAccountId2,
@@ -518,7 +518,7 @@ public class ApprovedJournalVoucherTests(ITestOutputHelper testOutputHelper)
             {
                 new()
                 {
-                    JournalEntryNumber = "1",
+                    JournalEntryNumber = 1,
                     JournalEntryType = JournalEntryType.Credit,
                     Amount = 2,
                     SubLedgerAccountId = subLedgerAccountId1,
@@ -526,7 +526,7 @@ public class ApprovedJournalVoucherTests(ITestOutputHelper testOutputHelper)
                 },
                 new()
                 {
-                    JournalEntryNumber = "2",
+                    JournalEntryNumber = 2,
                     JournalEntryType = JournalEntryType.Debit,
                     Amount = 5,
                     SubLedgerAccountId = subLedgerAccountId2,
@@ -591,7 +591,7 @@ public class ApprovedJournalVoucherTests(ITestOutputHelper testOutputHelper)
             {
                 new()
                 {
-                    JournalEntryNumber = "1",
+                    JournalEntryNumber = 1,
                     JournalEntryType = JournalEntryType.Credit,
                     Amount = 5,
                     SubLedgerAccountId = subLedgerAccountId1,
@@ -599,7 +599,7 @@ public class ApprovedJournalVoucherTests(ITestOutputHelper testOutputHelper)
                 },
                 new()
                 {
-                    JournalEntryNumber = "2",
+                    JournalEntryNumber = 2,
                     JournalEntryType = JournalEntryType.Debit,
                     Amount = 5,
                     SubLedgerAccountId = subLedgerAccountId2,
@@ -666,7 +666,7 @@ public class ApprovedJournalVoucherTests(ITestOutputHelper testOutputHelper)
             {
                 new()
                 {
-                    JournalEntryNumber = "1",
+                    JournalEntryNumber = 1,
                     JournalEntryType = JournalEntryType.Credit,
                     Amount = 5,
                     SubLedgerAccountId = subLedgerAccountId1,
@@ -675,7 +675,7 @@ public class ApprovedJournalVoucherTests(ITestOutputHelper testOutputHelper)
                 },
                 new()
                 {
-                    JournalEntryNumber = "2",
+                    JournalEntryNumber = 2,
                     JournalEntryType = JournalEntryType.Debit,
                     Amount = 5,
                     SubLedgerAccountId = subLedgerAccountId2,
@@ -745,7 +745,7 @@ public class ApprovedJournalVoucherTests(ITestOutputHelper testOutputHelper)
             {
                 new()
                 {
-                    JournalEntryNumber = "1",
+                    JournalEntryNumber = 1,
                     JournalEntryType = JournalEntryType.Credit,
                     Amount = 10,
                     SubLedgerAccountId = subLedgerAccountId1,
@@ -753,7 +753,7 @@ public class ApprovedJournalVoucherTests(ITestOutputHelper testOutputHelper)
                 },
                 new()
                 {
-                    JournalEntryNumber = "2",
+                    JournalEntryNumber = 2,
                     JournalEntryType = JournalEntryType.Debit,
                     Amount = 5,
                     SubLedgerAccountId = subLedgerAccountId2,
@@ -761,7 +761,7 @@ public class ApprovedJournalVoucherTests(ITestOutputHelper testOutputHelper)
                 },
                 new()
                 {
-                    JournalEntryNumber = "3",
+                    JournalEntryNumber = 3,
                     JournalEntryType = JournalEntryType.Debit,
                     Amount = 5,
                     SubLedgerAccountId = subLedgerAccountId3,
@@ -796,7 +796,7 @@ public class ApprovedJournalVoucherTests(ITestOutputHelper testOutputHelper)
 
         // Assert
         result.IsSuccess.Should().BeTrue();
-        existingJournalVoucherEntity.JournalVoucherState.Should().Be(JournalVoucherState.Approved);
+        existingJournalVoucherEntity.JournalVoucherState.Should().Be(JournalVoucherState.Posted);
         existingJournalVoucherEntity.ApprovedByUserId.Should().Be(approvedByUserId);
         existingJournalVoucherEntity.ApprovedTime.Should().NotBeNull();
         existingJournalVoucherEntity.ModifiedDate.Should().BeAfter(oldModifiedDate);

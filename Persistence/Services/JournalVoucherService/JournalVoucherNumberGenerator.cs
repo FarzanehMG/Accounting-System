@@ -1,7 +1,7 @@
 ﻿using Application.Contracts.JournalVoucherService;
 using Microsoft.EntityFrameworkCore;
 
-namespace Persistence.JournalVoucherService;
+namespace Persistence.Services.JournalVoucherService;
 
 public class JournalVoucherNumberGenerator(AccountingDbContext db) : IJournalVoucherNumberGenerator
 {

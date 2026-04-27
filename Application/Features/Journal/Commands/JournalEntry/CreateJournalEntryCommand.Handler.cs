@@ -1,13 +1,16 @@
 ﻿using Application.Common;
 using Application.Contracts.FileService.Interfaces;
+using Application.Contracts.FileService.Models;
+using Application.Contracts.JournalEntryService;
 using Application.Extensions;
 using Application.Repositories.Common;
+using Domain.Entities.Accounts;
 using Domain.Entities.Journal;
 using Domain.Enums;
 
 namespace Application.Features.Journal.Commands.JournalEntry;
 
-public class CreateJournalEntryCommandHandler(IUnitOfWork unitOfWork, IFileService fileService)
+public class CreateJournalEntryCommandHandler(IUnitOfWork unitOfWork, IFileService fileService, IJournalEntryNumberGenerator numberGenerator)
 {
     public async Task<OperationResult<bool>> Handle(List<CreateJournalEntryCommand> commands, CancellationToken cancellationToken)
     {
@@ -39,19 +42,36 @@ public class CreateJournalEntryCommandHandler(IUnitOfWork unitOfWork, IFileServi
             .Sum(c => c.Amount);
 
         if (debitTotal != creditTotal)
-            return OperationResult<bool>.FailureResult("Entries", "Journal entries are not balanced.");
+            return OperationResult<bool>.FailureResult("Balance", "Journal entries are not balanced.");
 
-        // Generate Entry Number (incremental per JournalVoucher)
-        var lastEntry = await unitOfWork.JournalEntryRepository.GetLastEntryByVoucherIdAsync(voucherId, cancellationToken);
+        // Preload Required Data
+        var subLedgerIds = commands.Select(c => c.SubLedgerAccountId).Distinct().ToList();
 
-        var lastEntryNum = lastEntry is null ? 0 : int.Parse(lastEntry.JournalEntryNumber);
+        var subLedgers = await unitOfWork.SubLedgerAccountRepository
+            .GetByIdsAsync(subLedgerIds, cancellationToken);
 
-        // Validator
+        var subLedgerDict = subLedgers.ToDictionary(x => x.Id);
+
+        var detailedIds = commands
+            .Where(c => c.DetailedAccountId.HasValue)
+            .Select(c => c.DetailedAccountId!.Value)
+            .Distinct()
+            .ToList();
+
+        var detailedAccounts = detailedIds.Any()
+            ? await unitOfWork.DetailedAccountRepository.GetByIdsAsync(detailedIds, cancellationToken)
+            : new List<DetailedAccountEntity>();
+
+        var detailedDict = detailedAccounts.ToDictionary(x => x.Id);
+
+        // Command Validator
         var validator = new CreateJournalEntryCommandValidator();
 
-        await unitOfWork.BeginTransactionAsync(cancellationToken);
+        // Store entities for post-commit operations
+        var createdEntries = new List<(JournalEntryEntity Entity, List<SaveFileModel>? Files)>();
 
-        try
+        // Transactional Execution
+        var result = await unitOfWork.ExecuteInTransactionAsync(async () =>
         {
             foreach (var command in commands)
             {
@@ -59,31 +79,36 @@ public class CreateJournalEntryCommandHandler(IUnitOfWork unitOfWork, IFileServi
                 if (!validationResult.IsValid)
                     throw new InvalidOperationException(validationResult.Errors.ConvertToKeyValuePair().First().Value);
 
-                var subLedgerAccountEntity = await unitOfWork.SubLedgerAccountRepository.GetByIdAsync(command.SubLedgerAccountId, cancellationToken);
+                // SubLedger account validation
+                if (!subLedgerDict.TryGetValue(command.SubLedgerAccountId, out var subLedger))
+                    throw new InvalidOperationException("Invalid sub-ledger account.");
 
-                if (subLedgerAccountEntity is null || !subLedgerAccountEntity.IsActive)
-                    return OperationResult<bool>.FailureResult(nameof(command.SubLedgerAccountId), "Invalid or inactive sub-ledger account.");
+                if (!subLedger.IsActive)
+                    throw new InvalidOperationException("SubLedger account is inactive.");
 
-                if (subLedgerAccountEntity.JournalEntryType != command.JournalEntryType)
-                    return OperationResult<bool>.FailureResult(nameof(command.JournalEntryType), "Journal entry type mismatch.");
+                if (subLedger.JournalEntryType != command.JournalEntryType)
+                    throw new InvalidOperationException("Journal entry type mismatch.");
 
-                // Check Detailed account
-                if (command.DetailedAccountId is not null)
+                // Detailed account validation
+                if (command.DetailedAccountId.HasValue)
                 {
-                    var detailedAccountEntity = await unitOfWork.DetailedAccountRepository.GetByIdAsync(command.DetailedAccountId.Value, cancellationToken);
+                    if (!detailedDict.TryGetValue(command.DetailedAccountId.Value, out var detailed))
+                        throw new InvalidOperationException("Invalid detailed account.");
 
-                    if (detailedAccountEntity is null || !detailedAccountEntity.IsActive)
-                        return OperationResult<bool>.FailureResult(nameof(command.DetailedAccountId), "Invalid or inactive detailed account.");
+                    if (!detailed.IsActive)
+                        throw new InvalidOperationException("Detailed account is inactive.");
 
-                    if (detailedAccountEntity.JournalEntryType != command.JournalEntryType)
-                        return OperationResult<bool>.FailureResult(nameof(command.JournalEntryType), "Journal entry type mismatch.");
+                    if (detailed.JournalEntryType != command.JournalEntryType)
+                        throw new InvalidOperationException("Detailed account type mismatch.");
                 }
 
-                lastEntryNum++;
+                // Generate number
+                var entryNumber = await numberGenerator.GenerateAsync(voucherId, cancellationToken);
 
-                var journalEntryEntity = new JournalEntryEntity
+                // Create journal entry
+                var entity = new JournalEntryEntity
                 {
-                    JournalEntryNumber = lastEntryNum.ToString(),
+                    JournalEntryNumber = entryNumber,
                     JournalEntryType = command.JournalEntryType,
                     Amount = command.Amount,
                     Description = command.Description,
@@ -92,19 +117,25 @@ public class CreateJournalEntryCommandHandler(IUnitOfWork unitOfWork, IFileServi
                     JournalVoucherId = voucherId
                 };
 
-                await unitOfWork.JournalEntryRepository.CreateAsync(journalEntryEntity, cancellationToken);
+                await unitOfWork.JournalEntryRepository.CreateAsync(entity, cancellationToken);
 
-                // Save files
-                await fileService.SaveFilesAsync(command.Attachments, journalEntryEntity.Id, cancellationToken);
+                createdEntries.Add((entity, command.Attachments));
             }
 
-            await unitOfWork.CommitTransactionAsync(cancellationToken);
             return OperationResult<bool>.SuccessResult(true);
-        }
-        catch (Exception ex)
+
+        }, cancellationToken);
+
+        // Post-Commit Side Effects
+        if (result.IsSuccess)
         {
-            await unitOfWork.RollbackTransactionAsync(cancellationToken);
-            return OperationResult<bool>.FailureResult("Posting", ex.Message);
+            foreach (var (entity, files) in createdEntries)
+            {
+                if (files is not null && files.Any())
+                    await fileService.SaveFilesAsync(files, entity.Id, cancellationToken);
+            }
         }
+
+        return result;
     }
 }

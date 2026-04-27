@@ -461,7 +461,7 @@ public class JournalVoucherTests(ApiTestSetup setup, ITestOutputHelper output)
         // Create journal voucher
         var journalVoucher = await setup.TestInit1.CreateJournalVoucher(financialPeriod);
 
-        journalVoucher.JournalVoucherState = JournalVoucherState.Rejected;
+        journalVoucher.JournalVoucherState = JournalVoucherState.Reversed;
         await setup.TestInit1.AccountingDbContext.SaveChangesAsync();
 
         // Update journal voucher

@@ -35,7 +35,7 @@ public class CloseFinancialPeriodCommandHandler(IUnitOfWork unitOfWork,
             return OperationResult<bool>.FailureResult("Transactions", "There are unPosted(draft) journal entries in this period.");
 
         // Business Rule: Compute closing balances per account
-        var journalVouchers = await unitOfWork.JournalVoucherRepository.GetByFinancialPeriodAndStateAsync(financialPeriod.Id, JournalVoucherState.Approved, cancellationToken);
+        var journalVouchers = await unitOfWork.JournalVoucherRepository.GetByFinancialPeriodAndStateAsync(financialPeriod.Id, JournalVoucherState.Posted, cancellationToken);
 
         var accountBalances = journalVouchers
             .SelectMany(v => v.JournalEntries) // flatten all entries
@@ -100,7 +100,7 @@ public class CloseFinancialPeriodCommandHandler(IUnitOfWork unitOfWork,
 
         // Update journal voucher
         var journalVoucher = await unitOfWork.JournalVoucherRepository.GetByFinancialPeriodAsync(newFinancialPeriod.Id, cancellationToken);
-        journalVoucher.JournalVoucherState = JournalVoucherState.Approved;
+        journalVoucher.JournalVoucherState = JournalVoucherState.Posted;
         await unitOfWork.JournalVoucherRepository.UpdateAsync(journalVoucher, cancellationToken);
 
         // Create journal entries

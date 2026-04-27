@@ -4,7 +4,7 @@ namespace Application.Features.Journal.Queries.JournalEntry;
 
 public record GetJournalEntriesQuery
 {
-    public string? JournalEntryNumber { get; init; }
+    public int? JournalEntryNumber { get; init; }
     public JournalEntryType? JournalEntryType { get; init; }
     public decimal? Amount { get; init; }
     public Guid? DetailedAccountId { get; init; }
