@@ -8,8 +8,14 @@ namespace Infrastructure.FileStorageService.Implementations;
 
 public class DatabaseStorageService(IUnitOfWork unitOfWork) : IFileService
 {
+    private const int MaxFileSizeBytes = 5 * 1024 * 1024; // 5MB
+
     public async Task<List<SaveFileModelResult>> SaveFilesAsync(List<SaveFileModel> files, Guid journalEntryId, CancellationToken cancellationToken = default)
     {
+        if (files.Count == 0)
+            return [];
+
+        var attachments = new List<AttachmentEntity>();
         var result = new List<SaveFileModelResult>();
 
         foreach (var file in files)
@@ -20,34 +26,31 @@ public class DatabaseStorageService(IUnitOfWork unitOfWork) : IFileService
             {
                 fileBytes = Convert.FromBase64String(file.Base64File);
             }
-            catch (FormatException)
+            catch
             {
                 throw new InvalidOperationException("Invalid Base64 file data provided.");
             }
 
+            if (fileBytes.Length > MaxFileSizeBytes)
+                throw new InvalidOperationException("File size exceeds allowed limit (5MB).");
+
             // Try to detect file type via FileTypeChecker
-            var extension = "bin";
-            var mimeType = "application/octet-stream";
             var fileType = FileTypeValidator.GetFileType(fileBytes);
-            if (fileType != null)
-            {
-                extension = fileType.Extension;
-                mimeType = fileType.MimeType;
-            }
+
+            var extension = fileType?.Extension ?? "bin";
+            var mimeType = fileType?.MimeType ?? "application/octet-stream";
 
             // Generate unique file name
             var fileName = $"{Guid.NewGuid():N}.{extension}";
 
             // Store file in DB
-            var attachment = new AttachmentEntity
+            attachments.Add(new AttachmentEntity
             {
                 FileName = fileName,
                 ContentType = mimeType,
                 FileData = fileBytes,
                 JournalEntryId = journalEntryId
-            };
-
-            await unitOfWork.AttachmentRepository.CreateAsync(attachment, cancellationToken);
+            });
 
             // Prepare result model
             result.Add(new SaveFileModelResult
@@ -57,31 +60,35 @@ public class DatabaseStorageService(IUnitOfWork unitOfWork) : IFileService
             });
         }
 
+        // Single batch insert (important for performance + consistency)
+        await unitOfWork.AttachmentRepository.AddRangeAsync(attachments, cancellationToken);
+
         return result;
     }
 
     public async Task<List<GetFileModel>> GetFilesByNameAsync(List<string> fileNames, CancellationToken cancellationToken = default)
     {
-        var attachments = await unitOfWork.AttachmentRepository.GetsByNameAsync(fileNames, cancellationToken);
+        if (fileNames.Count == 0)
+            return [];
 
-        var result = attachments.Select(x => new GetFileModel
+        var attachments = await unitOfWork.AttachmentRepository
+            .GetsByNameAsync(fileNames, cancellationToken);
+
+        return attachments.Select(x => new GetFileModel
         {
             FileName = x.FileName,
             FileType = x.ContentType,
             Base64Data = Convert.ToBase64String(x.FileData!)
         }).ToList();
-
-        return result;
     }
 
     public async Task RemoveFilesAsync(List<string> fileNames, CancellationToken cancellationToken = default)
     {
-        var attachments = await unitOfWork.AttachmentRepository.GetsByNameAsync(fileNames, cancellationToken);
-        if (!attachments.Any()) return;
+        if (fileNames.Count == 0)
+            return;
 
-        foreach (var attachment in attachments)
-        {
-            await unitOfWork.AttachmentRepository.RemoveAsync(attachment.FileName, cancellationToken);
-        }
+        // Bulk delete instead of per-row delete
+        await unitOfWork.AttachmentRepository
+            .RemoveByNamesAsync(fileNames, cancellationToken);
     }
 }

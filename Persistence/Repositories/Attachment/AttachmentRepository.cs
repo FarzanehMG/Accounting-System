@@ -7,10 +7,7 @@ namespace Persistence.Repositories.Attachment;
 
 internal sealed class AttachmentRepository(AccountingDbContext dbContext) : BaseRepository<AttachmentEntity>(dbContext), IAttachmentRepository
 {
-    public async Task CreateAsync(AttachmentEntity entity, CancellationToken cancellationToken = default)
-    {
-        await AddAsync(entity, cancellationToken);
-    }
+    private readonly AccountingDbContext _dbContext = dbContext;
 
     public async Task<List<AttachmentEntity>> GetsByNameAsync(List<string> fileNames, CancellationToken cancellationToken = default)
     {
@@ -22,13 +19,18 @@ internal sealed class AttachmentRepository(AccountingDbContext dbContext) : Base
             .ToListAsync(cancellationToken);
     }
 
-    public async Task<bool> RemoveAsync(string fileName, CancellationToken cancellationToken = default)
+    public async Task AddRangeAsync(List<AttachmentEntity> entities, CancellationToken ct)
     {
-        var entity = await Table.FirstOrDefaultAsync(x => x.FileName == fileName, cancellationToken);
-        if (entity == null)
-            return false;
+        await _dbContext.Set<AttachmentEntity>().AddRangeAsync(entities, ct);
+    }
 
-        Remove(entity);
-        return true;
+    public async Task RemoveByNamesAsync(List<string> fileNames, CancellationToken ct)
+    {
+        if (fileNames.Count == 0)
+            return;
+
+        await _dbContext.Set<AttachmentEntity>()
+            .Where(x => fileNames.Contains(x.FileName))
+            .ExecuteDeleteAsync(ct);
     }
 }

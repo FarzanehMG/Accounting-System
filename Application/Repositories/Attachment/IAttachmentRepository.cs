@@ -4,7 +4,7 @@ namespace Application.Repositories.Attachment;
 
 public interface IAttachmentRepository
 {
-	Task CreateAsync(AttachmentEntity entity, CancellationToken cancellationToken = default);
     Task<List<AttachmentEntity>> GetsByNameAsync(List<string> fileNames, CancellationToken cancellationToken = default);
-    Task<bool> RemoveAsync(string fileName, CancellationToken cancellationToken = default);
+    Task AddRangeAsync(List<AttachmentEntity> entities, CancellationToken cancellationToken = default);
+    Task RemoveByNamesAsync(List<string> fileNames, CancellationToken cancellationToken = default);
 }
