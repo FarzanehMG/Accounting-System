@@ -411,7 +411,7 @@ public class FinancialPeriodTests(ITestOutputHelper testOutputHelper)
         // Assert
         result.IsSuccess.Should().BeFalse();
         result.ErrorMessages.Should().ContainKey("StartDate")
-            .WhoseValue.Should().Contain("Cannot change StartDate because some journal entries already exist.");
+            .WhoseValue.Should().Contain("Cannot change StartDate because journal entries already exist in the period.");
     }
 
     [Fact]
@@ -429,20 +429,7 @@ public class FinancialPeriodTests(ITestOutputHelper testOutputHelper)
             StartDate = startDate,
             EndDate = DateTime.UtcNow,
             IsActive = true,
-            JournalVouchers =
-            [
-                new JournalVoucherEntity
-                {
-                    JournalVoucherTitle = faker.Finance.AccountName(),
-                    JournalVoucherNumber = new Random().Next(),
-                    ReferenceNumber = Guid.NewGuid().ToString(),
-                    TransactionTime = DateTime.UtcNow,
-                    Description = faker.Finance.AccountName(),
-                    JournalVoucherState = JournalVoucherState.Draft,
-                    FinancialPeriodId = Guid.NewGuid(),
-                    CreatedByUserId = Guid.NewGuid()
-                }
-            ],
+            JournalVouchers = [],
             CreatedDate = DateTime.UtcNow,
             ModifiedDate = DateTime.UtcNow
         };
@@ -480,27 +467,14 @@ public class FinancialPeriodTests(ITestOutputHelper testOutputHelper)
             StartDate = startDate,
             EndDate = DateTime.UtcNow,
             IsActive = true,
-            JournalVouchers =
-            [
-                new JournalVoucherEntity
-                {
-                    JournalVoucherTitle = faker.Finance.AccountName(),
-                    JournalVoucherNumber = new Random().Next(),
-                    ReferenceNumber = Guid.NewGuid().ToString(),
-                    TransactionTime = DateTime.UtcNow,
-                    Description = faker.Finance.AccountName(),
-                    JournalVoucherState = JournalVoucherState.Draft,
-                    FinancialPeriodId = Guid.NewGuid(),
-                    CreatedByUserId = Guid.NewGuid()
-                }
-            ],
+            JournalVouchers = [],
             CreatedDate = DateTime.UtcNow,
             ModifiedDate = DateTime.UtcNow
         };
         unitOfWork.FinancialPeriodRepository.GetByIdAsync(financialPeriodId, CancellationToken.None)
             .Returns(existingFinancialPeriodEntity);
 
-        unitOfWork.FinancialPeriodRepository.GetOverlappingFinancialPeriodAsync(CancellationToken.None, Arg.Any<DateTime>(), Arg.Any<DateTime>())
+        unitOfWork.FinancialPeriodRepository.GetOverlappingFinancialPeriodByIdAsync(existingFinancialPeriodEntity.Id, CancellationToken.None, Arg.Any<DateTime>(), Arg.Any<DateTime>())
             .Returns(existingFinancialPeriodEntity);
 
         var updateFinancialPeriodCommand = new UpdateFinancialPeriodCommand

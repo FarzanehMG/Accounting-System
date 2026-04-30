@@ -7,23 +7,36 @@ public class JournalEntryNumberGenerator(AccountingDbContext db) : IJournalEntry
 {
     public async Task<int> GenerateAsync(Guid voucherId, CancellationToken cancellationToken)
     {
-        var sql = @"
-            UPDATE JournalEntrySequences WITH (UPDLOCK, HOLDLOCK)
-            SET CurrentNumber = CurrentNumber + 1
-            OUTPUT INSERTED.CurrentNumber
-            WHERE JournalVoucherId = {0};
+        if (db.Database.CurrentTransaction is null)
+            throw new InvalidOperationException("Must run inside transaction.");
 
-            IF @@ROWCOUNT = 0
+        // safe initialization (no race condition via constraint reliance)
+        var initSql = @"
+            IF NOT EXISTS (
+                SELECT 1
+                FROM JournalEntrySequences WITH (UPDLOCK, HOLDLOCK)
+                WHERE JournalVoucherId = {0}
+            )
             BEGIN
                 INSERT INTO JournalEntrySequences (JournalVoucherId, CurrentNumber)
-                VALUES ({0}, 1);
-
-                SELECT 1;
+                VALUES ({0}, 0)
             END";
 
+        await db.Database.ExecuteSqlRawAsync(initSql, voucherId);
+
+        // atomic increment (single deterministic output)
+        var updateSql = @"
+            UPDATE JournalEntrySequences WITH (ROWLOCK, UPDLOCK)
+            SET CurrentNumber = CurrentNumber + 1
+            OUTPUT INSERTED.CurrentNumber
+            WHERE JournalVoucherId = {0};";
+
         var result = await db.Database
-            .SqlQueryRaw<int>(sql, voucherId)
+            .SqlQueryRaw<int>(updateSql, voucherId)
             .ToListAsync(cancellationToken);
+
+        if (result.Count != 1)
+            throw new InvalidOperationException("Sequence generation failed.");
 
         return result[0];
     }

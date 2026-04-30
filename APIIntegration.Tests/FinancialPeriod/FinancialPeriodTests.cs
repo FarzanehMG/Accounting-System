@@ -479,7 +479,7 @@ public class FinancialPeriodTests(ApiTestSetup setup, ITestOutputHelper output)
         catch (ApiException ex)
         {
             var responseContent = ex.Message;
-            responseContent.Should().Contain("Financial Period Not Found.");
+            responseContent.Should().Contain("Financial period not found.");
             ex.StatusCode.Should().Be(404);
         }
     }
@@ -593,7 +593,7 @@ public class FinancialPeriodTests(ApiTestSetup setup, ITestOutputHelper output)
         catch (ApiException ex)
         {
             var responseContent = ex.Message;
-            responseContent.Should().Contain("annot change StartDate because journal entries already exist in the period.");
+            responseContent.Should().Contain("Cannot change StartDate because journal entries already exist in the period.");
             ex.StatusCode.Should().Be(400);
         }
     }
