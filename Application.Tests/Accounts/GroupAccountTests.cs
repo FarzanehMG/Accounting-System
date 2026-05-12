@@ -180,6 +180,16 @@ public class GroupAccountTests(ITestOutputHelper testOutputHelper)
             .FindAccountByTitleAndTypeAsync(title, JournalEntryType.Debit, Arg.Any<CancellationToken>())
             .Returns(existingGroupAccount);
 
+        var existingFinancialPeriod = new FinancialPeriodEntity
+        {
+            FinancialPeriodTitle = faker.Finance.AccountName(),
+            StartDate = DateTime.MinValue,
+            EndDate = DateTime.MaxValue
+        };
+
+        unitOfWork.FinancialPeriodRepository.GetActiveFinancialPeriodAsync(Arg.Any<CancellationToken>())
+            .Returns(existingFinancialPeriod);
+
         var createGroupAccountCommand = new CreateGroupAccountCommand
         {
             Title = title,
@@ -495,6 +505,16 @@ public class GroupAccountTests(ITestOutputHelper testOutputHelper)
         var unitOfWork = Substitute.For<IUnitOfWork>();
         var faker = new Faker();
         var groupAccountId = Guid.NewGuid();
+
+        var existingFinancialPeriodEntity = new FinancialPeriodEntity
+        {
+            FinancialPeriodTitle = faker.Finance.AccountName(),
+            StartDate = DateTime.UtcNow.AddDays(-100),
+            EndDate = DateTime.UtcNow.AddDays(100)
+        };
+        unitOfWork.FinancialPeriodRepository
+            .GetActiveFinancialPeriodAsync(Arg.Any<CancellationToken>())
+            .Returns(existingFinancialPeriodEntity);
 
         unitOfWork.GroupAccountRepository
             .GetByIdAsync(groupAccountId, Arg.Any<CancellationToken>())
