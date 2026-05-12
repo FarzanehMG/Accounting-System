@@ -33,6 +33,15 @@ public class GeneralLedgerAccountTests(ITestOutputHelper testOutputHelper)
             .GetActiveFinancialPeriodAsync(Arg.Any<CancellationToken>())
             .Returns(existingFinancialPeriodEntity);
 
+        var existingGroupAccount = new GroupAccountEntity
+        {
+            AccountTitle = faker.Finance.AccountName(),
+            AccountCode = faker.Finance.AccountName(),
+            JournalEntryType = JournalEntryType.Credit
+        };
+        unitOfWork.GroupAccountRepository.GetByIdAsync(Arg.Any<Guid>(), Arg.Any<CancellationToken>())
+            .Returns(existingGroupAccount);
+
         var createGeneralAccountCommand = new CreateGeneralLedgerAccountCommand
         {
             Title = faker.Finance.AccountName(),
@@ -166,6 +175,25 @@ public class GeneralLedgerAccountTests(ITestOutputHelper testOutputHelper)
         var groupAccountId = Guid.NewGuid();
         const JournalEntryType journalEntryType = JournalEntryType.Debit;
 
+        var existingFinancialPeriodEntity = new FinancialPeriodEntity
+        {
+            FinancialPeriodTitle = faker.Finance.AccountName(),
+            StartDate = DateTime.UtcNow.AddDays(-100),
+            EndDate = DateTime.UtcNow.AddDays(100)
+        };
+        unitOfWork.FinancialPeriodRepository
+            .GetActiveFinancialPeriodAsync(Arg.Any<CancellationToken>())
+            .Returns(existingFinancialPeriodEntity);
+
+        var existingGroupAccount = new GroupAccountEntity
+        {
+            AccountTitle = faker.Finance.AccountName(),
+            AccountCode = faker.Finance.AccountName(),
+            JournalEntryType = journalEntryType
+        };
+        unitOfWork.GroupAccountRepository.GetByIdAsync(Arg.Any<Guid>(), Arg.Any<CancellationToken>())
+            .Returns(existingGroupAccount);
+
         var existingGeneralLedgerAccount = new GeneralLedgerAccountEntity
         {
             AccountTitle = title,
@@ -220,6 +248,15 @@ public class GeneralLedgerAccountTests(ITestOutputHelper testOutputHelper)
             .GetActiveFinancialPeriodAsync(Arg.Any<CancellationToken>())
             .Returns(existingFinancialPeriodEntity);
 
+        var existingGroupAccount = new GroupAccountEntity
+        {
+            AccountTitle = faker.Finance.AccountName(),
+            AccountCode = faker.Finance.AccountName(),
+            JournalEntryType = JournalEntryType.Credit
+        };
+        unitOfWork.GroupAccountRepository.GetByIdAsync(Arg.Any<Guid>(), Arg.Any<CancellationToken>())
+            .Returns(existingGroupAccount);
+
         var existingGeneralLedgerAccount = new GeneralLedgerAccountEntity
         {
             AccountTitle = title,
@@ -264,6 +301,26 @@ public class GeneralLedgerAccountTests(ITestOutputHelper testOutputHelper)
         var title = faker.Finance.AccountName();
         var groupAccountId = Guid.NewGuid();
         const JournalEntryType journalEntryType = JournalEntryType.Debit;
+
+        var existingFinancialPeriodEntity = new FinancialPeriodEntity
+        {
+            FinancialPeriodTitle = faker.Finance.AccountName(),
+            StartDate = DateTime.UtcNow.AddDays(-100),
+            EndDate = DateTime.UtcNow.AddDays(100)
+        };
+        unitOfWork.FinancialPeriodRepository
+            .GetActiveFinancialPeriodAsync(Arg.Any<CancellationToken>())
+            .Returns(existingFinancialPeriodEntity);
+
+        var existingGroupAccount = new GroupAccountEntity
+        {
+            AccountTitle = faker.Finance.AccountName(),
+            AccountCode = faker.Finance.AccountName(),
+            JournalEntryType = journalEntryType
+        };
+        unitOfWork.GroupAccountRepository.GetByIdAsync(Arg.Any<Guid>(), Arg.Any<CancellationToken>())
+            .Returns(existingGroupAccount);
+
 
         var existingGeneralLedgerAccount = new GeneralLedgerAccountEntity
         {
@@ -310,6 +367,25 @@ public class GeneralLedgerAccountTests(ITestOutputHelper testOutputHelper)
         var accountCode = faker.Finance.AccountName();
         const JournalEntryType journalEntryType = JournalEntryType.Debit;
 
+        var existingFinancialPeriodEntity = new FinancialPeriodEntity
+        {
+            FinancialPeriodTitle = faker.Finance.AccountName(),
+            StartDate = DateTime.UtcNow.AddDays(-100),
+            EndDate = DateTime.UtcNow.AddDays(100)
+        };
+        unitOfWork.FinancialPeriodRepository
+            .GetActiveFinancialPeriodAsync(Arg.Any<CancellationToken>())
+            .Returns(existingFinancialPeriodEntity);
+
+        var existingGroupAccount = new GroupAccountEntity
+        {
+            AccountTitle = faker.Finance.AccountName(),
+            AccountCode = faker.Finance.AccountName(),
+            JournalEntryType = journalEntryType
+        };
+        unitOfWork.GroupAccountRepository.GetByIdAsync(Arg.Any<Guid>(), Arg.Any<CancellationToken>())
+            .Returns(existingGroupAccount);
+
         var existingGeneralLedgerAccount = new GeneralLedgerAccountEntity
         {
             AccountTitle = title,
@@ -319,8 +395,8 @@ public class GeneralLedgerAccountTests(ITestOutputHelper testOutputHelper)
             GroupAccountId = groupAccountId
         };
         unitOfWork.GeneralLedgerAccountRepository
-            .FindAccountByTitleAndGroupAndTypeAsync(title, groupAccountId, journalEntryType, Arg.Any<CancellationToken>())
-            .Returns(Task.FromResult<IReadOnlyList<GeneralLedgerAccountEntity>>(new List<GeneralLedgerAccountEntity> { existingGeneralLedgerAccount }));
+            .FindByCodeAndGroupAccountIdAsync(accountCode, groupAccountId, Arg.Any<CancellationToken>())
+            .Returns(existingGeneralLedgerAccount);
 
         unitOfWork.GeneralLedgerAccountRepository
             .FindByCodeAsync(accountCode, Arg.Any<CancellationToken>())
@@ -407,6 +483,16 @@ public class GeneralLedgerAccountTests(ITestOutputHelper testOutputHelper)
         var unitOfWork = Substitute.For<IUnitOfWork>();
         var faker = new Faker();
 
+        var existingFinancialPeriodEntity = new FinancialPeriodEntity
+        {
+            FinancialPeriodTitle = faker.Finance.AccountName(),
+            StartDate = DateTime.UtcNow.AddDays(-100),
+            EndDate = DateTime.UtcNow.AddDays(100)
+        };
+        unitOfWork.FinancialPeriodRepository
+            .GetActiveFinancialPeriodAsync(Arg.Any<CancellationToken>())
+            .Returns(existingFinancialPeriodEntity);
+
         var existingGeneralLedgerAccountEntity = new GeneralLedgerAccountEntity
         {
             AccountTitle = faker.Finance.AccountName(),
@@ -429,7 +515,7 @@ public class GeneralLedgerAccountTests(ITestOutputHelper testOutputHelper)
         // Assert
         result.IsSuccess.Should().BeFalse();
         result.ErrorMessages.Should().ContainKey(nameof(updateGeneralLedgerAccountCommand.GeneralLedgerAccountId))
-            .WhoseValue.Should().Contain("General Account Not Found.");
+            .WhoseValue.Should().Contain("GeneralLedger Account Not Found.");
     }
 
     [Fact]
