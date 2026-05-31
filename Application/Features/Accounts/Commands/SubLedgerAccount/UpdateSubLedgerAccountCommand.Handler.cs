@@ -27,8 +27,8 @@ public class UpdateSubLedgerAccountCommandHandler(IUnitOfWork unitOfWork)
             return OperationResult<bool>.NotFoundResult(nameof(UpdateSubLedgerAccountCommand), "SubLedger Account Not Found.");
 
         // Check if the account has journal entries
-        var hasJournalEntries = await unitOfWork.JournalEntryRepository
-            .AnyJournalEntryByGroupAccountIdAsync(subLedgerAccount.GeneralLedgerAccount!.GroupAccountId, cancellationToken);
+        var hasJournalEntries = subLedgerAccount.GeneralLedgerAccount != null && await unitOfWork.JournalEntryRepository
+            .AnyJournalEntryByGroupAccountIdAsync(subLedgerAccount.GeneralLedgerAccount.GroupAccountId, cancellationToken);
 
         // Update title with duplicate check
         var titleResult = await UpdateAccountTitle(subLedgerAccount, request, cancellationToken);

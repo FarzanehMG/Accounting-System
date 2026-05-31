@@ -27,8 +27,8 @@ public class UpdateDetailedAccountCommandHandler(IUnitOfWork unitOfWork)
             return OperationResult<bool>.NotFoundResult(nameof(UpdateDetailedAccountCommand), "Detailed Account Not Found.");
 
         // Check if the account has journal entries
-        var hasJournalEntries = await unitOfWork.JournalEntryRepository
-            .AnyJournalEntryByGroupAccountIdAsync(detailedAccount.SubLedgerAccount!.GeneralLedgerAccount!.GroupAccountId, cancellationToken);
+        var hasJournalEntries = detailedAccount.SubLedgerAccount is { GeneralLedgerAccount: not null } && await unitOfWork.JournalEntryRepository
+            .AnyJournalEntryByGroupAccountIdAsync(detailedAccount.SubLedgerAccount.GeneralLedgerAccount.GroupAccountId, cancellationToken);
 
         // Update title with duplicate check
         var titleResult = await UpdateAccountTitle(detailedAccount, request, cancellationToken);
