@@ -6,6 +6,7 @@ using Application.Repositories.Common;
 using Application.Tests.Extensions;
 using Bogus;
 using Domain.Entities.Accounts;
+using Domain.Entities.FinancialPeriod;
 using Domain.Enums;
 using FluentAssertions;
 using NSubstitute;
@@ -22,6 +23,15 @@ public class SubLedgerAccountTests(ITestOutputHelper testOutputHelper)
         var unitOfWork = Substitute.For<IUnitOfWork>();
         var faker = new Faker();
         var generalLedgerAccountId = Guid.NewGuid();
+
+        var financialPeriod = new FinancialPeriodEntity
+        {
+            FinancialPeriodTitle = faker.Finance.AccountName(),
+            StartDate = DateTime.MinValue,
+            EndDate = DateTime.MaxValue
+        };
+        unitOfWork.FinancialPeriodRepository.GetActiveFinancialPeriodAsync()
+            .Returns(financialPeriod);
 
         var subLedgerAccountCommand = new CreateSubLedgerAccountCommand
         {
@@ -168,11 +178,19 @@ public class SubLedgerAccountTests(ITestOutputHelper testOutputHelper)
     [Fact]
     public async Task CreateSubLedgerAccountHandler_ShouldFail_WhenSubLedgerAccountNatureNotSameAsGeneralLedgerAccount()
     {
-
         // Arrange
         var unitOfWork = Substitute.For<IUnitOfWork>();
         var faker = new Faker();
         var generalLedgerAccountId = Guid.NewGuid();
+
+        var financialPeriod = new FinancialPeriodEntity
+        {
+            FinancialPeriodTitle = faker.Finance.AccountName(),
+            StartDate = DateTime.MinValue,
+            EndDate = DateTime.MaxValue
+        };
+        unitOfWork.FinancialPeriodRepository.GetActiveFinancialPeriodAsync()
+            .Returns(financialPeriod);
 
         var subLedgerAccountCommand = new CreateSubLedgerAccountCommand
         {
@@ -202,7 +220,7 @@ public class SubLedgerAccountTests(ITestOutputHelper testOutputHelper)
         // Assert
         result.IsSuccess.Should().BeFalse();
         result.ErrorMessages.Should().ContainKey(nameof(subLedgerAccountCommand.JournalEntryType))
-            .WhoseValue.Should().Contain("Sub Ledger account must have the same nature (JournalEntryType) as its General Ledger account.");
+            .WhoseValue.Should().Contain("SubLedger account must have the same nature (JournalEntryType) as its GeneralLedger account.");
     }
 
     [Fact]
@@ -239,6 +257,15 @@ public class SubLedgerAccountTests(ITestOutputHelper testOutputHelper)
         var generalLedgerAccountId = Guid.NewGuid();
         var title = faker.Finance.AccountName();
         const JournalEntryType journalEntryType = JournalEntryType.Credit;
+
+        var financialPeriod = new FinancialPeriodEntity
+        {
+            FinancialPeriodTitle = faker.Finance.AccountName(),
+            StartDate = DateTime.MinValue,
+            EndDate = DateTime.MaxValue
+        };
+        unitOfWork.FinancialPeriodRepository.GetActiveFinancialPeriodAsync()
+            .Returns(financialPeriod);
 
         var subLedgerAccountCommand = new CreateSubLedgerAccountCommand
         {
@@ -293,6 +320,15 @@ public class SubLedgerAccountTests(ITestOutputHelper testOutputHelper)
         var title = faker.Finance.AccountName();
         const JournalEntryType journalEntryType = JournalEntryType.Credit;
 
+        var financialPeriod = new FinancialPeriodEntity
+        {
+            FinancialPeriodTitle = faker.Finance.AccountName(),
+            StartDate = DateTime.MinValue,
+            EndDate = DateTime.MaxValue
+        };
+        unitOfWork.FinancialPeriodRepository.GetActiveFinancialPeriodAsync()
+            .Returns(financialPeriod);
+
         var subLedgerAccountCommand = new CreateSubLedgerAccountCommand
         {
             Title = title,
@@ -339,6 +375,15 @@ public class SubLedgerAccountTests(ITestOutputHelper testOutputHelper)
         var title = faker.Finance.AccountName();
         const JournalEntryType journalEntryType = JournalEntryType.Credit;
         var code = faker.Finance.Account();
+
+        var financialPeriod = new FinancialPeriodEntity
+        {
+            FinancialPeriodTitle = faker.Finance.AccountName(),
+            StartDate = DateTime.MinValue,
+            EndDate = DateTime.MaxValue
+        };
+        unitOfWork.FinancialPeriodRepository.GetActiveFinancialPeriodAsync()
+            .Returns(financialPeriod);
 
         var subLedgerAccountCommand = new CreateSubLedgerAccountCommand
         {
@@ -392,6 +437,15 @@ public class SubLedgerAccountTests(ITestOutputHelper testOutputHelper)
         var generalLedgerAccountId = Guid.NewGuid();
         var code = faker.Finance.Account();
 
+        var financialPeriod = new FinancialPeriodEntity
+        {
+            FinancialPeriodTitle = faker.Finance.AccountName(),
+            StartDate = DateTime.MinValue,
+            EndDate = DateTime.MaxValue
+        };
+        unitOfWork.FinancialPeriodRepository.GetActiveFinancialPeriodAsync()
+            .Returns(financialPeriod);
+
         var subLedgerAccountCommand = new CreateSubLedgerAccountCommand
         {
             Title = faker.Finance.AccountName(),
@@ -443,6 +497,15 @@ public class SubLedgerAccountTests(ITestOutputHelper testOutputHelper)
         var unitOfWork = Substitute.For<IUnitOfWork>();
         var faker = new Faker();
 
+        var financialPeriod = new FinancialPeriodEntity
+        {
+            FinancialPeriodTitle = faker.Finance.AccountName(),
+            StartDate = DateTime.MinValue,
+            EndDate = DateTime.MaxValue
+        };
+        unitOfWork.FinancialPeriodRepository.GetActiveFinancialPeriodAsync()
+            .Returns(financialPeriod);
+
         var subLedgerAccountCommand = new CreateSubLedgerAccountCommand
         {
             Title = faker.Finance.AccountName(),
@@ -460,7 +523,7 @@ public class SubLedgerAccountTests(ITestOutputHelper testOutputHelper)
         // Assert
         result.IsSuccess.Should().BeFalse();
         result.ErrorMessages.Should().ContainKey("GeneralLedgerAccountId")
-            .WhoseValue.Should().Contain("General ledger not found.");
+            .WhoseValue.Should().Contain("GeneralLedger not found.");
     }
 
     [Fact]
@@ -470,6 +533,15 @@ public class SubLedgerAccountTests(ITestOutputHelper testOutputHelper)
         var unitOfWork = Substitute.For<IUnitOfWork>();
         var faker = new Faker();
         var generalLedgerAccountId = Guid.NewGuid();
+
+        var financialPeriod = new FinancialPeriodEntity
+        {
+            FinancialPeriodTitle = faker.Finance.AccountName(),
+            StartDate = DateTime.MinValue,
+            EndDate = DateTime.MaxValue
+        };
+        unitOfWork.FinancialPeriodRepository.GetActiveFinancialPeriodAsync()
+            .Returns(financialPeriod);
 
         var subLedgerAccountCommand = new CreateSubLedgerAccountCommand
         {
@@ -499,7 +571,7 @@ public class SubLedgerAccountTests(ITestOutputHelper testOutputHelper)
         // Assert
         result.IsSuccess.Should().BeFalse();
         result.ErrorMessages.Should().ContainKey("GeneralLedgerAccountId")
-            .WhoseValue.Should().Contain("The General Ledger account must be active.");
+            .WhoseValue.Should().Contain("The GeneralLedger account must be active.");
     }
 
     [Fact]
@@ -670,6 +742,15 @@ public class SubLedgerAccountTests(ITestOutputHelper testOutputHelper)
         var subLedgerAccountId = Guid.NewGuid();
         var title = faker.Finance.AccountName();
 
+        var financialPeriod = new FinancialPeriodEntity
+        {
+            FinancialPeriodTitle = faker.Finance.AccountName(),
+            StartDate = DateTime.MinValue,
+            EndDate = DateTime.MaxValue
+        };
+        unitOfWork.FinancialPeriodRepository.GetActiveFinancialPeriodAsync()
+            .Returns(financialPeriod);
+
         var updateSubLedgerAccountCommand = new UpdateSubLedgerAccountCommand
         {
             SubLedgerAccountId = subLedgerAccountId,
@@ -708,6 +789,15 @@ public class SubLedgerAccountTests(ITestOutputHelper testOutputHelper)
         var faker = new Faker();
         var subLedgerAccountId = Guid.NewGuid();
         var code = faker.Finance.Account();
+
+        var financialPeriod = new FinancialPeriodEntity
+        {
+            FinancialPeriodTitle = faker.Finance.AccountName(),
+            StartDate = DateTime.MinValue,
+            EndDate = DateTime.MaxValue
+        };
+        unitOfWork.FinancialPeriodRepository.GetActiveFinancialPeriodAsync()
+            .Returns(financialPeriod);
 
         var updateSubLedgerAccountCommand = new UpdateSubLedgerAccountCommand
         {

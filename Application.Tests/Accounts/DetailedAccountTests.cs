@@ -6,6 +6,7 @@ using Application.Repositories.Common;
 using Application.Tests.Extensions;
 using Bogus;
 using Domain.Entities.Accounts;
+using Domain.Entities.FinancialPeriod;
 using Domain.Enums;
 using FluentAssertions;
 using NSubstitute;
@@ -22,6 +23,15 @@ public class DetailedAccountTests(ITestOutputHelper testOutputHelper)
         var unitOfWork = Substitute.For<IUnitOfWork>();
         var faker = new Faker();
         var subLedgerAccountId = Guid.NewGuid();
+
+        var financialPeriod = new FinancialPeriodEntity
+        {
+            FinancialPeriodTitle = faker.Finance.AccountName(),
+            StartDate = DateTime.MinValue,
+            EndDate = DateTime.MaxValue
+        };
+        unitOfWork.FinancialPeriodRepository.GetActiveFinancialPeriodAsync()
+            .Returns(financialPeriod);
 
         var detailedAccountCommand = new CreateDetailedAccountCommand
         {
@@ -173,6 +183,15 @@ public class DetailedAccountTests(ITestOutputHelper testOutputHelper)
         var faker = new Faker();
         var subLedgerAccountId = Guid.NewGuid();
 
+        var financialPeriod = new FinancialPeriodEntity
+        {
+            FinancialPeriodTitle = faker.Finance.AccountName(),
+            StartDate = DateTime.MinValue,
+            EndDate = DateTime.MaxValue
+        };
+        unitOfWork.FinancialPeriodRepository.GetActiveFinancialPeriodAsync()
+            .Returns(financialPeriod);
+
         var detailedAccountCommand = new CreateDetailedAccountCommand
         {
             Title = faker.Finance.AccountName(),
@@ -239,6 +258,15 @@ public class DetailedAccountTests(ITestOutputHelper testOutputHelper)
         var title = faker.Finance.AccountName();
         const JournalEntryType journalEntryType = JournalEntryType.Credit;
 
+        var financialPeriod = new FinancialPeriodEntity
+        {
+            FinancialPeriodTitle = faker.Finance.AccountName(),
+            StartDate = DateTime.MinValue,
+            EndDate = DateTime.MaxValue
+        };
+        unitOfWork.FinancialPeriodRepository.GetActiveFinancialPeriodAsync()
+            .Returns(financialPeriod);
+
         var detailedAccountCommand = new CreateDetailedAccountCommand
         {
             Title = title,
@@ -292,6 +320,15 @@ public class DetailedAccountTests(ITestOutputHelper testOutputHelper)
         var title = faker.Finance.AccountName();
         const JournalEntryType journalEntryType = JournalEntryType.Credit;
 
+        var financialPeriod = new FinancialPeriodEntity
+        {
+            FinancialPeriodTitle = faker.Finance.AccountName(),
+            StartDate = DateTime.MinValue,
+            EndDate = DateTime.MaxValue
+        };
+        unitOfWork.FinancialPeriodRepository.GetActiveFinancialPeriodAsync()
+            .Returns(financialPeriod);
+
         var detailedAccountCommand = new CreateDetailedAccountCommand
         {
             Title = title,
@@ -338,6 +375,15 @@ public class DetailedAccountTests(ITestOutputHelper testOutputHelper)
         var title = faker.Finance.AccountName();
         const JournalEntryType journalEntryType = JournalEntryType.Credit;
         var code = faker.Finance.Account();
+
+        var financialPeriod = new FinancialPeriodEntity
+        {
+            FinancialPeriodTitle = faker.Finance.AccountName(),
+            StartDate = DateTime.MinValue,
+            EndDate = DateTime.MaxValue
+        };
+        unitOfWork.FinancialPeriodRepository.GetActiveFinancialPeriodAsync()
+            .Returns(financialPeriod);
 
         var detailedAccountCommand = new CreateDetailedAccountCommand
         {
@@ -391,6 +437,15 @@ public class DetailedAccountTests(ITestOutputHelper testOutputHelper)
         var subLedgerAccountId = Guid.NewGuid();
         var code = faker.Finance.Account();
 
+        var financialPeriod = new FinancialPeriodEntity
+        {
+            FinancialPeriodTitle = faker.Finance.AccountName(),
+            StartDate = DateTime.MinValue,
+            EndDate = DateTime.MaxValue
+        };
+        unitOfWork.FinancialPeriodRepository.GetActiveFinancialPeriodAsync()
+            .Returns(financialPeriod);
+
         var detailedAccountCommand = new CreateDetailedAccountCommand
         {
             Title = faker.Finance.AccountName(),
@@ -441,6 +496,15 @@ public class DetailedAccountTests(ITestOutputHelper testOutputHelper)
         var unitOfWork = Substitute.For<IUnitOfWork>();
         var faker = new Faker();
 
+        var financialPeriod = new FinancialPeriodEntity
+        {
+            FinancialPeriodTitle = faker.Finance.AccountName(),
+            StartDate = DateTime.MinValue,
+            EndDate = DateTime.MaxValue
+        };
+        unitOfWork.FinancialPeriodRepository.GetActiveFinancialPeriodAsync()
+            .Returns(financialPeriod);
+
         var detailedAccountCommand = new CreateDetailedAccountCommand
         {
             Title = faker.Finance.AccountName(),
@@ -468,6 +532,15 @@ public class DetailedAccountTests(ITestOutputHelper testOutputHelper)
         var unitOfWork = Substitute.For<IUnitOfWork>();
         var faker = new Faker();
         var subLedgerAccountId = Guid.NewGuid();
+
+        var financialPeriod = new FinancialPeriodEntity
+        {
+            FinancialPeriodTitle = faker.Finance.AccountName(),
+            StartDate = DateTime.MinValue,
+            EndDate = DateTime.MaxValue
+        };
+        unitOfWork.FinancialPeriodRepository.GetActiveFinancialPeriodAsync()
+            .Returns(financialPeriod);
 
         var detailedAccountCommand = new CreateDetailedAccountCommand
         {
@@ -497,7 +570,7 @@ public class DetailedAccountTests(ITestOutputHelper testOutputHelper)
         // Assert
         result.IsSuccess.Should().BeFalse();
         result.ErrorMessages.Should().ContainKey("SubLedgerAccountId")
-            .WhoseValue.Should().Contain("The Sub Ledger account must be active.");
+            .WhoseValue.Should().Contain("The SubLedger account must be active.");
     }
 
     [Fact]
@@ -525,6 +598,16 @@ public class DetailedAccountTests(ITestOutputHelper testOutputHelper)
     {
         // Arrange
         var unitOfWork = Substitute.For<IUnitOfWork>();
+        var faker = new Faker();
+
+        var financialPeriod = new FinancialPeriodEntity
+        {
+            FinancialPeriodTitle = faker.Finance.AccountName(),
+            StartDate = DateTime.MinValue,
+            EndDate = DateTime.MaxValue
+        };
+        unitOfWork.FinancialPeriodRepository.GetActiveFinancialPeriodAsync()
+            .Returns(financialPeriod);
 
         var updateDetailedAccountCommand = new UpdateDetailedAccountCommand
         {
@@ -551,6 +634,15 @@ public class DetailedAccountTests(ITestOutputHelper testOutputHelper)
         var unitOfWork = Substitute.For<IUnitOfWork>();
         var faker = new Faker();
         var detailedAccountId = Guid.NewGuid();
+
+        var financialPeriod = new FinancialPeriodEntity
+        {
+            FinancialPeriodTitle = faker.Finance.AccountName(),
+            StartDate = DateTime.MinValue,
+            EndDate = DateTime.MaxValue
+        };
+        unitOfWork.FinancialPeriodRepository.GetActiveFinancialPeriodAsync()
+            .Returns(financialPeriod);
 
         var updateDetailedAccountCommand = new UpdateDetailedAccountCommand
         {
@@ -589,6 +681,15 @@ public class DetailedAccountTests(ITestOutputHelper testOutputHelper)
         var faker = new Faker();
         var detailedAccountId = Guid.NewGuid();
 
+        var financialPeriod = new FinancialPeriodEntity
+        {
+            FinancialPeriodTitle = faker.Finance.AccountName(),
+            StartDate = DateTime.MinValue,
+            EndDate = DateTime.MaxValue
+        };
+        unitOfWork.FinancialPeriodRepository.GetActiveFinancialPeriodAsync()
+            .Returns(financialPeriod);
+
         var updateDetailedAccountCommand = new UpdateDetailedAccountCommand
         {
             DetailedAccountId = detailedAccountId,
@@ -626,6 +727,15 @@ public class DetailedAccountTests(ITestOutputHelper testOutputHelper)
         var faker = new Faker();
         var detailedAccountId = Guid.NewGuid();
         var code = faker.Finance.Account();
+
+        var financialPeriod = new FinancialPeriodEntity
+        {
+            FinancialPeriodTitle = faker.Finance.AccountName(),
+            StartDate = DateTime.MinValue,
+            EndDate = DateTime.MaxValue
+        };
+        unitOfWork.FinancialPeriodRepository.GetActiveFinancialPeriodAsync()
+            .Returns(financialPeriod);
 
         var updateDetailedAccountCommand = new UpdateDetailedAccountCommand
         {
@@ -668,6 +778,15 @@ public class DetailedAccountTests(ITestOutputHelper testOutputHelper)
         var detailedAccountId = Guid.NewGuid();
         var title = faker.Finance.AccountName();
 
+        var financialPeriod = new FinancialPeriodEntity
+        {
+            FinancialPeriodTitle = faker.Finance.AccountName(),
+            StartDate = DateTime.MinValue,
+            EndDate = DateTime.MaxValue
+        };
+        unitOfWork.FinancialPeriodRepository.GetActiveFinancialPeriodAsync()
+            .Returns(financialPeriod);
+
         var updateDetailedAccountCommand = new UpdateDetailedAccountCommand
         {
             DetailedAccountId = detailedAccountId,
@@ -706,6 +825,15 @@ public class DetailedAccountTests(ITestOutputHelper testOutputHelper)
         var faker = new Faker();
         var detailedAccountId = Guid.NewGuid();
         var code = faker.Finance.Account();
+
+        var financialPeriod = new FinancialPeriodEntity
+        {
+            FinancialPeriodTitle = faker.Finance.AccountName(),
+            StartDate = DateTime.MinValue,
+            EndDate = DateTime.MaxValue
+        };
+        unitOfWork.FinancialPeriodRepository.GetActiveFinancialPeriodAsync()
+            .Returns(financialPeriod);
 
         var updateDetailedAccountCommand = new UpdateDetailedAccountCommand
         {
@@ -747,6 +875,15 @@ public class DetailedAccountTests(ITestOutputHelper testOutputHelper)
         var unitOfWork = Substitute.For<IUnitOfWork>();
         var faker = new Faker();
         var detailedAccountId = Guid.NewGuid();
+
+        var financialPeriod = new FinancialPeriodEntity
+        {
+            FinancialPeriodTitle = faker.Finance.AccountName(),
+            StartDate = DateTime.MinValue,
+            EndDate = DateTime.MaxValue
+        };
+        unitOfWork.FinancialPeriodRepository.GetActiveFinancialPeriodAsync()
+            .Returns(financialPeriod);
 
         var updateDetailedAccountCommand = new UpdateDetailedAccountCommand
         {
