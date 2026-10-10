@@ -1,0 +1,32 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Converters\JournalVoucher\**" />
+    <Compile Remove="Features\Journal\Commands\NewFolder\**" />
+    <EmbeddedResource Remove="Converters\JournalVoucher\**" />
+    <EmbeddedResource Remove="Features\Journal\Commands\NewFolder\**" />
+    <None Remove="Converters\JournalVoucher\**" />
+    <None Remove="Features\Journal\Commands\NewFolder\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Repositories\Common\" />
+    <Folder Include="Services\Journal\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="FluentValidation" Version="11.11.0" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="9.0.4" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Domain\Domain.csproj" />
+  </ItemGroup>
+
+</Project>
